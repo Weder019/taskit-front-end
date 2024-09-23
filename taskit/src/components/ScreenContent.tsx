@@ -2,6 +2,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import EditScreenInfo from './EditScreenInfo';
 
+import { useGlobalStyles } from '~/styles/globalStyles';
+
 type ScreenContentProps = {
   title: string;
   path: string;
@@ -9,12 +11,10 @@ type ScreenContentProps = {
 };
 
 export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {
+  const styles = useGlobalStyles();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <View style={styles.separator} />
-      <EditScreenInfo path={path} />
-      {children}
     </View>
   );
 };
