@@ -15,6 +15,7 @@ export const ScreenContent = ({ title, path, children }: ScreenContentProps) => 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
+      {children}
     </View>
   );
 };

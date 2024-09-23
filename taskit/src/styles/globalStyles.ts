@@ -10,9 +10,8 @@ export const useGlobalStyles = () => {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-      padding: 20,
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-end',
     },
     text: {
       color: theme.colors.onPrimary,
@@ -38,6 +37,11 @@ export const useGlobalStyles = () => {
       color: theme.colors.onPrimary,
       fontSize: 20,
       fontWeight: 'bold',
+    },
+    surface: {
+      width: '100%',
+      padding: 20,
+      backgroundColor: theme.colors.surface,
     },
   });
 };

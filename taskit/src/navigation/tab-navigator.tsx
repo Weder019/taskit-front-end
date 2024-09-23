@@ -6,6 +6,7 @@ import { HeaderButton } from '../components/HeaderButton';
 import { TabBarIcon } from '../components/TabBarIcon';
 import One from '../screens/one';
 import Two from '../screens/two';
+import Three from '../screens/three'
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,7 @@ export default function TabLayout({ navigation }: Props) {
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: 'black',
+        headerShown: false,
       }}>
       <Tab.Screen
         name="One"
@@ -23,7 +25,6 @@ export default function TabLayout({ navigation }: Props) {
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => <HeaderButton onPress={() => navigation.navigate('Modal')} />,
         }}
       />
       <Tab.Screen
@@ -31,6 +32,14 @@ export default function TabLayout({ navigation }: Props) {
         component={Two}
         options={{
           title: 'Tab Two',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="Three"
+        component={Three}
+        options={{
+          title: 'Tab Three',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
