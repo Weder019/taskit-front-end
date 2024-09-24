@@ -14,7 +14,8 @@ export const useGlobalStyles = () => {
       justifyContent: 'flex-end',
     },
     text: {
-      color: theme.colors.onPrimary,
+      color: theme.colors.onSurface,
+      fontFamily: 'Outfit-Regular',
       fontSize: 16,
     },
     button: {
@@ -36,7 +37,7 @@ export const useGlobalStyles = () => {
     title: {
       color: theme.colors.onPrimary,
       fontSize: 20,
-      fontWeight: 'bold',
+      fontFamily: 'Outfit-Bold',
     },
     surface: {
       width: '100%',
