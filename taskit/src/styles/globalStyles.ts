@@ -44,5 +44,9 @@ export const useGlobalStyles = () => {
       padding: 20,
       backgroundColor: theme.colors.surface,
     },
+    inputDefaultStyle: {
+      marginBottom: 16,
+      backgroundColor: theme.colors.surface,
+    },
   });
 };

@@ -16,20 +16,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="TabNavigator">
-        <Stack.Screen
-          name="TabNavigator"
-          component={TabNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Modal"
-          component={AuthTestScreen}
-          options={{ presentation: 'modal', headerLeft: () => null }}
-        />
-        <Stack.Screen name="AuthTest" component={AuthTestScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator initialRouteName="TabNavigator">
+      <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Modal"
+        component={AuthTestScreen}
+        options={{ presentation: 'modal', headerLeft: () => null }}
+      />
+      <Stack.Screen name="AuthTest" component={AuthTestScreen} />
+    </Stack.Navigator>
   );
 }
