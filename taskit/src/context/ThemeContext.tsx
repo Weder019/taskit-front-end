@@ -4,28 +4,11 @@ import { useColorScheme } from 'react-native';
 
 import { lightTheme, darkTheme } from '../styles/theme'; // Importa temas definidos
 
-// Defina o tipo para o tema
-interface Theme {
-  dark: boolean;
-  colors: {
-    primary: string;
-    onPrimary: string;
-    background: string;
-    surface: string;
-    onSurface: string;
-    onSurfaceVariant: string;
-    error: string;
-    onError: string;
-    errorContainer: string;
-    onErrorContainer: string;
-  };
-}
-
 // Defina o tipo para o contexto
 interface ThemeContextType {
-  theme: Theme;
+  theme: typeof lightTheme;
   isDarkTheme: boolean;
-  setIsDarkTheme: (isDark: boolean) => void;
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -39,10 +22,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     setIsDarkTheme(scheme === 'dark');
   }, [scheme]);
 
+  const toggleTheme = () => {
+    setIsDarkTheme(prevTheme => !prevTheme);
+  };
+
   const theme = isDarkTheme ? darkTheme : lightTheme;
 
   return (
-    <ThemeContext.Provider value={{ theme, isDarkTheme, setIsDarkTheme }}>
+    <ThemeContext.Provider value={{ theme, isDarkTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
