@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { TextInput } from 'react-native-paper';
+
 import { useGlobalStyles } from '~/styles/globalStyles';
 
 // Define as propriedades que o componente aceitará

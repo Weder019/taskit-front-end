@@ -24,7 +24,7 @@ export default function RootStack() {
     const checkAuthentication = async () => {
       // Verifique o status de autenticação
       // Se o usuário estiver autenticado, atualize o estado
-      setIsAuthenticated(true); // Simulação de usuário não autenticado
+      setIsAuthenticated(false); // Simulação de usuário não autenticado
     };
     checkAuthentication();
   }, []);

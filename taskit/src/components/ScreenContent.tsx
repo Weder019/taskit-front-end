@@ -1,17 +1,27 @@
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Image, View } from 'react-native';
 
 import { useGlobalStyles } from '~/styles/globalStyles';
 
 type ScreenContentProps = {
-  title: string;
+  isAuthenticationScreen: boolean; // Novo parâmetro para controlar a exibição da imagem
   children?: React.ReactNode;
 };
 
-export const ScreenContent = ({ title, children }: ScreenContentProps) => {
+export const ScreenContent = ({ isAuthenticationScreen, children }: ScreenContentProps) => {
   const styles = useGlobalStyles();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {/* Se for tela de autenticação, renderiza a imagem */}
+      {isAuthenticationScreen && (
+        <Image
+          source={require('../../assets/images/logo.png')} // Substitua pelo caminho da sua imagem local
+          style={styles.image}
+          resizeMode="contain"
+        />
+      )}
+
       {children}
     </View>
   );

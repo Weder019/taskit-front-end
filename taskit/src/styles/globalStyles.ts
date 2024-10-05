@@ -48,5 +48,19 @@ export const useGlobalStyles = () => {
       marginBottom: 16,
       backgroundColor: theme.colors.surface,
     },
+    containedButtonDefaultStyle: {
+      width: '43%',
+      alignSelf: 'center',
+      padding: 3,
+    },
+    screenHeadLineDefalutStyle: {
+      alignSelf: 'center',
+      fontFamily: 'Outfit-Bold',
+    },
+    image: {
+      width: 150, // Ajuste conforme necessário
+      height: 150,
+      marginBottom: 20,
+    },
   });
 };

@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
-import React from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { StatusBar } from 'react-native'; // Importe o StatusBar
-
-import { ThemeProvider } from './context/ThemeContext';
 import { NavigationContainer } from '@react-navigation/native';
-import RootStack from './navigation';
 import { useFonts } from 'expo-font';
+import React from 'react';
+import { StatusBar } from 'react-native'; // Importe o StatusBar
+import { Provider as PaperProvider } from 'react-native-paper';
+
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import RootStack from './navigation';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -30,9 +30,7 @@ function AppContent() {
 
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer >
-        <RootStack />
-      </NavigationContainer>
+      <RootStack />
     </PaperProvider>
   );
 }
