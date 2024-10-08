@@ -14,7 +14,7 @@ export default function TabTrheeScreen() {
   const [email, setEmail] = useState('');
   const [text, setText] = useState('');
   return (
-    <ScreenContent title="Tab Three">
+    <ScreenContent >
       <Container rounded>
         <GlobalInput
           label="Nome"

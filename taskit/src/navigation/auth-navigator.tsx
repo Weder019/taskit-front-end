@@ -13,7 +13,7 @@ const AuthStack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthNavigator() {
   return (
-    <AuthStack.Navigator initialRouteName="Login">
+    <AuthStack.Navigator initialRouteName="SignUp">
       <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
     </AuthStack.Navigator>

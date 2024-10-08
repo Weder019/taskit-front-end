@@ -4,7 +4,7 @@ import { StyleSheet, Image, View } from 'react-native';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
 type ScreenContentProps = {
-  isAuthenticationScreen: boolean; // Novo parâmetro para controlar a exibição da imagem
+  isAuthenticationScreen?: boolean; // Novo parâmetro para controlar a exibição da imagem
   children?: React.ReactNode;
 };
 
