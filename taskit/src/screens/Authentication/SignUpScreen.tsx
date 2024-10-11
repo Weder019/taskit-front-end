@@ -4,6 +4,7 @@ import { Button, Text } from 'react-native-paper';
 
 import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
+import { useUser } from '../../context/UserContext';
 
 import GlobalInput from '~/components/GlobalInput';
 import { useGlobalStyles } from '~/styles/globalStyles';
@@ -15,7 +16,17 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [cell, setCell] = useState('');
-  const [text, setText] = useState('');
+  const { signUp } = useUser();
+
+  const handleSignUp = async () => {
+    try {
+      await signUp(email, password, { name, cell }); // Passamos o nome como dado adicional
+      // Redirecionar ou mostrar mensagem de sucesso
+    } catch (error) {
+      console.log('Erro ao registrar:', error);
+      // Tratar erro (exibir mensagem, etc.)
+    }
+  };
 
   return (
     <ScreenContent isAuthenticationScreen>
@@ -79,7 +90,7 @@ export default function SignUpScreen() {
 
         <Button
           mode="contained"
-          onPress={() => console.log('Pressed')}
+          onPress={handleSignUp}
           style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
           ENTRAR
         </Button>

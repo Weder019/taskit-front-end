@@ -4,6 +4,7 @@ import { Button, Text } from 'react-native-paper';
 
 import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
+import { useUser } from '../../context/UserContext';
 
 import GlobalInput from '~/components/GlobalInput';
 import { useGlobalStyles } from '~/styles/globalStyles';
@@ -12,7 +13,18 @@ export default function LoginScreen() {
   const Globalstyles = useGlobalStyles();
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [text, setText] = useState('');
+  const { login } = useUser();
+
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+      console.log("VAI CURINTIA")
+      // Redirecionar ou mostrar mensagem de sucesso
+    } catch (error) {
+      console.log('Erro ao fazer login:', error);
+      // Tratar erro (exibir mensagem, etc.)
+    }
+  };
 
   return (
     <ScreenContent isAuthenticationScreen>
@@ -47,7 +59,7 @@ export default function LoginScreen() {
 
         <Button
           mode="contained"
-          onPress={() => console.log('Pressed')}
+          onPress={handleLogin}
           style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
           ENTRAR
         </Button>
