@@ -17,7 +17,7 @@ export const ScreenContent = ({ isAuthenticationScreen, children }: ScreenConten
       {isAuthenticationScreen && (
         <Image
           source={require('../../assets/images/logo.png')} // Substitua pelo caminho da sua imagem local
-          style={styles.image}
+          style={styles.logoImage}
           resizeMode="contain"
         />
       )}
