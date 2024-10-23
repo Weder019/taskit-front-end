@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import { TextInput, Text } from 'react-native-paper';
 
 import { useGlobalStyles } from '~/styles/globalStyles';
 
@@ -17,6 +17,7 @@ interface GlobalInputProps {
   style?: ViewStyle; // Estilo personalizado
   mode?: 'outlined' | 'flat'; // Modo do input
   error?: boolean; // Exibe erro
+  errorMessage?: string;
 }
 
 const GlobalInput: React.FC<GlobalInputProps> = ({
@@ -31,30 +32,48 @@ const GlobalInput: React.FC<GlobalInputProps> = ({
   style,
   mode = 'outlined',
   error = false,
+  errorMessage = '',
 }) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
   const Globalstyles = useGlobalStyles();
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
+
   return (
-    <TextInput
-      label={label}
-      value={value}
-      onChangeText={onChangeText}
-      keyboardType={keyboardType}
-      secureTextEntry={secureTextEntry}
-      placeholder={placeholder}
-      mode={mode}
-      error={error}
-      style={[Globalstyles.inputDefaultStyle, style]} // Aplica estilo padrão + estilo customizado
-      left={prefixIcon ? <TextInput.Icon icon={prefixIcon} /> : null} // Ícone à esquerda
-      right={suffixIcon ? <TextInput.Icon icon={suffixIcon} /> : null} // Ícone à direita
-    />
+    <View style={[Globalstyles.inputDefaultStyle, style]}>
+      <TextInput
+        label={label}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        secureTextEntry={!isPasswordVisible}
+        placeholder={placeholder}
+        mode={mode}
+        error={error}
+        style={Globalstyles.inputDefaultStyle} // Aplica estilo padrão + estilo customizado
+        left={prefixIcon ? <TextInput.Icon icon={prefixIcon} /> : null} // Ícone à esquerda
+        right={
+          secureTextEntry ? (
+            <TextInput.Icon
+              icon={isPasswordVisible ? 'eye-off' : 'eye'} // Alterna o ícone de olho
+              onPress={togglePasswordVisibility} // Alterna a visibilidade
+            />
+          ) : null
+        }
+      />
+      {error && !!errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+    </View>
   );
 };
 
 // Estilo padrão do componente
 const styles = StyleSheet.create({
-  defaultStyle: {
-    marginBottom: 16,
-    backgroundColor: 'white', // Definir fundo padrão
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 0,
   },
 });
 

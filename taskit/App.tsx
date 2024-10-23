@@ -2,10 +2,11 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import React from 'react';
-import { StatusBar } from 'react-native'; // Importe o StatusBar
+import { StatusBar } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { UserProvider } from './src/context/UserContext'; // Importe o UserProvider
 import RootStack from './src/navigation';
 
 export default function App() {
@@ -17,10 +18,13 @@ export default function App() {
   if (!fontsLoaded) {
     return null; // Enquanto as fontes carregam, a tela fica em branco
   }
+
   return (
     <ThemeProvider>
-      <StatusBar hidden />
-      <AppContent />
+      <UserProvider>
+        <StatusBar hidden />
+        <AppContent />
+      </UserProvider>
     </ThemeProvider>
   );
 }
