@@ -45,7 +45,6 @@ export const useGlobalStyles = () => {
       backgroundColor: theme.colors.surface,
     },
     inputDefaultStyle: {
-      marginBottom: 16,
       backgroundColor: theme.colors.surface,
     },
     containedButtonDefaultStyle: {
@@ -57,10 +56,10 @@ export const useGlobalStyles = () => {
       alignSelf: 'center',
       fontFamily: 'Outfit-Bold',
     },
-    image: {
+    logoImage: {
       width: 150, // Ajuste conforme necessário
       height: 150,
-      marginBottom: 20,
+      margin: '2%',
     },
   });
 };

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import AuthNavigator from './auth-navigator'; // Importa o AuthNavigator
 import TabNavigator from './tab-navigator';
+import { useUser } from '../context/UserContext';
 
 import AuthTestScreen from '~/screens/AuthTestScreen';
 
@@ -16,6 +17,7 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
+  const { user } = useUser();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Simulação de um efeito que busca o status de login
@@ -31,7 +33,7 @@ export default function RootStack() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? (
+      {user ? (
         // Se o usuário estiver autenticado, exibe o Stack principal
         <Stack.Navigator initialRouteName="TabNavigator">
           <Stack.Screen
