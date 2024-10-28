@@ -13,8 +13,6 @@ import {
 import React, { useState } from 'react';
 import { Icon } from 'react-native-paper';
 
-
-
 export default function CategoriesScreen() {
   const categories = [
     { label: 'Investimento', prefixIcon: 'trending-up' },
@@ -23,43 +21,55 @@ export default function CategoriesScreen() {
     { label: 'Prêmio', prefixIcon: 'emoji-events' },
     { label: 'Outros', prefixIcon: 'more-horizontal' },
   ];
+  
   const back = () => {
     console.log('back');
   };
+
   const ToggleButton = () => {
-    const [selected, setSelected] = useState('despesas');
+    const [selected, setSelected] = useState<'despesas' | 'receitas'>('despesas');
   
     const handleClick = (type: 'despesas' | 'receitas') => {
       setSelected(type);
     };
 
-  return(
+    return (
+      <View style={styles.switchContainer}>
+        <TouchableOpacity 
+          style={[styles.switchButton, selected === 'despesas' ? styles.expensesButton : {}]}
+          onPress={() => handleClick('despesas')}
+        >
+          <Text style={styles.switchButtonText}>Despesas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.switchButton, selected === 'receitas' ? styles.incomeButton : {}]}
+          onPress={() => handleClick('receitas')}
+        >
+          <Text style={styles.incomeButtonText}>Receitas</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <ScreenContent>
         {/* Cabeçalho */}
         <View style={styles.header}>
           <BackButton onPress={back}></BackButton>
-          <Text style={[styles.title]}>
-            Categorias
-          </Text>
+          <Text style={[styles.title]}>Categorias</Text>
         </View>
         
         {/* Botão despesa e receita */}
-        <View style={styles.switchContainer}>
-          <div className='toggle-button'>
-            <button>
-              
-            </button>
-          </div>
-        </View>
+        <ToggleButton />
 
         <Container rounded>
-        {/* Lista de categorias */}
-        <View style={styles.container}>
-          {categories.map((category, index) => (
-            <CategoryItem key={index} label={category.label} icon={category.prefixIcon}></CategoryItem>
-          ))}
-        </View>
+          {/* Lista de categorias */}
+          <View style={styles.container}>
+            {categories.map((category, index) => (
+              <CategoryItem key={index} label={category.label} icon={category.prefixIcon}></CategoryItem>
+            ))}
+          </View>
         </Container>
       </ScreenContent>
     </ScrollView>
@@ -75,7 +85,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'center', // Centralizar o conteúdo
+    justifyContent: 'center',
   },
   container: {
     backgroundColor: '#f0f0f5',
@@ -94,7 +104,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1a1a2e',
+    color: '#FFFFFF',
     alignItems: 'center',
   },
   switchContainer: {
@@ -137,5 +147,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
-})};
+});

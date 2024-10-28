@@ -7,6 +7,7 @@ import One from '../screens/one';
 import Two from '../screens/two';
 import Three from '../screens/three' 
 import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
+import CategoryItem from '~/screens/Categories/Components/CategoryItem';
 
 const Tab = createBottomTabNavigator();
 
