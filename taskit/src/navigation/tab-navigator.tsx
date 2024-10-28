@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import { RootStackParamList } from '.';
-import { HeaderButton } from '../components/HeaderButton';
 import { TabBarIcon } from '../components/TabBarIcon';
 import One from '../screens/one';
 import Two from '../screens/two';
-import Three from '../screens/three'
+import Three from '../screens/three' 
+import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,8 +20,8 @@ export default function TabLayout({ navigation }: Props) {
         headerShown: false,
       }}>
       <Tab.Screen
-        name="One"
-        component={One}
+        name="CategoriesScreen"
+        component={CategoriesScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
