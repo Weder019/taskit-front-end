@@ -25,9 +25,10 @@ const GlobalSwitch: React.FC<GlobalSwitchProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      {/* Renderiza o ícone, se fornecido */}
-      {icon && <IconButton icon={icon} size={24} style={styles.icon} />}
-      <Text style={styles.label}>{label}</Text>
+      <View style={styles.labelContainer}>
+        {icon && <IconButton icon={icon} size={24} style={styles.icon} />}
+        {label && <Text style={styles.label}>{label}</Text>}
+      </View>
       <Switch
         value={value}
         onValueChange={onValueChange}
@@ -45,8 +46,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 8,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   icon: {
-    marginRight: 8,
+    marginRight: 4,
   },
   label: {
     fontSize: 16,

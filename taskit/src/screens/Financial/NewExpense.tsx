@@ -5,21 +5,29 @@ import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
 
 import { useGlobalStyles } from '~/styles/globalStyles';
-import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { BackButton } from '~/components/BackButton';
 import GlobalInput from '~/components/GlobalInput';
 import React, { useState } from 'react';
 import DropdownInput from '../../components/DropdownInput';
 import GlobalSwitch from '~/components/GlobalSwitch';
+import CalendarDatePicker from '~/components/CalendarDatePicker';
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import EditableAmountInput from './components/EditableAmountInput';
+
+moment.locale('pt-br');
 
 export default function NewExpenseScreen() {
   const style = useGlobalStyles();
+  const [amount, setAmount] = useState('00,00');
+  const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
   const [tag, setTag] = useState('');
   const [account, setAccount] = useState('');
   const [fixed, setFix] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [remind, setRemind] = useState('');
+  const [selectedDate, setSelectedDate] = useState(moment().format('DD/MM/YYYY'));
 
   const back = () => {
     console.log('back');
@@ -31,26 +39,36 @@ export default function NewExpenseScreen() {
       style={styles.keyboardAvoidingView}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ScreenContent>
-          <View></View>
-          <BackButton onPress={back}></BackButton>
-          <Text variant="headlineMedium" style={[style.title, styles.title]}>
-            Despesa
-          </Text>
-          <Text variant="headlineMedium" style={[style.title, styles.title]}>
-            Valor da despesa
-          </Text>
-          <Text variant="headlineMedium" style={[style.title, styles.title]}>
-            R$ 150, 00
-          </Text>
-          <Text variant="headlineMedium" style={[style.title, styles.title]}>
-            Despesa
-          </Text>
+          <View style={styles.containerTitle}>
+            <BackButton onPress={back} />
+            <Text variant="headlineMedium" style={[style.title, styles.title]}>
+              Despesa
+            </Text>
+          </View>
+          <View style={styles.containerSubtitle}>
+            <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>
+              Valor da despesa
+            </Text>
+            <EditableAmountInput value={amount} onChangeValue={setAmount} style={style.title} />
+          </View>
           <Container rounded>
+            <GlobalSwitch
+              value={paid}
+              onValueChange={(value) => setPaid(value)}
+              label="Pago"
+              color="#37618E" // cor personalizada
+              icon="check-circle"
+              style={styles.switch}
+            />
+            <CalendarDatePicker
+              initialDate={selectedDate}
+              onDateChange={setSelectedDate} // Callback para atualizar a data
+            />
             <GlobalInput
               label="Descrição"
               value={name}
               onChangeText={setName}
-              placeholder="Descrição de Despesa"
+              placeholder="Descrição da Despesa"
               prefixIcon="pencil"
               style={styles.input}
             />
@@ -125,10 +143,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 16,
   },
   balance: {
-    fontSize: 25,
+    fontSize: 35,
     marginBottom: 20,
   },
   input: {
