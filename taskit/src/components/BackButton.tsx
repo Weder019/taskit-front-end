@@ -1,11 +1,11 @@
 import { Feather } from '@expo/vector-icons';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 export const BackButton = ({ onPress }: { onPress: () => void }) => {
   return (
-    <View style={styles.backButton}>
+    <TouchableOpacity onPress={onPress} style={styles.backButton}>
       <Feather name="chevron-left" size={37} color="#FFFFFF" />
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

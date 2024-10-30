@@ -9,7 +9,7 @@ import GlobalInput from '~/components/GlobalInput';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { ScreenContent } from '~/components/ScreenContent';
 import GlobalSwitch from '~/components/GlobalSwitch';
-import OpenModalButton from '~/components/OpenModalButton';
+import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, {
@@ -17,12 +17,15 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import CustomBottomSheet from '../../components/CustomBottomSheet';
+import EditableAmountInput from './components/EditableAmountInput';
 
 export default function NewBankAccount() {
   const Globalstyles = useGlobalStyles();
   const [description, setDescription] = useState('');
-  const [account, setAccount] = useState('');
-  const [accountType, setAccountType] = useState('');
+  const [amount, setAmount] = useState('00,00');
+  // const [account, setAccount] = useState('');
+  // const [accountType, setAccountType] = useState('');
   const [switch1, setSwitch1] = useState(false);
 
   const back = () => {
@@ -30,43 +33,40 @@ export default function NewBankAccount() {
   };
 
   //Modal
-  const sheetRef = useRef<BottomSheet>(null);
+  const bottomSheetAccount = useRef<BottomSheet>(null);
+  const bottomSheetAccountType = useRef<BottomSheet>(null);
 
   // variables
   const data = useMemo(
     () =>
-      Array(100)
+      Array(6)
         .fill(0)
         .map((_, index) => `index-${index}`),
     []
   );
-  const snapPoints = useMemo(() => ['55%', '90%'], []);
 
   // callbacks
-  const handleSheetChange = useCallback((index) => {
-    console.log('handleSheetChange', index);
-  }, []);
-  const handleSnapPress = useCallback((index) => {
-    sheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleClosePress = useCallback(() => {
-    sheetRef.current?.close();
-  }, []);
-  const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />,
-    []
-  );
+
+  const handleSnapPressAccount = (index: number) => {
+    bottomSheetAccount.current?.snapToIndex(index);
+  };
+
+  const handleSnapPressAccountType = (index: number) => {
+    bottomSheetAccountType.current?.snapToIndex(index);
+  };
+
   // render
   const renderItem = useCallback(
-    (item) => (
+    (item: any) => (
       <View key={item} style={styles.itemContainer}>
         <Text>{item}</Text>
       </View>
     ),
     []
   );
+
   return (
-    <GestureHandlerRootView styles={styles.gesture}>
+    <GestureHandlerRootView>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta o comportamento para iOS e Android
         style={styles.keyboardAvoidingView}>
@@ -82,16 +82,12 @@ export default function NewBankAccount() {
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
                 Saldo atual da conta
               </Text>
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.balance]}>
-                R$ 0,00
-              </Text>
+              <EditableAmountInput value={amount} onChangeValue={setAmount} style={Globalstyles.title} />
             </View>
             <Container rounded>
               <OpenModalButton
                 label="Conta"
-                value={account}
-                placeholder="Escolha..."
-                onPress={() => handleSnapPress(0)}
+                onPress={() => handleSnapPressAccount(0)}
                 prefixIcon="wallet"
                 error={false}
                 errorMessage=""
@@ -106,9 +102,7 @@ export default function NewBankAccount() {
               />
               <OpenModalButton
                 label="Tipo da conta"
-                value={accountType}
-                placeholder="Escolha..."
-                onPress={back}
+                onPress={() => handleSnapPressAccountType(0)}
                 prefixIcon="credit-card"
                 error={false}
                 errorMessage=""
@@ -130,21 +124,32 @@ export default function NewBankAccount() {
                 Salvar
               </Button>
             </Container>
-            <BottomSheet
-              ref={sheetRef}
-              index={-1}
-              snapPoints={snapPoints}
-              enableDynamicSizing={false}
-              onChange={handleSheetChange}
-              enablePanDownToClose={true}
-              backdropComponent={renderBackdrop}
-              backgroundStyle={{ backgroundColor: '#37618E' }}
-              handleIndicatorStyle={{ backgroundColor: '#FFF' }}>
-              <View >
-                <Text style={[Globalstyles.title, styles.title]}>text</Text>
-              </View>
-              <BottomSheetScrollView>{data.map(renderItem)}</BottomSheetScrollView>
-            </BottomSheet>
+
+            <CustomBottomSheet
+              ref={bottomSheetAccount}
+              snapPoints={['68%', '90%']}
+              children={
+                <>
+                  <BottomSheetScrollView>
+                    <View style={styles.contentContainer}>
+                      <Text style={styles.containerHeadline}>Teste</Text>
+                    </View>
+                    {data.map(renderItem)}
+                  </BottomSheetScrollView>
+                </>
+              }
+            />
+
+            <CustomBottomSheet
+              title="sera"
+              ref={bottomSheetAccountType}
+              snapPoints={['45%']}
+              children={
+                <>
+                  <BottomSheetView>{data.map(renderItem)}</BottomSheetView>
+                </>
+              }
+            />
           </ScreenContent>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -156,8 +161,8 @@ const styles = StyleSheet.create({
   openModal: {
     marginBottom: 25,
   },
-  titleModal:{
-    justifyContent: 'center'
+  titleModal: {
+    justifyContent: 'center',
   },
   keyboardAvoidingView: {
     flex: 1, // Ocupar o espaço inteiro
@@ -180,14 +185,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
+    marginBottom: 20
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 16,
   },
-  balance: {
-    fontSize: 25,
-    marginBottom: 20,
-  },
+
   input: {
     marginBottom: 25, // Espaço entre os inputs
   },
@@ -200,5 +203,19 @@ const styles = StyleSheet.create({
   },
   gesture: {
     flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  containerHeadline: {
+    fontSize: 24,
+    fontWeight: 600,
+    padding: 20,
+    color: '#000000',
+  },
+  itemContainer: {
+    marginBottom: 4,
+    padding: 10,
   },
 });

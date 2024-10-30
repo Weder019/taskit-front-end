@@ -5,9 +5,7 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 
 interface OpenModalButtonProps {
   label: string;
-  value: string;
   onPress: () => void;
-  placeholder?: string;
   mode?: 'outlined' | 'flat';
   style?: ViewStyle; // Estilo personalizado
   error?: boolean; // Exibe erro
@@ -17,12 +15,10 @@ interface OpenModalButtonProps {
 
 const OpenModalButton: React.FC<OpenModalButtonProps> = ({
   label,
-  value,
   onPress,
-  placeholder,
   style,
   error = false,
-  mode = 'flat',
+  mode = 'outlined',
   errorMessage = '',
   prefixIcon,
 }) => {
@@ -33,8 +29,6 @@ const OpenModalButton: React.FC<OpenModalButtonProps> = ({
       <TouchableOpacity onPress={onPress}>
         <TextInput
           label={label}
-          value={value}
-          placeholder={placeholder}
           mode="outlined"
           editable={false} // Torna o campo não editável
           left={prefixIcon ? <TextInput.Icon icon={prefixIcon} /> : null} // Ícone à esquerda
