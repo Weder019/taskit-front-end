@@ -58,7 +58,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setUser(loggedInUser);
 
       const data = await getUserDataFromFirestore(loggedInUser.uid);
-      console.log(data);
       if (data) {
         await saveUserData(loggedInUser.uid, data);
         setUserData(data);

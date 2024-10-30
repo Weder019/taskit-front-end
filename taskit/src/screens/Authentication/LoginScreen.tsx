@@ -24,7 +24,7 @@ export default function LoginScreen() {
   const Globalstyles = useGlobalStyles();
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const { login, loading, userData } = useUser();
+  const { login, loading } = useUser();
   const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation<LoginScreenNavigationProp>(); // Tipagem de navegação
   const { errors, validateForm } = useFormValidation(); // Hook de validação
@@ -36,6 +36,7 @@ export default function LoginScreen() {
         console.log('VAI CURINTIA');
         // Redirecionar ou mostrar mensagem de sucesso
       } catch (error) {
+        console.log(error);
         setErrorMessage('Erro ao fazer login. Verifique suas informações.');
         // Tratar erro (exibir mensagem, etc.)
       }
