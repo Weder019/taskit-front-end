@@ -3,10 +3,12 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import { RootStackParamList } from '.';
 import { TabBarIcon } from '../components/TabBarIcon';
-import One from '../screens/one';
+import One from '../screens/Financial/NewExpense';
 import Two from '../screens/two';
+
 import Three from '../screens/three'
 import NewBankAccount from '~/screens/Financial/NewBankAccount';
+
 
 const Tab = createBottomTabNavigator();
 
