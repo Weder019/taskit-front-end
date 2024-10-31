@@ -9,6 +9,7 @@ interface GlobalInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: (args: any) => void;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad'; // Tipos de teclado
   secureTextEntry?: boolean; // Para inputs de senha
   prefixIcon?: string; // Ícone à esquerda
@@ -24,6 +25,7 @@ const GlobalInput: React.FC<GlobalInputProps> = ({
   label,
   value,
   onChangeText,
+  onBlur,
   keyboardType = 'default',
   secureTextEntry = false,
   prefixIcon,
@@ -52,6 +54,7 @@ const GlobalInput: React.FC<GlobalInputProps> = ({
         placeholder={placeholder}
         mode={mode}
         error={error}
+        onBlur={onBlur}
         style={Globalstyles.inputDefaultStyle} // Aplica estilo padrão + estilo customizado
         left={prefixIcon ? <TextInput.Icon icon={prefixIcon} /> : null} // Ícone à esquerda
         right={

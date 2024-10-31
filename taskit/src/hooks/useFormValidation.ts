@@ -95,9 +95,9 @@ export const useFormValidation = () => {
     if (!cell) {
       isValid = false;
       error = 'O campo de celular é obrigatório.';
-    } else if (!/^\d{10,11}$/.test(cell)) { // Ajuste a regex de acordo com o formato de celular esperado
+    } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(cell)) { // Regex para o formato (XX) XXXXX-XXXX
       isValid = false;
-      error = 'Formato de celular inválido.';
+      error = 'Formato de celular inválido. Use o formato (XX) XXXXX-XXXX.';
     }
 
     setErrors((prevErrors) => ({
