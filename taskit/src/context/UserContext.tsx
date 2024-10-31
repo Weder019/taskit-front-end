@@ -1,18 +1,21 @@
+// src/context/UserContext.tsx
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-import authService from '../services/authService'; // Certifique-se de importar corretamente
+import { login, signUp, logout, getUserDataFromFirestore } from '../services/authService';
+import { saveUserData, getUserData, clearUserData } from '../storage/userStorage';
 
 interface UserContextProps {
   user: User | null;
   userData: any;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalData: any) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 interface UserProviderProps {
-  children: ReactNode; // Definimos explicitamente o tipo de children
+  children: ReactNode;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -20,43 +23,94 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const auth = getAuth(); // Acesse diretamente o auth do Firebase aqui
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const data = await authService.getUserData(currentUser.uid);
-        setUserData(data);
-      } else {
-        setUserData(null);
-      }
-    });
+    const initializeAuthState = async () => {
+      setLoading(true);
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (currentUser) => {
+        setUser(currentUser);
+        if (currentUser) {
+          const cachedData = await getUserData(currentUser.uid);
+          console.log(cachedData);
+          setUserData(cachedData);
 
-    return () => unsubscribe();
+          const data = await getUserDataFromFirestore(currentUser.uid);
+          if (data) {
+            await saveUserData(currentUser.uid, data);
+            setUserData(data);
+          }
+        } else {
+          setUserData(null);
+        }
+        setLoading(false);
+      });
+    };
+
+    initializeAuthState();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const user = await authService.login(email, password);
-    setUser(user);
-    const data = await authService.getUserData(user.uid);
-    setUserData(data);
+  const handleLogin = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const loggedInUser = await login(email, password);
+      setUser(loggedInUser);
+
+      const data = await getUserDataFromFirestore(loggedInUser.uid);
+      if (data) {
+        await saveUserData(loggedInUser.uid, data);
+        setUserData(data);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const signUp = async (email: string, password: string, additionalData: any) => {
-    const user = await authService.signUp(email, password, additionalData);
-    setUser(user);
-    setUserData(additionalData); // Aqui salvamos os dados fornecidos no Firestore
+  const handleSignUp = async (email: string, password: string, additionalData: any) => {
+    setLoading(true);
+    try {
+      const newUser = await signUp(email, password, additionalData);
+      setUser(newUser);
+
+      const data = { email, ...additionalData };
+      await saveUserData(newUser.uid, data);
+      setUserData(data);
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const logout = async () => {
-    await authService.logout();
-    setUser(null);
-    setUserData(null);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      if (user) {
+        await clearUserData(user.uid);
+      }
+      setUser(null);
+      setUserData(null);
+    } catch (error) {
+      console.error('Erro ao sair:', error);
+      throw error;
+    }
   };
 
   return (
-    <UserContext.Provider value={{ user, userData, login, signUp, logout }}>
+    <UserContext.Provider
+      value={{
+        user,
+        userData,
+        loading,
+        login: handleLogin,
+        signUp: handleSignUp,
+        logout: handleLogout,
+      }}>
       {children}
     </UserContext.Provider>
   );
@@ -65,7 +119,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error('useUser deve ser usado dentro de um UserProvider');
   }
   return context;
 };
