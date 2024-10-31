@@ -1,19 +1,20 @@
+import moment from 'moment';
+import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
+import EditableAmountInput from './components/EditableAmountInput';
 import Container from '../../components/Container';
+import DropdownInput from '../../components/DropdownInput';
 import { ScreenContent } from '../../components/ScreenContent';
 
-import { useGlobalStyles } from '~/styles/globalStyles';
 import { BackButton } from '~/components/BackButton';
-import GlobalInput from '~/components/GlobalInput';
-import React, { useState } from 'react';
-import DropdownInput from '../../components/DropdownInput';
-import GlobalSwitch from '~/components/GlobalSwitch';
 import CalendarDatePicker from '~/components/CalendarDatePicker';
-import moment from 'moment';
+import GlobalInput from '~/components/GlobalInput';
+import GlobalSwitch from '~/components/GlobalSwitch';
+import { useGlobalStyles } from '~/styles/globalStyles';
+
 import 'moment/locale/pt-br';
-import EditableAmountInput from './components/EditableAmountInput';
 
 moment.locale('pt-br');
 

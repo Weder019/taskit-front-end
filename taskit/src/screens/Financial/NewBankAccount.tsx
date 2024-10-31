@@ -1,24 +1,23 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { Button, Text } from 'react-native-paper';
-import { BackButton } from '~/components/BackButton';
-import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
-
-import Container from '../../components/Container';
-
-import GlobalInput from '~/components/GlobalInput';
-import { useGlobalStyles } from '~/styles/globalStyles';
-import { ScreenContent } from '~/components/ScreenContent';
-import GlobalSwitch from '~/components/GlobalSwitch';
-import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
-
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import CustomBottomSheet from '../../components/CustomBottomSheet';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Button, Text } from 'react-native-paper';
+
 import EditableAmountInput from './components/EditableAmountInput';
+import Container from '../../components/Container';
+import CustomBottomSheet from '../../components/CustomBottomSheet';
+
+import { BackButton } from '~/components/BackButton';
+import GlobalInput from '~/components/GlobalInput';
+import GlobalSwitch from '~/components/GlobalSwitch';
+import { ScreenContent } from '~/components/ScreenContent';
+import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
+import { useGlobalStyles } from '~/styles/globalStyles';
 
 export default function NewBankAccount() {
   const Globalstyles = useGlobalStyles();
@@ -82,7 +81,11 @@ export default function NewBankAccount() {
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
                 Saldo atual da conta
               </Text>
-              <EditableAmountInput value={amount} onChangeValue={setAmount} style={Globalstyles.title} />
+              <EditableAmountInput
+                value={amount}
+                onChangeValue={setAmount}
+                style={Globalstyles.title}
+              />
             </View>
             <Container rounded>
               <OpenModalButton
@@ -127,7 +130,7 @@ export default function NewBankAccount() {
 
             <CustomBottomSheet
               ref={bottomSheetAccount}
-              snapPoints={['68%', '90%']}
+              snapPoints={['65%', '90%']}
               children={
                 <>
                   <BottomSheetScrollView>
@@ -141,7 +144,7 @@ export default function NewBankAccount() {
             />
 
             <CustomBottomSheet
-              title="sera"
+              title="Teste 2"
               ref={bottomSheetAccountType}
               snapPoints={['45%']}
               children={
@@ -185,7 +188,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    marginBottom: 20
+    marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,

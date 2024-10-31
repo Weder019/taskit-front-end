@@ -3,12 +3,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import { RootStackParamList } from '.';
 import { TabBarIcon } from '../components/TabBarIcon';
-import One from '../screens/Financial/NewExpense';
-import Two from '../screens/two';
+import NewExpenseScreen from '../screens/Financial/NewExpense';
+import Three from '../screens/three';
 
-import Three from '../screens/three'
 import NewBankAccount from '~/screens/Financial/NewBankAccount';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -31,7 +29,7 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={Two}
+        component={NewExpenseScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
