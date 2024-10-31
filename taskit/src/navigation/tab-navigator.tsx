@@ -6,6 +6,7 @@ import { TabBarIcon } from '../components/TabBarIcon';
 import One from '../screens/one';
 import Two from '../screens/two';
 import Three from '../screens/three'
+import NewBankAccount from '~/screens/Financial/NewBankAccount';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,8 +20,8 @@ export default function TabLayout({ navigation }: Props) {
         headerShown: false,
       }}>
       <Tab.Screen
-        name="One"
-        component={One}
+        name="NewBankAccount"
+        component={NewBankAccount}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
