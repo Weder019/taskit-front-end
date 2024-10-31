@@ -32,6 +32,16 @@ export default function SignUpScreen() {
   const navigation = useNavigation<SignUpScreenNavigationProp>();
   const { errors, validateForm } = useFormValidation();
 
+  // Função para formatar o número de telefone
+  const formatPhoneNumber = (phone: string) => {
+    // Remove todos os caracteres não numéricos
+    const cleaned = phone.replace(/\D/g, '');
+
+    // Aplica a máscara (XX) XXXXX-XXXX
+    const formatted = cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    setCell(formatted);
+  };
+
   // Apenas ajuste a função handleSignUp para passar os campos adequados
   const handleSignUp = async () => {
     if (validateForm({ email, password, confirmPassword, name, cell })) {
@@ -97,6 +107,7 @@ export default function SignUpScreen() {
               prefixIcon="cellphone"
               error={!!errors.cell}
               errorMessage={errors.cell}
+              onBlur={() => formatPhoneNumber(cell)}
               style={styles.input}
             />
 
@@ -132,7 +143,7 @@ export default function SignUpScreen() {
                 mode="contained"
                 onPress={handleSignUp}
                 style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
-                ENTRAR
+                CADSTRAR
               </Button>
             )}
 
