@@ -3,6 +3,7 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -16,11 +17,15 @@ import { BackButton } from '~/components/BackButton';
 import GlobalInput from '~/components/GlobalInput';
 import GlobalSwitch from '~/components/GlobalSwitch';
 import { ScreenContent } from '~/components/ScreenContent';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
+type NewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
+
 export default function NewBankAccount() {
   const Globalstyles = useGlobalStyles();
+  const navigation = useNavigation<NewBankAccountScreenNavigationProp>();
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
   // const [account, setAccount] = useState('');
@@ -28,7 +33,7 @@ export default function NewBankAccount() {
   const [switch1, setSwitch1] = useState(false);
 
   const back = () => {
-    console.log('back');
+    navigation.goBack();
   };
 
   //Modal
