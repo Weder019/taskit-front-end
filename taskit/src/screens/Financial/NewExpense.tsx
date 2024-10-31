@@ -1,3 +1,4 @@
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
@@ -12,14 +13,18 @@ import { BackButton } from '~/components/BackButton';
 import CalendarDatePicker from '~/components/CalendarDatePicker';
 import GlobalInput from '~/components/GlobalInput';
 import GlobalSwitch from '~/components/GlobalSwitch';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
 import 'moment/locale/pt-br';
 
 moment.locale('pt-br');
 
+type NewExpensesScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewExpense'>;
+
 export default function NewExpenseScreen() {
   const style = useGlobalStyles();
+  const navigation = useNavigation<NewExpensesScreenNavigationProp>();
   const [amount, setAmount] = useState('00,00');
   const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
@@ -31,7 +36,7 @@ export default function NewExpenseScreen() {
   const [selectedDate, setSelectedDate] = useState(moment().format('DD/MM/YYYY'));
 
   const back = () => {
-    console.log('back');
+    navigation.goBack();
   };
 
   return (
