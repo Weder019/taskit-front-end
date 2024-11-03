@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
@@ -17,6 +17,9 @@ import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
 import 'moment/locale/pt-br';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import OpenModalButton from './components/OpenModalButton';
+import CustomBottomSheet from '~/components/CustomBottomSheet';
 
 moment.locale('pt-br');
 
@@ -28,16 +31,60 @@ export default function NewExpenseScreen() {
   const [amount, setAmount] = useState('00,00');
   const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
-  const [tag, setTag] = useState('');
-  const [account, setAccount] = useState('');
+  // const [tag, setTag] = useState('');
+  // const [account, setAccount] = useState('');
   const [fixed, setFix] = useState(false);
   const [repeat, setRepeat] = useState(false);
-  const [remind, setRemind] = useState('');
+  // const [remind, setRemind] = useState('');
   const [selectedDate, setSelectedDate] = useState(moment().format('DD/MM/YYYY'));
 
   const back = () => {
     navigation.goBack();
   };
+
+  const bottomSheetAccount = useRef<BottomSheet>(null);
+  const bottomSheetCategory = useRef<BottomSheet>(null);
+
+  const data = useMemo(
+    () =>
+      Array(5)
+        .fill(0)
+        .map((_, index) => `index-${index}`),
+    []
+  );
+
+  const tags = [
+    'Casa',
+    'Educação',
+    'Eletrônicos',
+    'Lazer',
+    'Restaurantes',
+    'Saúde',
+    'Serviços',
+    'Supermercado',
+    'Transporte1',
+    'Transporte2',
+    'Transporte3',
+    'Transporte4',
+    'Transporte',
+  ];
+
+  const handleSnapPressAccount = (index: number) => {
+    bottomSheetAccount.current?.snapToIndex(index);
+  };
+
+  const handleSnapPressCategory = (index: number) => {
+    bottomSheetCategory.current?.snapToIndex(index);
+  };
+
+  const renderItem = useCallback(
+    (item: any) => (
+      <View key={item} style={styles.itemContainer}>
+        <Text>{item}</Text>
+      </View>
+    ),
+    []
+  );
 
   return (
     <KeyboardAvoidingView
@@ -78,16 +125,23 @@ export default function NewExpenseScreen() {
               prefixIcon="pencil"
               style={styles.input}
             />
-            <DropdownInput
+            <OpenModalButton
               label="Tags"
-              value={tag}
-              onSelect={setTag}
-              options={['Tag 1', 'Tag 2', 'Tag 3']}
-              placeholder="Selecione uma tag"
+              onPress={() => handleSnapPressCategory(0)}
               prefixIcon="tag"
-              style={styles.input}
+              error={false}
+              errorMessage=""
+              style={styles.openModal}
             />
-            <DropdownInput
+            <OpenModalButton
+              label="Conta"
+              onPress={() => handleSnapPressAccount(0)}
+              prefixIcon="wallet"
+              error={false}
+              errorMessage=""
+              style={styles.openModal}
+            />
+            {/* <DropdownInput
               label="Conta"
               value={account}
               onSelect={setAccount}
@@ -95,7 +149,7 @@ export default function NewExpenseScreen() {
               placeholder="Selecione uma Conta"
               prefixIcon="wallet"
               style={styles.input}
-            />
+            /> */}
             <GlobalSwitch
               value={fixed}
               onValueChange={(value) => setFix(value)}
@@ -119,6 +173,31 @@ export default function NewExpenseScreen() {
               Salvar
             </Button>
           </Container>
+
+          <CustomBottomSheet
+            ref={bottomSheetCategory}
+            snapPoints={['65%', '90%']}
+            children={
+              <>
+                <BottomSheetScrollView>
+                  <View style={styles.contentContainer}>
+                    <Text style={styles.containerHeadline}>Teste</Text>
+                  </View>
+                  {tags.map(renderItem)}
+                </BottomSheetScrollView>
+              </>
+            }
+          />
+
+          <CustomBottomSheet
+            ref={bottomSheetAccount}
+            snapPoints={['20%', '90%']}
+            children={
+              <>
+                <BottomSheetView>{data.map(renderItem)}</BottomSheetView>
+              </>
+            }
+          />
         </ScreenContent>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -126,6 +205,12 @@ export default function NewExpenseScreen() {
 }
 
 const styles = StyleSheet.create({
+  openModal: {
+    marginBottom: 25,
+  },
+  titleModal: {
+    justifyContent: 'center',
+  },
   keyboardAvoidingView: {
     flex: 1, // Ocupar o espaço inteiro
   },
@@ -149,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
   },
   balance: {
     fontSize: 35,
@@ -164,5 +249,22 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginBottom: 0,
+  },
+  gesture: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  containerHeadline: {
+    fontSize: 24,
+    fontWeight: 600,
+    padding: 20,
+    color: '#000000',
+  },
+  itemContainer: {
+    marginBottom: 4,
+    padding: 10,
   },
 });
