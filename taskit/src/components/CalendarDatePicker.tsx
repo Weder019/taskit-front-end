@@ -1,13 +1,10 @@
-// CalendarDatePicker.tsx
-
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
-// Função para converter data em string para o objeto Date
 const parseDateString = (dateString: string) => {
   const [day, month, year] = dateString.split('/').map(Number);
   return new Date(year, month - 1, day);
@@ -29,21 +26,41 @@ const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
   const handleOpenCalendar = () => setShowPicker(true);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (selectedDate) {
+    setShowPicker(false);
+    if (selectedDate && selectedDate.toDateString() !== date.toDateString()) {
       setDate(selectedDate);
-      const formattedDate = moment(selectedDate).format('DD/MM/YYYY'); // Formata para pt-BR
+      const formattedDate = moment(selectedDate).format('DD/MM/YYYY');
       onDateChange(formattedDate);
     }
-    setShowPicker(false); // Fecha o seletor após a escolha de data
+  };
+
+  const handleToday = () => {
+    const today = new Date();
+    setDate(today);
+    const formattedDate = moment(today).format('DD/MM/YYYY');
+    onDateChange(formattedDate);
+  };
+
+  const handleYesterday = () => {
+    const yesterday = moment().subtract(1, 'days').toDate();
+    setDate(yesterday);
+    const formattedDate = moment(yesterday).format('DD/MM/YYYY');
+    onDateChange(formattedDate);
   };
 
   return (
     <View style={styles.container}>
-      {/* Botão para abrir o seletor de data */}
       <IconButton icon="calendar" onPress={handleOpenCalendar} style={styles.iconButton} />
-      <Text style={styles.dateText}>{moment(date).format('DD/MM/YYYY')}</Text>
+      <TouchableOpacity onPress={handleToday} style={styles.button}>
+        <Text style={styles.buttonText}>Hoje</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleYesterday} style={styles.button}>
+        <Text style={styles.buttonText}>Ontem</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleOpenCalendar} style={styles.button}>
+        <Text style={styles.buttonText}>Outro</Text>
+      </TouchableOpacity>
 
-      {/* DateTimePicker que exibe o seletor nativo de data */}
       {showPicker && (
         <DateTimePicker
           value={date}
@@ -63,11 +80,22 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   iconButton: {
-    marginRight: 4,
+    marginRight: 8,
   },
-  dateText: {
+  button: {
+    width: 80,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 15,
+    borderRadius: 20,
+    backgroundColor: '#37618E',
+  },
+  buttonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: '#333',
   },
 });
 

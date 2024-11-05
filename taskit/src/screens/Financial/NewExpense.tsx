@@ -113,10 +113,12 @@ export default function NewExpenseScreen() {
               icon="check-circle"
               style={styles.switch}
             />
-            <CalendarDatePicker
-              initialDate={selectedDate}
-              onDateChange={setSelectedDate} // Callback para atualizar a data
-            />
+            <View>
+              <CalendarDatePicker
+                initialDate={selectedDate}
+                onDateChange={setSelectedDate} // Callback para atualizar a data
+              />
+            </View>
             <GlobalInput
               label="Descrição"
               value={name}
