@@ -3,8 +3,10 @@ import { View, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { TextInput, Text } from 'react-native-paper';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
+
 interface OpenModalButtonProps {
   label: string;
+  selectedLabel?: string;
   onPress: () => void;
   mode?: 'outlined' | 'flat';
   style?: ViewStyle; // Estilo personalizado
@@ -15,6 +17,7 @@ interface OpenModalButtonProps {
 
 const OpenModalButton: React.FC<OpenModalButtonProps> = ({
   label,
+  selectedLabel = '',
   onPress,
   style,
   error = false,
@@ -29,6 +32,7 @@ const OpenModalButton: React.FC<OpenModalButtonProps> = ({
       <TouchableOpacity onPress={onPress}>
         <TextInput
           label={label}
+          value={selectedLabel}
           mode="outlined"
           editable={false} // Torna o campo não editável
           left={prefixIcon ? <TextInput.Icon icon={prefixIcon} /> : null} // Ícone à esquerda
