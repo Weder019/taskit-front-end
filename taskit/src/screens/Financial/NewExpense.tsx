@@ -20,6 +20,8 @@ import 'moment/locale/pt-br';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import OpenModalButton from './components/OpenModalButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
+import QuantitySelector from './components/QuantitySelector';
+import SelectItem from './components/SelectItem';
 
 moment.locale('pt-br');
 
@@ -31,12 +33,17 @@ export default function NewExpenseScreen() {
   const [amount, setAmount] = useState('00,00');
   const [paid, setPaid] = useState(false);
   const [name, setName] = useState('');
-  // const [tag, setTag] = useState('');
-  // const [account, setAccount] = useState('');
   const [fixed, setFix] = useState(false);
   const [repeat, setRepeat] = useState(false);
-  // const [remind, setRemind] = useState('');
+  const [quantity, setQuantity] = useState(2);
+  const [period, setPeriod] = useState('Mensal');
   const [selectedDate, setSelectedDate] = useState(moment().format('DD/MM/YYYY'));
+
+  const [selectedCategoryIcon, setSelectedCategoryIcon] = useState('tag');
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
+
+  const [selectedCategory, setSelectedCategory] = useState('Selecione a categoria desejada');
+  const [selectedAccount, setSelectedAccountType] = useState('Selecione a conta desejada');
 
   const back = () => {
     navigation.goBack();
@@ -44,29 +51,31 @@ export default function NewExpenseScreen() {
 
   const bottomSheetAccount = useRef<BottomSheet>(null);
   const bottomSheetCategory = useRef<BottomSheet>(null);
+  const bottomSheetRepeat = useRef<BottomSheet>(null);
 
-  const data = useMemo(
-    () =>
-      Array(5)
-        .fill(0)
-        .map((_, index) => `index-${index}`),
-    []
-  );
+  const accountList = [
+    { name: 'Carteira', iconName: 'wallet' },
+    { name: 'Conta Corrente', iconName: 'bank' },
+    { name: 'Poupança', iconName: 'download' },
+    { name: 'Investimentos', iconName: 'trending-up' },
+    { name: 'Outros', iconName: 'dots-horizontal' },
+  ];
 
-  const tags = [
-    'Casa',
-    'Educação',
-    'Eletrônicos',
-    'Lazer',
-    'Restaurantes',
-    'Saúde',
-    'Serviços',
-    'Supermercado',
-    'Transporte1',
-    'Transporte2',
-    'Transporte3',
-    'Transporte4',
-    'Transporte',
+  const categoryList = [
+    { name: 'Casa', iconName: 'home' },
+    { name: 'Educação', iconName: 'school' },
+    { name: 'Eletrônicos', iconName: 'devices' },
+    { name: 'Lazer', iconName: 'gamepad' },
+    { name: 'Outros', iconName: 'dots-horizontal' },
+    { name: 'Restaurantes', iconName: 'food' },
+    { name: 'Saúde', iconName: 'heart' },
+    { name: 'Serviços', iconName: 'cog' },
+    { name: 'Supermercado', iconName: 'cart' },
+    { name: 'Transporte', iconName: 'car' },
+    { name: 'Investimento', iconName: 'cash' },
+    { name: 'Presente', iconName: 'gift' },
+    { name: 'Salário', iconName: 'cash-multiple' },
+    { name: 'Prêmio', iconName: 'trophy' },
   ];
 
   const handleSnapPressAccount = (index: number) => {
@@ -77,14 +86,29 @@ export default function NewExpenseScreen() {
     bottomSheetCategory.current?.snapToIndex(index);
   };
 
-  const renderItem = useCallback(
-    (item: any) => (
-      <View key={item} style={styles.itemContainer}>
-        <Text>{item}</Text>
-      </View>
-    ),
-    []
-  );
+  const handleSnapPressRepeat = (index: number) => {
+    bottomSheetRepeat.current?.snapToIndex(index);
+  };
+
+  const handleRepeatChange = (value: boolean) => {
+    if (value) {
+      handleSnapPressRepeat(0);
+    } else {
+      setRepeat(false);
+    }
+  };
+
+  const handleAccountChange = (account: { name: string; iconName: string }) => {
+    setSelectedAccountType(account.name);
+    setSelectedAccountIcon(account.iconName);
+    bottomSheetAccount.current?.close();
+  };
+
+  const handleCategoryChange = (category: { name: string; iconName: string }) => {
+    setSelectedCategory(category.name);
+    setSelectedCategoryIcon(category.iconName);
+    bottomSheetCategory.current?.close();
+  };
 
   return (
     <KeyboardAvoidingView
@@ -128,30 +152,23 @@ export default function NewExpenseScreen() {
               style={styles.input}
             />
             <OpenModalButton
-              label="Tags"
+              label=""
+              selectedLabel={selectedCategory}
               onPress={() => handleSnapPressCategory(0)}
-              prefixIcon="tag"
+              prefixIcon={selectedCategoryIcon}
               error={false}
               errorMessage=""
               style={styles.openModal}
             />
             <OpenModalButton
-              label="Conta"
+              label=""
+              selectedLabel={selectedAccount}
               onPress={() => handleSnapPressAccount(0)}
-              prefixIcon="wallet"
+              prefixIcon={selectedAccountIcon}
               error={false}
               errorMessage=""
               style={styles.openModal}
             />
-            {/* <DropdownInput
-              label="Conta"
-              value={account}
-              onSelect={setAccount}
-              options={['Conta 1', 'Conta 2', 'Conta 3']}
-              placeholder="Selecione uma Conta"
-              prefixIcon="wallet"
-              style={styles.input}
-            /> */}
             <GlobalSwitch
               value={fixed}
               onValueChange={(value) => setFix(value)}
@@ -162,7 +179,7 @@ export default function NewExpenseScreen() {
             />
             <GlobalSwitch
               value={repeat}
-              onValueChange={(value) => setRepeat(value)}
+              onValueChange={handleRepeatChange}
               label="Repetir"
               color="#37618E" // cor personalizada
               icon="repeat"
@@ -182,10 +199,19 @@ export default function NewExpenseScreen() {
             children={
               <>
                 <BottomSheetScrollView>
-                  <View style={styles.contentContainer}>
-                    <Text style={styles.containerHeadline}>Teste</Text>
-                  </View>
-                  {tags.map(renderItem)}
+                  <Text style={styles.BottomSheetTitle}>Tags</Text>
+                  {categoryList.map((category) => (
+                    <SelectItem
+                      key={category.name}
+                      label={category.name}
+                      type="categoria"
+                      value={{ name: category.name, imageUri: '' }}
+                      selectedValue={selectedCategory}
+                      onChange={() => handleCategoryChange(category)}
+                      iconName={category.iconName}
+                      style={styles.SelectItemInsideModal}
+                    />
+                  ))}
                 </BottomSheetScrollView>
               </>
             }
@@ -193,11 +219,55 @@ export default function NewExpenseScreen() {
 
           <CustomBottomSheet
             ref={bottomSheetAccount}
-            snapPoints={['20%', '90%']}
+            snapPoints={['49%']}
             children={
               <>
-                <BottomSheetView>{data.map(renderItem)}</BottomSheetView>
+                <BottomSheetView>
+                  <Text style={styles.BottomSheetTitle}>Tipo da Conta</Text>
+                  {accountList.map((account) => (
+                    <SelectItem
+                      key={account.name}
+                      label={account.name}
+                      type="categoria"
+                      value={{ name: account.name, imageUri: '' }}
+                      selectedValue={selectedAccount}
+                      onChange={() => handleAccountChange(account)}
+                      iconName={account.iconName}
+                      style={styles.SelectItemInsideModal}
+                    />
+                  ))}
+                </BottomSheetView>
               </>
+            }
+          />
+
+          <CustomBottomSheet
+            ref={bottomSheetRepeat}
+            snapPoints={['35%']}
+            children={
+              <BottomSheetView style={styles.repeatContent}>
+                <Text style={styles.containerHeadline}>Como sua transação se repete?</Text>
+                <View style={styles.repeatOption}>
+                  <Text style={styles.optionLabel}>Quantidade</Text>
+                  <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+                </View>
+                <View style={styles.repeatOption}>
+                  <Text style={styles.optionLabel}>Período</Text>
+                  <DropdownInput
+                    value={period}
+                    options={['Diário', 'Semanal', 'Mensal', 'Anual']}
+                    onSelect={(value) => setPeriod(value)}
+                  />
+                </View>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    setRepeat(true);
+                    bottomSheetRepeat.current?.close();
+                  }}>
+                  Concluído
+                </Button>
+              </BottomSheetView>
             }
           />
         </ScreenContent>
@@ -246,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 37,
+    marginTop: 75,
     marginBottom: 30, // Espaço acima do botão
   },
   switch: {
@@ -268,5 +338,27 @@ const styles = StyleSheet.create({
   itemContainer: {
     marginBottom: 4,
     padding: 10,
+  },
+  repeatContent: {
+    padding: 16,
+  },
+  repeatOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  optionLabel: {
+    fontSize: 16,
+  },
+  BottomSheetTitle: {
+    fontSize: 20,
+    alignSelf: 'center',
+    marginTop: 15,
+  },
+  SelectItemInsideModal: {
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    marginHorizontal: 15,
   },
 });

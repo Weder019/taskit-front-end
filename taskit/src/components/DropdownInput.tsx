@@ -5,7 +5,7 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 
 // Define as propriedades que o componente aceitará
 interface GlobalDropdownInputProps {
-  label: string;
+  label?: string;
   value: string;
   onSelect: (value: string) => void;
   options: string[]; // Opções do dropdown

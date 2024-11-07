@@ -22,8 +22,12 @@ const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
   const parsedDate = initialDate ? parseDateString(initialDate) : new Date();
   const [date, setDate] = useState(parsedDate);
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedButton, setSelectedButton] = useState('Hoje');
 
-  const handleOpenCalendar = () => setShowPicker(true);
+  const handleOpenCalendar = () => {
+    setShowPicker(true);
+    setSelectedButton('Outro');
+  };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowPicker(false);
@@ -39,6 +43,7 @@ const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
     setDate(today);
     const formattedDate = moment(today).format('DD/MM/YYYY');
     onDateChange(formattedDate);
+    setSelectedButton('Hoje'); // Atualiza o botão selecionado
   };
 
   const handleYesterday = () => {
@@ -46,19 +51,32 @@ const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
     setDate(yesterday);
     const formattedDate = moment(yesterday).format('DD/MM/YYYY');
     onDateChange(formattedDate);
+    setSelectedButton('Ontem'); // Atualiza o botão selecionado
   };
 
   return (
     <View style={styles.container}>
       <IconButton icon="calendar" onPress={handleOpenCalendar} style={styles.iconButton} />
-      <TouchableOpacity onPress={handleToday} style={styles.button}>
-        <Text style={styles.buttonText}>Hoje</Text>
+      <TouchableOpacity
+        onPress={handleToday}
+        style={[styles.button, selectedButton === 'Hoje' && styles.selectedButton]}>
+        <Text style={selectedButton === 'Hoje' ? styles.selectedButtonText : styles.buttonText}>
+          Hoje
+        </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleYesterday} style={styles.button}>
-        <Text style={styles.buttonText}>Ontem</Text>
+      <TouchableOpacity
+        onPress={handleYesterday}
+        style={[styles.button, selectedButton === 'Ontem' && styles.selectedButton]}>
+        <Text style={selectedButton === 'Ontem' ? styles.selectedButtonText : styles.buttonText}>
+          Ontem
+        </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleOpenCalendar} style={styles.button}>
-        <Text style={styles.buttonText}>Outro</Text>
+      <TouchableOpacity
+        onPress={handleOpenCalendar}
+        style={[styles.button, selectedButton === 'Outro' && styles.selectedButton]}>
+        <Text style={selectedButton === 'Outro' ? styles.selectedButtonText : styles.buttonText}>
+          Outro
+        </Text>
       </TouchableOpacity>
 
       {showPicker && (
@@ -83,17 +101,23 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   button: {
-    width: 80,
+    width: 70,
     height: 35,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 15,
+    marginRight: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+  },
+  selectedButton: {
     backgroundColor: '#37618E',
   },
   buttonText: {
+    color: '#000000',
+    fontSize: 16,
+  },
+  selectedButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
   },
