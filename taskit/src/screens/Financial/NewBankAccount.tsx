@@ -30,8 +30,8 @@ export default function NewBankAccount() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
   const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
-  const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
+
 
   const bankList = [
     { name: 'Nubank', imageUri: 'https://logopng.com.br/logos/nubank-95.png' },
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 335,
+    marginTop: 175,
     marginBottom: 30, // Espaço acima do botão
   },
   gesture: {

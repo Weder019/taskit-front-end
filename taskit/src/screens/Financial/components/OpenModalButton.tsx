@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { TextInput, Text } from 'react-native-paper';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
+
 interface OpenModalButtonProps {
   label: string;
   selectedLabel?: string;
