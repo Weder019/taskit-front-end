@@ -30,7 +30,8 @@ export default function NewBankAccount() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
   const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
-  const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
+
 
   const bankList = [
     { name: 'Nubank', imageUri: 'https://logopng.com.br/logos/nubank-95.png' },
@@ -166,9 +167,9 @@ export default function NewBankAccount() {
     bottomSheetAccountType.current?.snapToIndex(index);
   };
 
-  const handleAccountTypeChange = (accountType: { name: string }) => {
+  const handleAccountTypeChange = (accountType: { name: string; iconName: string }) => {
     setSelectedAccountType(accountType.name);
-    console.log(accountType);
+    setSelectedAccountIcon(accountType.iconName);
     bottomSheetAccountType.current?.close();
   };
 
@@ -187,7 +188,7 @@ export default function NewBankAccount() {
             </View>
             <View style={styles.containerSubtitle}>
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
-                Saldo atual da conta
+                Saldo Da Conta
               </Text>
               <EditableAmountInput
                 value={amount}
@@ -219,12 +220,11 @@ export default function NewBankAccount() {
                 label=""
                 selectedLabel={selectedAccountType}
                 onPress={() => handleSnapPressAccountType(0)}
-                prefixIcon="credit-card"
+                prefixIcon={selectedAccountIcon}
                 error={false}
                 errorMessage=""
                 style={styles.openModal}
               />
-              
 
               <Button
                 mode="contained"
@@ -316,10 +316,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    marginBottom: 20,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
   },
   BottomSheetTitle: {
     fontSize: 20,
@@ -354,7 +353,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     padding: 3.5,
     paddingVertical: 5,
-    
   },
   SelectItemInsideModal: {
     padding: 10,

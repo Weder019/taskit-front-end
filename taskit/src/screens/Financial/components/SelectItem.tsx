@@ -72,8 +72,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    
-    
     marginVertical: 5,
   },
   image: {
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#ccc',
-    
   },
   checkIcon: {
     margin: 0, // Remove o espaçamento extra do IconButton

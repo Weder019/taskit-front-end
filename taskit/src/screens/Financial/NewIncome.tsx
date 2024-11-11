@@ -119,12 +119,12 @@ export default function NewExpenseScreen() {
           <View style={styles.containerTitle}>
             <BackButton onPress={back} />
             <Text variant="headlineMedium" style={[style.title, styles.title]}>
-              Despesa
+              Receita
             </Text>
           </View>
           <View style={styles.containerSubtitle}>
             <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>
-              Valor da despesa
+              Valor da Receita
             </Text>
             <EditableAmountInput value={amount} onChangeValue={setAmount} style={style.title} />
           </View>
@@ -132,7 +132,7 @@ export default function NewExpenseScreen() {
             <GlobalSwitch
               value={paid}
               onValueChange={(value) => setPaid(value)}
-              label="Pago"
+              label="Recebido"
               color="#37618E" // cor personalizada
               icon="check-circle"
               style={styles.switch}
@@ -147,7 +147,7 @@ export default function NewExpenseScreen() {
               label="Descrição"
               value={name}
               onChangeText={setName}
-              placeholder="Descrição da Despesa"
+              placeholder="Descrição da Receita"
               prefixIcon="pencil"
               style={styles.input}
             />
@@ -172,7 +172,7 @@ export default function NewExpenseScreen() {
             <GlobalSwitch
               value={fixed}
               onValueChange={(value) => setFix(value)}
-              label="Despesa Fixa"
+              label="Receita Fixa"
               color="#37618E" // cor personalizada
               icon="pin"
               style={styles.switch}

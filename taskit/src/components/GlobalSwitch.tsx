@@ -34,6 +34,7 @@ const GlobalSwitch: React.FC<GlobalSwitchProps> = ({
         onValueChange={onValueChange}
         color={color || colors.primary} // Cor personalizável
         disabled={disabled}
+        style={styles.switch}
       />
     </View>
   );
@@ -55,6 +56,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+  },
+  switch: {
+    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
   },
 });
 
