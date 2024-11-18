@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { Icon } from 'react-native-elements';
-import { useGlobalStyles } from '~/styles/globalStyles';
 
 interface CategoryItemProps {
   label: string;
@@ -9,31 +8,37 @@ interface CategoryItemProps {
 }
 
 const CategoryItem: React.FC<CategoryItemProps> = ({ label, icon }) => {
-  const styles = useGlobalStyles();
-
   return (
     <TouchableOpacity style={styles.categoryButton}>
-      <View style={localStyles.iconContainer}>
+      <View style={styles.iconContainer}>
         <Icon name={icon} type="material" color="#fff" size={20} />
       </View>
-      <Text style={[styles.categoryText, localStyles.labelText]}>{label}</Text>
+      <Text style={styles.categoryText}>{label}</Text>
     </TouchableOpacity>
   );
 };
 
-const localStyles = StyleSheet.create({
-  iconContainer: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#1E90FF', // Cor da bola azul
-    justifyContent: 'center',
+export default CategoryItem;
+
+const styles = StyleSheet.create({
+  categoryButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10, // Espaço entre o ícone e o texto
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
-  labelText: {
-    color: '#fff', // Cor do texto, se necessário
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#37618E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  categoryText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
   },
 });
-
-export default CategoryItem;

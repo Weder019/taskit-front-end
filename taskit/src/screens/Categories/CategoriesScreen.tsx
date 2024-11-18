@@ -1,51 +1,43 @@
-import { Text } from 'react-native';
-import { ScreenContent } from '../../components/ScreenContent';
-import { BackButton } from '~/components/BackButton';
-import Container from '../../components/Container';
-import { useGlobalStyles } from '~/styles/globalStyles';
-import CategoryItem from '../../screens/Categories/Components/CategoryItem';
-import { 
-  StyleSheet, 
-  TouchableOpacity, 
-  View,
-  ScrollView,
-} from 'react-native';
+import { StyleSheet, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScreenContent } from '~/components/ScreenContent';
 import React, { useState } from 'react';
-import { Icon } from 'react-native-paper';
+import Container from '~/components/Container';
+import CategoryItem from './Components/CategoryItem';
+import { Icon } from 'react-native-elements';
 
 export default function CategoriesScreen() {
   const categories = [
     { label: 'Investimento', prefixIcon: 'trending-up' },
-    { label: 'Presente', prefixIcon: 'present' },
+    { label: 'Presente', prefixIcon: 'card-giftcard' },
     { label: 'Salário', prefixIcon: 'attach-money' },
     { label: 'Prêmio', prefixIcon: 'emoji-events' },
-    { label: 'Outros', prefixIcon: 'more-horizontal' },
+    { label: 'Outros', prefixIcon: 'more-horiz' },
   ];
-  
-  const back = () => {
-    console.log('back');
-  };
 
   const ToggleButton = () => {
     const [selected, setSelected] = useState<'despesas' | 'receitas'>('despesas');
-  
+
     const handleClick = (type: 'despesas' | 'receitas') => {
       setSelected(type);
     };
 
     return (
-      <View style={styles.switchContainer}>
-        <TouchableOpacity 
-          style={[styles.switchButton, selected === 'despesas' ? styles.expensesButton : {}]}
+      <View style={styles.switchReceitasDespesas}>
+        <TouchableOpacity
+          style={[styles.toggleOption, selected === 'despesas' ? styles.active : styles.inactive]}
           onPress={() => handleClick('despesas')}
         >
-          <Text style={styles.switchButtonText}>Despesas</Text>
+          <Text style={selected === 'despesas' ? styles.activeText : styles.inactiveText}>
+            Despesas
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.switchButton, selected === 'receitas' ? styles.incomeButton : {}]}
+        <TouchableOpacity
+          style={[styles.toggleOption, selected === 'receitas' ? styles.active : styles.inactive]}
           onPress={() => handleClick('receitas')}
         >
-          <Text style={styles.incomeButtonText}>Receitas</Text>
+          <Text style={selected === 'receitas' ? styles.activeText : styles.inactiveText}>
+            Receitas
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -54,22 +46,22 @@ export default function CategoriesScreen() {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <ScreenContent>
-        {/* Cabeçalho */}
-        <View style={styles.header}>
-          <BackButton onPress={back}></BackButton>
-          <Text style={[styles.title]}>Categorias</Text>
+        <View>
+          <Text style={styles.title}>Categorias</Text>
         </View>
-        
-        {/* Botão despesa e receita */}
         <ToggleButton />
-
-        <Container rounded>
-          {/* Lista de categorias */}
-          <View style={styles.container}>
+        <Container rounded style={styles.container}>
+          {/* Lista de Categorias */}
+          <View style={styles.categoriesContainer}>
             {categories.map((category, index) => (
-              <CategoryItem key={index} label={category.label} icon={category.prefixIcon}></CategoryItem>
+              <CategoryItem key={index} label={category.label} icon={category.prefixIcon} />
             ))}
           </View>
+
+          {/* Botão de adicionar */}
+          <TouchableOpacity style={styles.addButton}>
+            <Icon name="add" color="#fff" size={30} />
+          </TouchableOpacity>
         </Container>
       </ScreenContent>
     </ScrollView>
@@ -77,74 +69,63 @@ export default function CategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  screenContent: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-    paddingHorizontal: 16,
-    paddingVertical: 32,
-  },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-  },
-  container: {
-    backgroundColor: '#f0f0f5',
-    borderRadius: 16,
-    padding: 16,
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  backButton: {
-    marginRight: 8,
+    backgroundColor: '#001d36',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
     color: '#FFFFFF',
-    alignItems: 'center',
+    fontSize: 32,
+    marginLeft: 20,
+    marginBottom: 10,
   },
-  switchContainer: {
+  container: {
+    paddingTop: 150,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  switchReceitasDespesas: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: 20,
+    padding: 4,
   },
-  switchButton: {
+  toggleOption: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 20,
+    marginHorizontal: 6,
   },
-  expensesButton: {
-    backgroundColor: '#ddd',
-    marginRight: 4,
-  },
-  incomeButton: {
+  active: {
     backgroundColor: '#37618E',
   },
-  switchButtonText: {
-    fontSize: 16,
-    color: '#1a1a2e',
+  inactive: {
+    backgroundColor: '#d7e3f8',
   },
-  incomeButtonText: {
+  activeText: {
     color: '#fff',
+    fontWeight: 'bold',
+  },
+  inactiveText: {
+    color: '#37618E',
   },
   categoriesContainer: {
-    flex: 1,
-    marginBottom: 16,
+    paddingTop: 10,
   },
   addButton: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    right: 20,
+    bottom: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#37618E',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
