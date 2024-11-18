@@ -7,6 +7,10 @@ export type FinancialStackParamList = {
   FinancialHome: undefined;
   NewBankAccount: undefined;
   NewExpense: undefined;
+  NewIncome: undefined;
+  EditExpense: undefined;
+  EditIncome: undefined;
+  EditAccount: undefined;
 };
 
 const FinancialStack = createStackNavigator<FinancialStackParamList>();

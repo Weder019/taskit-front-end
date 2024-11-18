@@ -19,7 +19,7 @@ export default function RootStack() {
 
   return (
     <NavigationContainer>
-      {user ? (
+      {true ? (
         // Se o usuário estiver autenticado, exibe o Stack principal
         <Stack.Navigator initialRouteName="TabNavigator">
           <Stack.Screen
