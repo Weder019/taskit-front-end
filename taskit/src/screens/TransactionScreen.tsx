@@ -1,26 +1,84 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { Appbar, IconButton, Text } from 'react-native-paper';
 import { BackButton } from '~/components/BackButton';
 import Container from '~/components/Container';
 import { ScreenContent } from '~/components/ScreenContent';
 import { useGlobalStyles } from '~/styles/globalStyles';
 
-const transactions: { [key: string]: { id: string, date: string, description: string, category: string, account: string, amount: string }[] } = {
-  'Outubro': [
-    { id: '1', date: 'Terça, 08', description: 'Aluguel', category: 'Casa', account: 'Conta corrente', amount: 'R$ 550,00' },
-    { id: '2', date: 'Segunda, 07', description: 'Sushi', category: 'Restaurante', account: 'Conta corrente', amount: 'R$ 180,00' },
-    { id: '3', date: 'Quinta, 03', description: 'Aluguel', category: 'Casa', account: 'Conta corrente', amount: 'R$ 180,00' },
+const transactions: {
+  [key: string]: {
+    id: string;
+    date: string;
+    description: string;
+    category: string;
+    account: string;
+    amount: string;
+  }[];
+} = {
+  Outubro: [
+    {
+      id: '1',
+      date: 'Terça, 08',
+      description: 'Aluguel',
+      category: 'Casa',
+      account: 'Conta corrente',
+      amount: 'R$ 550,00',
+    },
+    {
+      id: '2',
+      date: 'Segunda, 07',
+      description: 'Sushi',
+      category: 'Restaurante',
+      account: 'Conta corrente',
+      amount: 'R$ 180,00',
+    },
+    {
+      id: '3',
+      date: 'Quinta, 03',
+      description: 'Aluguel',
+      category: 'Casa',
+      account: 'Conta corrente',
+      amount: 'R$ 180,00',
+    },
   ],
-  'Setembro': [
-    { id: '4', date: 'Sexta, 29', description: 'Supermercado', category: 'Compras', account: 'Cartão de crédito', amount: 'R$ 250,00' },
-  ]
+  Setembro: [
+    {
+      id: '4',
+      date: 'Sexta, 29',
+      description: 'Supermercado',
+      category: 'Compras',
+      account: 'Cartão de crédito',
+      amount: 'R$ 250,00',
+    },
+  ],
 };
 export default function TransactionsScreen() {
   const [monthIndex, setMonthIndex] = useState(9);
   const [isExpense, setIsExpense] = useState(true); // Novo estado para alternar entre despesas e receitas
   const style = useGlobalStyles();
-  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const monthNames = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
 
   const handleNextMonth = () => {
     setMonthIndex((prevIndex) => (prevIndex + 1) % 12);
@@ -52,21 +110,19 @@ export default function TransactionsScreen() {
           <View style={styles.toggleContainer}>
             <TouchableOpacity onPress={() => setIsExpense(!isExpense)} style={styles.toggleButton}>
               <View style={styles.toggleContent}>
-                <Text style={styles.toggleButtonText}>
-                  {isExpense ? "Despesas" : "Receitas"}
-                </Text>
-                <IconButton icon={'arrow-down'} iconColor='#fff' size={24} style={styles.icon} />
+                <Text style={styles.toggleButtonText}>{isExpense ? 'Despesas' : 'Receitas'}</Text>
+                <IconButton icon={'arrow-down'} iconColor="#fff" size={24} style={styles.icon} />
               </View>
             </TouchableOpacity>
           </View>
           <Container rounded>
             <View style={styles.monthSelector}>
               <TouchableOpacity onPress={handlePreviousMonth}>
-                <Text style={styles.arrow}>{"<"}</Text>
+                <Text style={styles.arrow}>{'<'}</Text>
               </TouchableOpacity>
               <Text style={styles.monthText}>{currentMonth}</Text>
               <TouchableOpacity onPress={handleNextMonth}>
-                <Text style={styles.arrow}>{">"}</Text>
+                <Text style={styles.arrow}>{'>'}</Text>
               </TouchableOpacity>
             </View>
 
@@ -89,7 +145,9 @@ export default function TransactionsScreen() {
                 <View style={styles.transaction}>
                   <View style={styles.transactionInfo}>
                     <Text style={styles.description}>{item.description}</Text>
-                    <Text style={styles.details}>{item.category} | {item.account}</Text>
+                    <Text style={styles.details}>
+                      {item.category} | {item.account}
+                    </Text>
                   </View>
                   <Text style={styles.amount}>{item.amount}</Text>
                 </View>
@@ -178,9 +236,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
   },
-  details: {
-
-  },
+  details: {},
   amount: {
     fontSize: 16,
     fontWeight: 'bold',
