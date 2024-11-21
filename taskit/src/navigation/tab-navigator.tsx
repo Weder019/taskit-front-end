@@ -10,8 +10,10 @@ import Three from '../screens/three' ;
 
 import NewBankAccount from '~/screens/Financial/NewBankAccount';
 import NewIncome from '~/screens/Financial/NewIncome';
+import TransactionsScreen from '~/screens/TransactionScreen';
 import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
 import CategoryItem from '~/screens/Categories/Components/CategoryItem';
+
 
 const Tab = createBottomTabNavigator();
 
