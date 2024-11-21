@@ -61,5 +61,7 @@ export const useGlobalStyles = () => {
       height: 150,
       margin: '2%',
     },
+    categoryText:{},
+      categoryButton:{},
   });
 };
