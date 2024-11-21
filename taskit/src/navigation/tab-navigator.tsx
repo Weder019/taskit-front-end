@@ -1,12 +1,15 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import { RootStackParamList } from '.';
-import { HeaderButton } from '../components/HeaderButton';
+import FinancialNavigator from './finacial-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
-import One from '../screens/one';
-import Two from '../screens/two';
-import Three from '../screens/three'
+import NewExpenseScreen from '../screens/Financial/NewExpense';
+import Three from '../screens/three';
+
+import NewBankAccount from '~/screens/Financial/NewBankAccount';
+import NewIncome from '~/screens/Financial/NewIncome';
 import TransactionsScreen from '~/screens/TransactionScreen';
 
 const Tab = createBottomTabNavigator();
@@ -16,9 +19,16 @@ type Props = StackScreenProps<RootStackParamList, 'TabNavigator'>;
 export default function TabLayout({ navigation }: Props) {
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: 'black',
-        headerShown: false,
+      screenOptions={({ route }) => {
+        const routeName = getFocusedRouteNameFromRoute(route) ?? 'FinancialHome';
+
+        return {
+          tabBarStyle: {
+            display: routeName === 'FinancialHome' ? 'flex' : 'none', // Exibe somente na FinancialHome
+          },
+          headerShown: false, // Oculta o header de navegação
+          tabBarActiveTintColor: 'black',
+        };
       }}>
       <Tab.Screen
         name="One"
@@ -30,18 +40,18 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={Two}
+        component={NewExpenseScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tab.Screen
-        name="Three"
-        component={Three}
+        name="Financial"
+        component={FinancialNavigator}
         options={{
-          title: 'Tab Three',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Financial',
+          tabBarIcon: ({ color }) => <TabBarIcon name="money" color={color} />, // ícone representativo
         }}
       />
     </Tab.Navigator>

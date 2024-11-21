@@ -7,7 +7,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Button, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
 
 import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
@@ -24,7 +24,8 @@ export default function LoginScreen() {
   const Globalstyles = useGlobalStyles();
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const { login } = useUser();
+  const { login, loading } = useUser();
+  const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation<LoginScreenNavigationProp>(); // Tipagem de navegação
   const { errors, validateForm } = useFormValidation(); // Hook de validação
 
@@ -35,7 +36,8 @@ export default function LoginScreen() {
         console.log('VAI CURINTIA');
         // Redirecionar ou mostrar mensagem de sucesso
       } catch (error) {
-        console.log('Erro ao fazer login:', error);
+        console.log(error);
+        setErrorMessage('Erro ao fazer login. Verifique suas informações.');
         // Tratar erro (exibir mensagem, etc.)
       }
     } else {
@@ -84,12 +86,16 @@ export default function LoginScreen() {
               style={styles.input}
             />
 
-            <Button
-              mode="contained"
-              onPress={handleLogin}
-              style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
-              ENTRAR
-            </Button>
+            {loading ? (
+              <ActivityIndicator animating size="large" />
+            ) : (
+              <Button
+                mode="contained"
+                onPress={handleLogin}
+                style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
+                ENTRAR
+              </Button>
+            )}
 
             <TouchableOpacity onPress={handleRegisterRedirect}>
               <Text style={styles.registerText}>Não tem conta? Registre-se</Text>
@@ -97,6 +103,17 @@ export default function LoginScreen() {
           </Container>
         </ScreenContent>
       </ScrollView>
+      <Snackbar
+        visible={!!errorMessage}
+        onDismiss={() => setErrorMessage('')}
+        action={{
+          label: 'Fechar',
+          onPress: () => {
+            setErrorMessage('');
+          },
+        }}>
+        {errorMessage}
+      </Snackbar>
     </KeyboardAvoidingView>
   );
 }

@@ -1,52 +1,41 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User,
+} from 'firebase/auth';
+import { getDoc, setDoc, doc } from 'firebase/firestore';
 
-import { auth, firestore } from '../utils/firebase'; // Importe o auth e firestore configurados
+import { auth, firestore } from '../utils/firebase';
 
-// Função para registrar um novo usuário
-const signUp = async (email: string, password: string, additionalData: any) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
-
-  // Após criar o usuário, salvar os dados no Firestore
-  await setDoc(doc(firestore, 'users', user.uid), {
-    email,
-    ...additionalData,
-  });
-
-  return user;
-};
-
-// Função para fazer login
-const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string): Promise<User> => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   return userCredential.user;
 };
 
-// Função para fazer logout
-const logout = async () => {
+export const signUp = async (
+  email: string,
+  password: string,
+  additionalData: any
+): Promise<User> => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
+
+  // Salva os dados no Firestore
+  const userDocRef = doc(firestore, 'users', user.uid);
+  await setDoc(userDocRef, { email, ...additionalData });
+
+  return user;
+};
+
+export const logout = async (): Promise<void> => {
   await signOut(auth);
 };
 
-// Função para buscar os dados do usuário no Firestore
-const getUserData = async (uid: string) => {
+export const getUserDataFromFirestore = async (uid: string) => {
   const docRef = doc(firestore, 'users', uid);
   const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    return docSnap.data();
-  } else {
-    console.log('No such document!');
-    return null;
-  }
+  return docSnap.exists() ? docSnap.data() : null;
 };
-
-// Exportando todas as funções como parte do authService
-const authService = {
-  signUp,
-  login,
-  logout,
-  getUserData,
-};
-
-export default authService;

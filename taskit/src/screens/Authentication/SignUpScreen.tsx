@@ -7,7 +7,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Button, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
 
 import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
@@ -15,8 +15,8 @@ import { useUser } from '../../context/UserContext';
 import { AuthStackParamList } from '../../navigation/auth-navigator';
 
 import GlobalInput from '~/components/GlobalInput';
-import { useGlobalStyles } from '~/styles/globalStyles';
 import { useFormValidation } from '~/hooks/useFormValidation';
+import { useGlobalStyles } from '~/styles/globalStyles';
 
 type SignUpScreenNavigationProp = NavigationProp<AuthStackParamList, 'SignUp'>;
 
@@ -27,9 +27,20 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [cell, setCell] = useState('');
-  const { signUp } = useUser();
+  const { signUp, loading } = useUser();
+  const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation<SignUpScreenNavigationProp>();
   const { errors, validateForm } = useFormValidation();
+
+  // Função para formatar o número de telefone
+  const formatPhoneNumber = (phone: string) => {
+    // Remove todos os caracteres não numéricos
+    const cleaned = phone.replace(/\D/g, '');
+
+    // Aplica a máscara (XX) XXXXX-XXXX
+    const formatted = cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    setCell(formatted);
+  };
 
   // Apenas ajuste a função handleSignUp para passar os campos adequados
   const handleSignUp = async () => {
@@ -38,7 +49,8 @@ export default function SignUpScreen() {
         await signUp(email, password, { name, cell });
         // Redirecionar ou mostrar mensagem de sucesso
       } catch (error) {
-        console.log('Erro ao registrar:', error);
+        console.log(error);
+        setErrorMessage('Erro ao registrar. Verifique suas informações.');
         // Tratar erro (exibir mensagem, etc.)
       }
     } else {
@@ -95,6 +107,7 @@ export default function SignUpScreen() {
               prefixIcon="cellphone"
               error={!!errors.cell}
               errorMessage={errors.cell}
+              onBlur={() => formatPhoneNumber(cell)}
               style={styles.input}
             />
 
@@ -123,12 +136,16 @@ export default function SignUpScreen() {
               style={styles.input}
             />
 
-            <Button
-              mode="contained"
-              onPress={handleSignUp}
-              style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
-              ENTRAR
-            </Button>
+            {loading ? (
+              <ActivityIndicator animating size="large" />
+            ) : (
+              <Button
+                mode="contained"
+                onPress={handleSignUp}
+                style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
+                CADSTRAR
+              </Button>
+            )}
 
             <TouchableOpacity onPress={handleLoginRedirect}>
               <Text style={styles.loginText}>Já tem uma conta? Faça login</Text>
@@ -136,6 +153,17 @@ export default function SignUpScreen() {
           </Container>
         </ScreenContent>
       </ScrollView>
+      <Snackbar
+        visible={!!errorMessage}
+        onDismiss={() => setErrorMessage('')}
+        action={{
+          label: 'Fechar',
+          onPress: () => {
+            setErrorMessage('');
+          },
+        }}>
+        {errorMessage}
+      </Snackbar>
     </KeyboardAvoidingView>
   );
 }
