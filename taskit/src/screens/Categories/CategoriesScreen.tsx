@@ -25,16 +25,14 @@ export default function CategoriesScreen() {
       <View style={styles.switchReceitasDespesas}>
         <TouchableOpacity
           style={[styles.toggleOption, selected === 'despesas' ? styles.active : styles.inactive]}
-          onPress={() => handleClick('despesas')}
-        >
+          onPress={() => handleClick('despesas')}>
           <Text style={selected === 'despesas' ? styles.activeText : styles.inactiveText}>
             Despesas
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.toggleOption, selected === 'receitas' ? styles.active : styles.inactive]}
-          onPress={() => handleClick('receitas')}
-        >
+          onPress={() => handleClick('receitas')}>
           <Text style={selected === 'receitas' ? styles.activeText : styles.inactiveText}>
             Receitas
           </Text>
