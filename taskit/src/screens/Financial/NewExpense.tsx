@@ -1,8 +1,9 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { Expense } from '~/types/financial.types';
 
 import EditableAmountInput from './components/EditableAmountInput';
 import Container from '../../components/Container';
@@ -110,6 +111,67 @@ export default function NewExpenseScreen() {
     bottomSheetCategory.current?.close();
   };
 
+  const generateRepeatedExpenses = (baseExpense: Expense, quantity: number, period: string) => {
+    const momentDate = moment(baseExpense.date, 'DD/MM/YYYY');
+    const expenses: Expense[] = [];
+
+    const periodMapping: { [key: string]: moment.unitOfTime.DurationConstructor } = {
+      Diário: 'days',
+      Semanal: 'weeks',
+      Mensal: 'months',
+      Anual: 'years',
+    };
+
+    const newPeriod = periodMapping[period];
+
+    for (let i = 0; i < quantity; i++) {
+      const newDate = momentDate.clone().add(i, newPeriod);
+      expenses.push({
+        ...baseExpense,
+        date: newDate.format('DD/MM/YYYY'),
+      });
+    }
+    return expenses;
+  };
+
+  const handleSaveExpense = () => {
+    if (!name.trim()) {
+      alert('Por favor, insira o nome da despesa.');
+      return;
+    }
+
+    if (!amount || parseFloat(amount.replace(',', '.')) <= 0) {
+      alert('Por favor, insira um valor válido.');
+      return;
+    }
+
+    if (!selectedCategory || selectedCategory === 'Selecione a categoria desejada') {
+      alert('Por favor, selecione uma categoria.');
+      return;
+    }
+
+    // Montar a despesa base
+    const baseExpense: Expense = {
+      exp_name: name || 'Despesa sem nome',
+      category: selectedCategory || 'Outros',
+      value: parseFloat(amount.replace(',', '.')),
+      date: selectedDate,
+      fixed,
+      paid,
+    };
+
+    let expenses: Expense[] = [baseExpense];
+
+    if (repeat) {
+      expenses = generateRepeatedExpenses(baseExpense, quantity, period);
+    }
+
+    console.log('Despesas Geradas:', expenses);
+
+    // Aqui você pode salvar todas as despesas no back-end
+    // Lembrar de salvar em um objeto data contendo o accountId e a Expense
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta o comportamento para iOS e Android
@@ -187,7 +249,7 @@ export default function NewExpenseScreen() {
             />
             <Button
               mode="contained"
-              onPress={back}
+              onPress={handleSaveExpense}
               style={[style.containedButtonDefaultStyle, styles.button]}>
               Salvar
             </Button>
