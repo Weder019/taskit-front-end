@@ -20,6 +20,9 @@ export default function FinancialHome() {
             onPress={() => navigation.navigate('NewBankAccount')}
           />
           <Button title="Go to New Expense" onPress={() => navigation.navigate('NewExpense')} />
+          <Button title="Go to Edit Account" onPress={() => navigation.navigate('EditNewBankAccount')} />
+          <Button title="Go to Edit Expense" onPress={() => navigation.navigate('EditExpense')} />
+          <Button title="Go to Edit Income" onPress={() => navigation.navigate('EditIncome')} />
           {/* Outros botões para navegação */}
         </View>
       </Container>

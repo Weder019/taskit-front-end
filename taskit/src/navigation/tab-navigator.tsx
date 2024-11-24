@@ -12,6 +12,8 @@ import NewBankAccount from '~/screens/Financial/NewBankAccount';
 import NewIncomeScreen from '~/screens/Financial/NewIncome';
 import EditExpenseScreen from '~/screens/Financial/EditExpense';
 import EditIncomeScreen from '~/screens/Financial/EditIncome';
+import EditNewBankAccount from '~/screens/Financial/EditNewBankAccount';
+import AccountDetails from '~/screens/Financial/AccountDetails';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +35,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="NewIncome"
-        component={EditIncomeScreen}
+        component={EditNewBankAccount}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -41,7 +43,7 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={EditExpenseScreen}
+        component={AccountDetails}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
