@@ -15,7 +15,7 @@ import EditIncomeScreen from '~/screens/Financial/EditIncome';
 import EditNewBankAccount from '~/screens/Financial/EditNewBankAccount';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import TransactionsScreen from '~/screens/TransactionScreen';
-import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
+import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
 import CategoryItem from '~/screens/Categories/Components/CategoryItem';
 
 
