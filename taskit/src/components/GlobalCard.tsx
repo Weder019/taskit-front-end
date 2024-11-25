@@ -10,25 +10,16 @@ interface GlobalCardProps {
 const GlobalCard: React.FC<GlobalCardProps> = ({ children, style }) => {
   const { colors } = useTheme(); // Acessa o tema atual
 
-  return (
-    <View style={[styles.card, { backgroundColor: colors.surface }, style]}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}>
-        {children}
-      </ScrollView>
-    </View>
-  );
+  return <View style={[styles.card, { backgroundColor: colors.surface }, style]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12, // Bordas arredondadas
+    borderRadius: 32, // Bordas arredondadas
     padding: 16, // Espaçamento interno
     shadowColor: '#000', // Sombra para destaque
     shadowOffset: { width: 0, height: 2 },
-    width: '95%',
-    maxHeight: '28%',
+    maxHeight: 200,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3, // Elevação para Android

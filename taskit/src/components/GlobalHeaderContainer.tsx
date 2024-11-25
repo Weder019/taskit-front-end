@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, // Posição da sombra
     shadowOpacity: 0.1, // Transparência da sombra
     shadowRadius: 6, // Difusão da sombra
+    alignItems: 'center',
   },
 });
 
