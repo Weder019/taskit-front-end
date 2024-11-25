@@ -22,13 +22,12 @@ import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
 import { bankList } from '~/utils/bankList';
-import {accountTypeList}from '~/utils/accountTypeList'
 
-type NewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
+type EditNewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditNewBankAccount'>;
 
-export default function NewBankAccount() {
+export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
-  const navigation = useNavigation<NewBankAccountScreenNavigationProp>();
+  const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
   const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
@@ -36,7 +35,14 @@ export default function NewBankAccount() {
   const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
 
 
-  
+  const accountTypeList = [
+    { name: 'Carteira', iconName: 'wallet' },
+    { name: 'Conta Corrente', iconName: 'bank' },
+    { name: 'Poupança', iconName: 'download' },
+    { name: 'Investimentos', iconName: 'trending-up' },
+    { name: 'Outros', iconName: 'dots-horizontal' },
+  ];
+
   const back = () => {
     navigation.goBack();
   };
@@ -79,7 +85,7 @@ export default function NewBankAccount() {
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Nova Conta
+                Editar Conta
               </Text>
             </View>
             <View style={styles.containerSubtitle}>

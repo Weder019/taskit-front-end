@@ -1,0 +1,105 @@
+export const testUser = {
+  id: 'afowinafwoinafw1234124',
+  name: 'Fernando',
+  email: 'fernando@teste.com',
+  cell: '19999999999',
+  accounts: [
+    {
+      id: '001',
+      acc_name: 'Conta Corrente',
+      bank: 'Nubank',
+      expenses: [
+        {
+          exp_name: 'Japa com a tropa',
+          category: 'Restaurantes',
+          value: 119.9,
+          date: '30/10/2024',
+          fixed: false,
+          paid: true,
+        },
+        {
+          exp_name: 'Aluguel',
+          category: 'Casa',
+          value: 500,
+          date: '10/10/2024',
+          fixed: true,
+          paid: false,
+        },
+        {
+          exp_name: 'Remedios',
+          category: 'Saude',
+          value: 250,
+          date: '15/9/2024',
+          fixed: false,
+          paid: true,
+        },
+      ],
+      incomes: [
+        {
+          inc_name: 'Salario',
+          category: 'Salario',
+          value: 1650,
+          date: '10/10/2024',
+          fixed: true,
+        },
+        {
+          inc_name: 'Aluguel Casa Praia',
+          category: 'Casa',
+          value: 2500,
+          date: '20/10/2024',
+          fixed: false,
+        },
+      ],
+      balance: 345.87,
+    },
+    {
+      id: '002',
+      acc_name: 'Conta Investimento',
+      bank: 'Jp Morgans',
+      expenses: [{}],
+      incomes: [
+        {
+          inc_name: 'Dividendos',
+          category: 'Investimento',
+          value: 150,
+          date: '15/10/2024',
+          fixed: true,
+        },
+        {
+          inc_name: 'Tesouro Direto',
+          category: 'Investimento',
+          value: 30,
+          date: '05/10/2024',
+          fixed: true,
+        },
+      ],
+      balance: 700,
+    },
+  ],
+  Categories: ['sexo', 'sexo1', 'sexo2'],
+  Tasks: [
+    {
+      title: 'Reunião',
+      description: 'Reunião semanal com a equipe de desenvolvimento',
+      data: '31/10/2024',
+      priority: 2,
+      subTask: [
+        {
+          title: 'Slide Next Sprint',
+          description: 'Finalizar slide de apresentação para a nova sprint',
+          priority: 1,
+          done: true,
+        },
+      ],
+      done: true,
+    },
+    {
+      title: 'Almoço com a coroa',
+      description: 'almoço com a veia',
+      data: '9/10/2024',
+      priority: 3,
+      subTask: [{}],
+      done: true,
+    },
+  ],
+};

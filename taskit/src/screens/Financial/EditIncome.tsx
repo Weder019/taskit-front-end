@@ -1,7 +1,7 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
 import EditableAmountInput from './components/EditableAmountInput';
@@ -22,28 +22,72 @@ import OpenModalButton from './components/OpenModalButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
 import QuantitySelector from './components/QuantitySelector';
 import SelectItem from './components/SelectItem';
-
+import { Account } from '~/types/financial.types';
 moment.locale('pt-br');
 
-type NewIncomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewIncome'>;
+type EditIncomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditIncome'>;
 
-export default function NewIncomeScreen() {
+export default function EditIncomeScreen() {
   const style = useGlobalStyles();
-  const navigation = useNavigation<NewIncomeScreenNavigationProp>();
-  const [amount, setAmount] = useState('00,00');
-  const [paid, setPaid] = useState(false);
-  const [name, setName] = useState('');
-  const [fixed, setFix] = useState(false);
+  const navigation = useNavigation<EditIncomeScreenNavigationProp>();
+
+  const [userAccounts, setUserAccounts] = useState<Account[]>([
+    {
+      id: 'HTFTDk51MRMbxddpSz6g',
+      acc_name: 'Minha Conta Nubank', // Nome escolhido pelo usuário
+      acc_type: 'Conta Corrente', // Relacionado ao accountList
+      bank: 'Nubank',
+      expenses: [],
+      incomes: [],
+      balance: 1000,
+    },
+    {
+      id: '2',
+      acc_name: 'Poupança da Caixa',
+      acc_type: 'Poupança',
+      bank: 'Caixa Econômica',
+      expenses: [],
+      incomes: [],
+      balance: 500,
+    },
+    {
+      id: '3',
+      acc_name: 'Minha Carteira',
+      acc_type: 'Carteira',
+      bank: '',
+      expenses: [],
+      incomes: [],
+      balance: 250,
+    },
+  ]);
+
+  const accountId = 'HTFTDk51MRMbxddpSz6g';
+  const acc_type = 'Conta Corrente';
+  const [income, setIncome] = useState({
+    id: 'U6KqFx8UmO8rEs20tKJE',
+    inc_name: 'Dividendos CPX022',
+    category: 'Investimento',
+    value: 330,
+    date: '2024-11-07',
+    fixed: true,
+    received: true,
+  });
+
+  const [amount, setAmount] = useState(income.value.toFixed(2).replace('.', ','));
+  const [received, setReceived] = useState(income.received);
+  const [name, setName] = useState(income.inc_name);
+  const [fixed, setFix] = useState(income.fixed);
   const [repeat, setRepeat] = useState(false);
   const [quantity, setQuantity] = useState(2);
   const [period, setPeriod] = useState('Mensal');
-  const [selectedDate, setSelectedDate] = useState(moment().format('DD/MM/YYYY'));
+  const [selectedDate, setSelectedDate] = useState(
+    moment(income.date, 'YYYY-MM-DD').format('DD/MM/YYYY')
+  );
 
-  const [selectedCategoryIcon, setSelectedCategoryIcon] = useState('tag');
-  const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
-
-  const [selectedCategory, setSelectedCategory] = useState('Selecione a categoria desejada');
-  const [selectedAccount, setSelectedAccountType] = useState('Selecione a conta desejada');
+  const [selectedCategory, setSelectedCategory] = useState(income.category);
+  const [selectedAccount, setSelectedAccountType] = useState(
+    userAccounts.find((account) => account.id === accountId)?.acc_name || 'wallet'
+  );
 
   const back = () => {
     navigation.goBack();
@@ -78,6 +122,13 @@ export default function NewIncomeScreen() {
     { name: 'Prêmio', iconName: 'trophy' },
   ];
 
+  const [selectedCategoryIcon, setSelectedCategoryIcon] = useState(
+    categoryList.find((categories) => categories.name === income.category)?.iconName || 'tag'
+  );
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState(
+    accountList.find((account) => account.name === acc_type)?.iconName || 'wallet'
+  );
+
   const handleSnapPressAccount = (index: number) => {
     bottomSheetAccount.current?.snapToIndex(index);
   };
@@ -110,6 +161,66 @@ export default function NewIncomeScreen() {
     bottomSheetCategory.current?.close();
   };
 
+  const handleSaveIncome = () => {
+    // Validação dos campos
+    if (!name.trim()) {
+      Alert.alert('Erro', 'Por favor, insira o nome da receita.');
+      return;
+    }
+
+    if (!amount || parseFloat(amount.replace(',', '.')) <= 0) {
+      Alert.alert('Erro', 'Por favor, insira um valor válido.');
+      return;
+    }
+
+    if (!selectedCategory || selectedCategory === 'Selecione a categoria desejada') {
+      Alert.alert('Erro', 'Por favor, selecione uma categoria.');
+      return;
+    }
+
+    const selectedAccountData = userAccounts.find(
+      (account) => account.acc_name === selectedAccount
+    );
+    if (!selectedAccountData) {
+      Alert.alert('Erro', 'Conta selecionada inválida.');
+      return;
+    }
+
+    const updatedIncome = {
+      id: income.id,
+      inc_name: name,
+      category: selectedCategory,
+      value: parseFloat(amount.replace(',', '.')),
+      date: moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+      fixed,
+      received,
+    };
+
+    if (selectedAccountData.id !== accountId) {
+      const payload = {
+        oldAccountId: accountId,
+        newAccountId: selectedAccountData.id,
+        income: updatedIncome,
+      };
+      console.log('Conta alterada, payload:', payload);
+      // Mostrar alerta de confirmação
+      Alert.alert('Conta Alterada', 'A receita foi movida para outra conta.', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    } else {
+      // Caso a conta não tenha sido alterada
+      const payload = {
+        accountId, // ID da conta atual
+        expense: updatedIncome,
+      };
+
+      console.log('Conta inalterada, payload:', payload);
+      Alert.alert('Sucesso', 'Despesa atualizada com sucesso!', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta o comportamento para iOS e Android
@@ -119,7 +230,7 @@ export default function NewIncomeScreen() {
           <View style={styles.containerTitle}>
             <BackButton onPress={back} />
             <Text variant="headlineMedium" style={[style.title, styles.title]}>
-              Receita
+              Editar Receita
             </Text>
           </View>
           <View style={styles.containerSubtitle}>
@@ -130,8 +241,8 @@ export default function NewIncomeScreen() {
           </View>
           <Container rounded>
             <GlobalSwitch
-              value={paid}
-              onValueChange={(value) => setPaid(value)}
+              value={received}
+              onValueChange={(value) => setReceived(value)}
               label="Recebido"
               color="#37618E" // cor personalizada
               icon="check-circle"
@@ -187,7 +298,7 @@ export default function NewIncomeScreen() {
             />
             <Button
               mode="contained"
-              onPress={back}
+              onPress={handleSaveIncome}
               style={[style.containedButtonDefaultStyle, styles.button]}>
               Salvar
             </Button>
@@ -224,18 +335,25 @@ export default function NewIncomeScreen() {
               <>
                 <BottomSheetView>
                   <Text style={styles.BottomSheetTitle}>Tipo da Conta</Text>
-                  {accountList.map((account) => (
-                    <SelectItem
-                      key={account.name}
-                      label={account.name}
-                      type="categoria"
-                      value={{ name: account.name, imageUri: '' }}
-                      selectedValue={selectedAccount}
-                      onChange={() => handleAccountChange(account)}
-                      iconName={account.iconName}
-                      style={styles.SelectItemInsideModal}
-                    />
-                  ))}
+                  {userAccounts.map((account) => {
+                    const icon =
+                      accountList.find((item) => item.name === account.acc_type)?.iconName ||
+                      'wallet';
+                    return (
+                      <SelectItem
+                        key={account.id}
+                        label={account.acc_name}
+                        type="categoria"
+                        value={{ name: account.acc_name, imageUri: '' }}
+                        selectedValue={selectedAccount}
+                        onChange={() =>
+                          handleAccountChange({ name: account.acc_name, iconName: icon })
+                        }
+                        iconName={icon}
+                        style={styles.SelectItemInsideModal}
+                      />
+                    );
+                  })}
                 </BottomSheetView>
               </>
             }
