@@ -2,7 +2,7 @@
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-import { login, signUp, logout, getUserDataFromFirestore } from '../services/authService';
+import { login, signUp, logout, getStoredUser } from '../services/authService';
 import { saveUserData, getUserData, clearUserData } from '../storage/userStorage';
 
 interface UserContextProps {
@@ -33,10 +33,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUser(currentUser);
         if (currentUser) {
           const cachedData = await getUserData(currentUser.uid);
-          console.log(cachedData);
+          console.log(cachedData.accounts[0].incomes);
           setUserData(cachedData);
 
-          const data = await getUserDataFromFirestore(currentUser.uid);
+          const data = await getStoredUser(currentUser.uid);
           if (data) {
             await saveUserData(currentUser.uid, data);
             setUserData(data);
@@ -57,7 +57,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const loggedInUser = await login(email, password);
       setUser(loggedInUser);
 
-      const data = await getUserDataFromFirestore(loggedInUser.uid);
+      const data = await getStoredUser(loggedInUser.uid);
+      console.log(data);
       if (data) {
         await saveUserData(loggedInUser.uid, data);
         setUserData(data);
@@ -76,7 +77,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const newUser = await signUp(email, password, additionalData);
       setUser(newUser);
 
-      const data = { email, ...additionalData };
+      const data = await getUserData(newUser.uid);
       await saveUserData(newUser.uid, data);
       setUserData(data);
     } catch (error) {
