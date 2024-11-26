@@ -30,21 +30,17 @@ export default function CategoriesScreen() {
   const back = () => {
     console.log('back');
   };
+
   const [selectedType, setSelectedType] = useState<'Despesas' | 'Receitas'>('Despesas');
   const [nameCategory, setNameCategory] = useState('');
-  const [categories, setCategories] = useState<Category[]>([
-    ...expenseCategories.map((cat) => ({ name: cat.name, type: 'Despesas' })),
-    ...incomeCategories.map((cat) => ({ name: cat.name, type: 'Receitas' })),
-  ]);
+  const [userCategories, setUserCategories] = useState<Category[]>([]); // Apenas categorias criadas pelo usuário
 
   const bottomSheetCreateCategory = useRef<BottomSheet>(null);
 
+  const [newCategoryType, setNewCategoryType] = useState<'Despesas' | 'Receitas'>('Despesas');
+
   const handleSnapPressCreateCategory = () => {
     bottomSheetCreateCategory.current?.snapToIndex(0);
-  };
-
-  const handleToggleChange = (selectedOption: string) => {
-    setSelectedType(selectedOption as 'Despesas' | 'Receitas'); // Atualiza o estado com a opção selecionada
   };
 
   const handleCreateCategory = () => {
@@ -55,16 +51,27 @@ export default function CategoriesScreen() {
 
     const newCategory: Category = {
       name: nameCategory.trim(),
-      type: selectedType,
+      type: newCategoryType,
     };
 
-    setCategories((prev) => [...prev, newCategory]); // Adiciona a nova categoria à lista
+    setUserCategories((prev) => [...prev, newCategory]); // Adiciona a nova categoria criada pelo usuário
     setNameCategory(''); // Reseta o campo
     bottomSheetCreateCategory.current?.close(); // Fecha o BottomSheet
+    console.log(newCategory)
   };
 
-  // Categorias exibidas com base no estado
-  const filteredCategories = categories.filter((cat) => cat.type === selectedType);
+  // Categorias exibidas na interface (fixas + criadas pelo usuário)
+  const filteredCategories = [
+    ...userCategories.filter((cat) => cat.type === selectedType), // Categorias criadas pelo usuário
+    ...(selectedType === 'Despesas' ? expenseCategories : incomeCategories), // Categorias fixas
+  ];
+
+  const getCategoryIcon = (categoryName: string) => {
+    // Busca o ícone das categorias fixas ou retorna o ícone padrão
+    const list = selectedType === 'Despesas' ? expenseCategories : incomeCategories;
+    const category = list.find((cat) => cat.name === categoryName);
+    return category?.icon || 'dots-horizontal'; // Ícone padrão para categorias criadas pelo usuário
+  };
 
   return (
     <KeyboardAvoidingView
@@ -77,15 +84,19 @@ export default function CategoriesScreen() {
               <BackButton onPress={back} />
               <Text style={styles.title}>Categorias</Text>
             </View>
-            <ToggleButtonGroup options={['Despesas', 'Receitas']} onChange={handleToggleChange} />
+            <ToggleButtonGroup
+              options={['Despesas', 'Receitas']}
+              value={selectedType} // Passa o estado atual
+              onChange={setSelectedType} // Atualiza o estado
+            />
             <Container rounded style={styles.container}>
               {/* Lista de Categorias */}
               <ScrollView contentContainerStyle={styles.categoriesContainer}>
                 {filteredCategories.map((category, index) => (
                   <CategoryItemComponent
-                    key={`${category.name}-${index}`} // Chave única
-                    categoryName={category.name} // Nome da categoria
-                    categoryIconName={category.type === 'Despesas' ? 'expense' : 'income'} // Ícone baseado no tipo
+                    key={`${category.name}-${index}`}
+                    categoryName={category.name}
+                    categoryIconName={getCategoryIcon(category.name)}
                   />
                 ))}
               </ScrollView>
@@ -121,7 +132,8 @@ export default function CategoriesScreen() {
                     <View>
                       <ToggleButtonGroup
                         options={['Despesas', 'Receitas']}
-                        onChange={(option) => setSelectedType(option as 'Despesas' | 'Receitas')}
+                        onChange={setNewCategoryType} // Sem necessidade de usar `as`
+                        value={newCategoryType}
                       />
                     </View>
                     <View style={styles.buttonContainer}>

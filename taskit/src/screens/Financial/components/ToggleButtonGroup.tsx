@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-interface ToggleButtonGroupProps {
-  options: string[]; // Opções (ex: ["Despesas", "Receitas"])
-  onChange: (selectedOption: string) => void; // Função chamada ao alternar
+interface ToggleButtonGroupProps<T> {
+  options: T[]; // Opções genéricas
+  onChange: (selectedOption: T) => void; // Função chamada ao alternar
+  value: T; // Valor atual selecionado
 }
 
-const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ options, onChange }) => {
-  const [selected, setSelected] = useState(options[0]); // Estado inicial
-
-  const handlePress = (option: string) => {
-    setSelected(option);
-    onChange(option);
-  };
-
+const ToggleButtonGroup = <T extends string>({
+  options,
+  onChange,
+  value,
+}: ToggleButtonGroupProps<T>) => {
   return (
     <View style={styles.container}>
       {options.map((option, index) => (
@@ -21,15 +19,15 @@ const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ options, onChange
           key={option}
           style={[
             styles.button,
-            selected === option && styles.activeButton, // Botão ativo
+            value === option && styles.activeButton, // Botão ativo
             index === 0 ? styles.leftButton : {}, // Estilo do botão esquerdo
             index === options.length - 1 ? styles.rightButton : {}, // Estilo do botão direito
           ]}
-          onPress={() => handlePress(option)}>
+          onPress={() => onChange(option)}>
           <Text
             style={[
               styles.text,
-              selected === option && styles.activeText, // Texto ativo
+              value === option && styles.activeText, // Texto ativo
             ]}>
             {option}
           </Text>
@@ -42,21 +40,21 @@ const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ options, onChange
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderRadius: 15, // Ajuste proporcional para bordas menores
+    borderRadius: 15,
     overflow: 'hidden',
-    backgroundColor: '#e0e0e0', // Cor de fundo padrão
-    alignSelf: 'center', // Centraliza o grupo
-    width: 300, // Define a largura total do grupo
+    backgroundColor: '#e0e0e0',
+    alignSelf: 'center',
+    width: 300,
   },
   button: {
-    flex: 1, // Remove isso para botões mais compactos
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 6, // Reduz a altura
-    backgroundColor: '#e0e0e0', // Fundo padrão do botão
+    paddingVertical: 6,
+    backgroundColor: '#e0e0e0',
   },
   activeButton: {
-    backgroundColor: '#37618E', // Fundo do botão ativo
+    backgroundColor: '#37618E',
   },
   leftButton: {
     borderTopLeftRadius: 15,
@@ -67,13 +65,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 15,
   },
   text: {
-    fontSize: 18, // Reduz o tamanho do texto
-    color: '#555', // Cor do texto padrão
+    fontSize: 18,
+    color: '#555',
   },
   activeText: {
-    color: '#fff', // Cor do texto ativo
+    color: '#fff',
   },
 });
-
 
 export default ToggleButtonGroup;
