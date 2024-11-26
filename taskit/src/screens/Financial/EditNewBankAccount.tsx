@@ -22,8 +22,12 @@ import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
 import { bankList } from '~/utils/bankList';
+import TrashButton from '~/components/TrashButton';
 
-type EditNewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditNewBankAccount'>;
+type EditNewBankAccountScreenNavigationProp = NavigationProp<
+  FinancialStackParamList,
+  'EditNewBankAccount'
+>;
 
 export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
@@ -33,7 +37,6 @@ export default function EditNewBankAccount() {
   const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
   const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
-
 
   const accountTypeList = [
     { name: 'Carteira', iconName: 'wallet' },
@@ -45,6 +48,10 @@ export default function EditNewBankAccount() {
 
   const back = () => {
     navigation.goBack();
+  };
+
+  const handleDelete = () => {
+    console.log('deletar');
   };
 
   //Modal
@@ -84,9 +91,12 @@ export default function EditNewBankAccount() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Editar Conta
-              </Text>
+              <View style={{ flex: 1, alignItems: 'center', marginLeft: 50 }}>
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  Editar Conta
+                </Text>
+              </View>
+              <TrashButton onPress={handleDelete} size={35} />
             </View>
             <View style={styles.containerSubtitle}>
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
@@ -205,12 +215,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',

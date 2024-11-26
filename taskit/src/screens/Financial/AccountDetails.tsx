@@ -32,6 +32,7 @@ import { accountTypeList } from '~/utils/accountTypeList';
 import SelectItem from './components/SelectItem';
 import StaticSelectItem from './components/StaticSelectItem';
 import CircularButton from '~/components/CircularButton';
+import TrashButton from '~/components/TrashButton';
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
 
@@ -66,10 +67,14 @@ export default function AccountDetails() {
   ]);
   const accountId = 'HTFTDk51MRMbxddpSz6g';
   const acc_type = 'Conta Corrente';
+
   const back = () => {
     console.log('back');
   };
 
+  const handleDelete = () => {
+    console.log('deletar');
+  };
   const [selectedAccount, setSelectedAccount] = useState(userAccounts[0]);
 
   const [isEditingBalance, setIsEditingBalance] = useState(false);
@@ -142,9 +147,12 @@ export default function AccountDetails() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Detalhes
-              </Text>
+              <View style={{ flex: 1, alignItems: 'center', marginLeft:50 }}>
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  Detalhes
+                </Text>
+              </View>
+              <TrashButton onPress={handleDelete} size={35} />
             </View>
             <View>
               <SelectorAccount
@@ -281,12 +289,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',
@@ -389,12 +397,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    
+
     paddingHorizontal: 0, // Espaçamento nas laterais
   },
   iconDetails: {
     flex: 1, // Permite que o IconDetails ocupe espaço uniformemente
     marginRight: 16, // Espaçamento do lado direito para o CircularButton
   },
-  
 });
