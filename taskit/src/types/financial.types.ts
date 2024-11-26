@@ -25,3 +25,8 @@ export interface Account {
   incomes: Income[]; // Lista de receitas associadas a esta conta
   balance: number; // Saldo atual da conta
 }
+
+export interface Category{
+  name: string; // Nome da categoria
+  type: string; 
+}

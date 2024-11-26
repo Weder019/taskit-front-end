@@ -1,4 +1,13 @@
-import { StyleSheet, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
 import { ScreenContent } from '~/components/ScreenContent';
 import React, { useRef, useState } from 'react';
 import Container from '~/components/Container';
@@ -9,15 +18,24 @@ import SelectItem from './components/SelectItem';
 import CategoryItemComponent from './components/CategoryItemComponent';
 import ToggleButtonGroup from './components/ToggleButtonGroup';
 import { expenseCategories, incomeCategories } from '~/utils/categoriesList';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
+import GlobalInput from '~/components/GlobalInput';
+import GlobalInputBottomSheet from './components/GlobalInputBottomSheet';
+import { Button } from 'react-native-paper';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { Category } from '~/types/financial.types';
 
 export default function CategoriesScreen() {
   const back = () => {
-    console.log('Back');
+    console.log('back');
   };
-
   const [selectedType, setSelectedType] = useState<'Despesas' | 'Receitas'>('Despesas');
+  const [nameCategory, setNameCategory] = useState('');
+  const [categories, setCategories] = useState<Category[]>([
+    ...expenseCategories.map((cat) => ({ name: cat.name, type: 'Despesas' })),
+    ...incomeCategories.map((cat) => ({ name: cat.name, type: 'Receitas' })),
+  ]);
 
   const bottomSheetCreateCategory = useRef<BottomSheet>(null);
 
@@ -29,53 +47,96 @@ export default function CategoriesScreen() {
     setSelectedType(selectedOption as 'Despesas' | 'Receitas'); // Atualiza o estado com a opção selecionada
   };
 
+  const handleCreateCategory = () => {
+    if (!nameCategory.trim()) {
+      Alert.alert('Erro', 'O nome da categoria não pode estar vazio.');
+      return;
+    }
+
+    const newCategory: Category = {
+      name: nameCategory.trim(),
+      type: selectedType,
+    };
+
+    setCategories((prev) => [...prev, newCategory]); // Adiciona a nova categoria à lista
+    setNameCategory(''); // Reseta o campo
+    bottomSheetCreateCategory.current?.close(); // Fecha o BottomSheet
+  };
+
   // Categorias exibidas com base no estado
-  const categories = selectedType === 'Despesas' ? expenseCategories : incomeCategories;
+  const filteredCategories = categories.filter((cat) => cat.type === selectedType);
 
   return (
-    <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <ScreenContent>
-          <View style={styles.containerTitle}>
-            <BackButton onPress={back} />
-            <Text style={styles.title}>Categorias</Text>
-          </View>
-          <ToggleButtonGroup options={['Despesas', 'Receitas']} onChange={handleToggleChange} />
-          <Container rounded style={styles.container}>
-            {/* Lista de Categorias */}
-            <ScrollView contentContainerStyle={styles.categoriesContainer}>
-              {categories.map((category) => (
-                <CategoryItemComponent
-                  key={category.name} // Chave única
-                  categoryName={category.name} // Nome da categoria
-                  categoryIconName={category.icon} // Nome do ícone
-                />
-              ))}
-            </ScrollView>
-            <CircularButton
-              onPress={() => handleSnapPressCreateCategory()}
-              iconName="plus"
-              size={48}
-              style={styles.circularButton}
-            />
-          </Container>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta o comportamento para iOS e Android
+      style={styles.keyboardAvoidingView}>
+      <View style={styles.screen}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <ScreenContent>
+            <View style={styles.containerTitle}>
+              <BackButton onPress={back} />
+              <Text style={styles.title}>Categorias</Text>
+            </View>
+            <ToggleButtonGroup options={['Despesas', 'Receitas']} onChange={handleToggleChange} />
+            <Container rounded style={styles.container}>
+              {/* Lista de Categorias */}
+              <ScrollView contentContainerStyle={styles.categoriesContainer}>
+                {filteredCategories.map((category, index) => (
+                  <CategoryItemComponent
+                    key={`${category.name}-${index}`} // Chave única
+                    categoryName={category.name} // Nome da categoria
+                    categoryIconName={category.type === 'Despesas' ? 'expense' : 'income'} // Ícone baseado no tipo
+                  />
+                ))}
+              </ScrollView>
+              <CircularButton
+                onPress={() => handleSnapPressCreateCategory()}
+                iconName="plus"
+                size={48}
+                style={styles.circularButton}
+              />
+            </Container>
 
-          <CustomBottomSheet
-            ref={bottomSheetCreateCategory}
-            snapPoints={['40%']}
-            children={
-              <>
-                <BottomSheetView>
-                  <View>
-                    <Text>Titulo</Text>
-                  </View>
-                </BottomSheetView>
-              </>
-            }
-          />
-        </ScreenContent>
-      </ScrollView>
-    </View>
+            <CustomBottomSheet
+              ref={bottomSheetCreateCategory}
+              snapPoints={['40%', '60%']}
+              children={
+                <>
+                  <BottomSheetView>
+                    <View>
+                      <Text style={styles.BottomSheetTitle}>Criar nova categoria</Text>
+                    </View>
+                    <View>
+                      <GlobalInputBottomSheet
+                        label=""
+                        value={nameCategory}
+                        onChangeText={(text) => setNameCategory(text)}
+                        placeholder="Digite o nome da categoria"
+                        prefixIcon="category"
+                        error={false}
+                        errorMessage=""
+                        style={styles.input}
+                      />
+                    </View>
+                    <View>
+                      <ToggleButtonGroup
+                        options={['Despesas', 'Receitas']}
+                        onChange={(option) => setSelectedType(option as 'Despesas' | 'Receitas')}
+                      />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity style={styles.createButton} onPress={handleCreateCategory}>
+                        <Text style={styles.buttonText}>Criar</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </BottomSheetView>
+                </>
+              }
+            />
+          </ScreenContent>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -157,5 +218,34 @@ const styles = StyleSheet.create({
     bottom: 20, // Distância da parte inferior
     right: 20, // Distância da borda direita
     backgroundColor: '#37618E', // Cor de fundo do botão
+  },
+  BottomSheetTitle: {
+    fontSize: 20,
+    alignSelf: 'center',
+    marginTop: 15,
+  },
+  input: {
+    marginBottom: 25, // Espaço entre os inputs
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: 25,
+  },
+  keyboardAvoidingView: {
+    flex: 1, // Ocupar o espaço inteiro
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  createButton: {
+    backgroundColor: '#37618E',
+    padding: 10,
+    borderRadius: 8,
+    width: '50%',
+    alignItems: 'center',
   },
 });
