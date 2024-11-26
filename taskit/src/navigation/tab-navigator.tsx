@@ -6,7 +6,7 @@ import { RootStackParamList } from '.';
 import FinancialNavigator from './finacial-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
 import NewExpenseScreen from '../screens/Financial/NewExpense';
-import Three from '../screens/three' ;
+import Three from '../screens/three';
 
 import NewBankAccount from '~/screens/Financial/NewBankAccount';
 import NewIncomeScreen from '~/screens/Financial/NewIncome';
@@ -14,11 +14,8 @@ import EditExpenseScreen from '~/screens/Financial/EditExpense';
 import EditIncomeScreen from '~/screens/Financial/EditIncome';
 import EditNewBankAccount from '~/screens/Financial/EditNewBankAccount';
 import AccountDetails from '~/screens/Financial/AccountDetails';
-import TransactionsScreen from '~/screens/TransactionScreen';
+import TransactionsScreen from '~/screens/Financial/TransactionScreen';
 import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
-import CategoryItem from '~/screens/Categories/Components/CategoryItem';
-
-
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +37,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={CategoriesScreen}
+        component={TransactionsScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
