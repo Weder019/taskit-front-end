@@ -54,3 +54,7 @@ export interface User {
   categories?: string[]; // Lista de categorias personalizadas
   tasks?: Task[]; // Lista de tarefas do usuário
 }
+export interface Category{
+  name: string;
+  type: string;
+}
