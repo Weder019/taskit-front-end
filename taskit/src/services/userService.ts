@@ -1,6 +1,7 @@
 import { httpsCallable } from 'firebase/functions';
-import { functions } from '../utils/firebase'; // Certifique-se de ajustar o caminho para sua configuração Firebase
+
 import { User } from '../types/models'; // Certifique-se de ajustar o caminho para o modelo User
+import { functions } from '../utils/firebase'; // Certifique-se de ajustar o caminho para sua configuração Firebase
 
 // Tipos auxiliares para os retornos das funções
 interface CreateUserResponse {

@@ -1,4 +1,3 @@
-// src/context/UserContext.tsx
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
@@ -12,6 +11,7 @@ interface UserContextProps {
   login: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalData: any) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUserData: () => Promise<void>; // Nova função
 }
 
 interface UserProviderProps {
@@ -102,6 +102,31 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const refreshUserData = async () => {
+    setLoading(true);
+    try {
+      if (!user) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      // Busca os dados atualizados do Firestore
+      const updatedData = await getStoredUser(user.uid);
+
+      if (updatedData) {
+        // Salva os dados no AsyncStorage
+        await saveUserData(user.uid, updatedData);
+
+        // Atualiza o estado global
+        setUserData(updatedData);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar os dados do usuário:', error);
+      throw error; // Caso precise tratar o erro no componente
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -111,6 +136,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         login: handleLogin,
         signUp: handleSignUp,
         logout: handleLogout,
+        refreshUserData,
       }}>
       {children}
     </UserContext.Provider>

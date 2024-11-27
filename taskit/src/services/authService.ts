@@ -5,10 +5,11 @@ import {
   signOut,
   User,
 } from 'firebase/auth';
+
 import { getUser, createUser as createFirestoreUser } from './userService'; // userService lida com Firestore
 import { saveUserData, getUserData, clearUserData } from '../storage/userStorage'; // Armazenamento local
+import { User as UserType } from '../types/models';
 import { auth } from '../utils/firebase'; // Configuração do Firebase
-import { User as UserType } from "../types/models";
 
 // Login do usuário
 export const login = async (email: string, password: string): Promise<User> => {
