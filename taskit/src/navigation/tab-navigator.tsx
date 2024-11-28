@@ -9,9 +9,10 @@ import { TabBarIcon } from '../components/TabBarIcon';
 import NewExpenseScreen from '../screens/Financial/NewExpense';
 import Three from '../screens/three';
 
+import { useUser } from '~/context/UserContext';
 import AccountDetails from '~/screens/Financial/AccountDetails';
-import TransactionsScreen from '~/screens/Financial/TransactionScreen';
 import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
+import TransactionsScreen from '~/screens/Financial/TransactionScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,21 +21,6 @@ type Props = StackScreenProps<RootStackParamList, 'TabNavigator'>;
 export default function TabLayout({ navigation }: Props) {
   const { refreshUserData } = useUser();
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        try {
-          console.log('Atualizando dados do usuário...');
-          await refreshUserData();
-          console.log('Dados do usuário atualizados com sucesso!');
-        } catch (error) {
-          console.error('Erro ao atualizar os dados do usuário:', error);
-        }
-      };
-
-      fetchData();
-    }, [])
-  );
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
