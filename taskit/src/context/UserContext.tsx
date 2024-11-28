@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 
 import { login, signUp, logout, getStoredUser } from '../services/authService';
 import { saveUserData, getUserData, clearUserData } from '../storage/userStorage';
+import { getUser } from '~/services/userService';
 
 interface UserContextProps {
   user: User | null;
@@ -40,6 +41,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           if (data) {
             await saveUserData(currentUser.uid, data);
             setUserData(data);
+            await refreshUserData();
           }
         } else {
           setUserData(null);
@@ -110,7 +112,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
 
       // Busca os dados atualizados do Firestore
-      const updatedData = await getStoredUser(user.uid);
+      const updatedData = await getUser(user.uid);
+      console.log(updatedData);
 
       if (updatedData) {
         // Salva os dados no AsyncStorage
