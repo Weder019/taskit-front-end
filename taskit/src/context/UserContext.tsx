@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 
 import { login, signUp, logout, getStoredUser } from '../services/authService';
 import { saveUserData, getUserData, clearUserData } from '../storage/userStorage';
+import { getUser } from '~/services/userService';
 
 interface UserContextProps {
   user: User | null;
@@ -11,7 +12,7 @@ interface UserContextProps {
   login: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalData: any) => Promise<void>;
   logout: () => Promise<void>;
-  refreshUserData: () => Promise<void>; // Nova função
+  refreshUserData: (uid: string) => Promise<void>; // Nova função
 }
 
 interface UserProviderProps {
@@ -33,13 +34,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUser(currentUser);
         if (currentUser) {
           const cachedData = await getUserData(currentUser.uid);
-          console.log(cachedData.accounts[0].incomes);
           setUserData(cachedData);
 
           const data = await getStoredUser(currentUser.uid);
           if (data) {
             await saveUserData(currentUser.uid, data);
             setUserData(data);
+            await refreshUserData(currentUser.uid);
           }
         } else {
           setUserData(null);
@@ -102,19 +103,20 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  const refreshUserData = async () => {
+  const refreshUserData = async (uid: string) => {
     setLoading(true);
     try {
-      if (!user) {
-        throw new Error('Usuário não autenticado');
+      if (!uid) {
+        throw new Error('UID não fornecido');
       }
 
-      // Busca os dados atualizados do Firestore
-      const updatedData = await getStoredUser(user.uid);
+      // Busca os dados atualizados do Firestore usando o UID fornecido
+      const updatedData = await getUser(uid);
+      console.log(uid);
 
       if (updatedData) {
         // Salva os dados no AsyncStorage
-        await saveUserData(user.uid, updatedData);
+        await saveUserData(uid, updatedData);
 
         // Atualiza o estado global
         setUserData(updatedData);

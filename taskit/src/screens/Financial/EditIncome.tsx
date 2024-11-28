@@ -23,6 +23,7 @@ import CustomBottomSheet from '~/components/CustomBottomSheet';
 import QuantitySelector from './components/QuantitySelector';
 import SelectItem from './components/SelectItem';
 import { Account } from '~/types/financial.types';
+import TrashButton from '~/components/TrashButton';
 moment.locale('pt-br');
 
 type EditIncomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditIncome'>;
@@ -91,6 +92,10 @@ export default function EditIncomeScreen() {
 
   const back = () => {
     navigation.goBack();
+  };
+
+  const handleDelete = () => {
+    console.log('deletar');
   };
 
   const bottomSheetAccount = useRef<BottomSheet>(null);
@@ -229,9 +234,12 @@ export default function EditIncomeScreen() {
         <ScreenContent>
           <View style={styles.containerTitle}>
             <BackButton onPress={back} />
-            <Text variant="headlineMedium" style={[style.title, styles.title]}>
-              Editar Receita
-            </Text>
+            <View style={{ flex: 1, alignItems: 'center', marginLeft: 55 }}>
+              <Text variant="headlineMedium" style={[style.title, styles.title]}>
+                Editar Receita
+              </Text>
+            </View>
+            <TrashButton onPress={handleDelete} size={35} />
           </View>
           <View style={styles.containerSubtitle}>
             <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>
@@ -409,12 +417,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',

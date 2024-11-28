@@ -56,54 +56,54 @@ export const deleteAccount = async (accountId: string): Promise<string> => {
   }
 };
 
-// Obtém uma conta específica
-export const getAccount = async (accountId: string): Promise<Account> => {
-  try {
-    const getAccountCallable = httpsCallable<
-      { accountId: string },
-      { message: string; account: Account }
-    >(functions, 'getAccount');
+// // Obtém uma conta específica
+// export const getAccount = async (accountId: string): Promise<Account> => {
+//   try {
+//     const getAccountCallable = httpsCallable<
+//       { accountId: string },
+//       { message: string; account: Account }
+//     >(functions, 'getAccount');
 
-    const response = await getAccountCallable({ accountId });
-    return response.data.account;
-  } catch (error) {
-    console.error('Erro ao obter conta:', error);
-    throw error;
-  }
-};
+//     const response = await getAccountCallable({ accountId });
+//     return response.data.account;
+//   } catch (error) {
+//     console.error('Erro ao obter conta:', error);
+//     throw error;
+//   }
+// };
 
-// Obtém todas as contas do usuário
-export const getAllAccounts = async (): Promise<Account[]> => {
-  try {
-    const getAllAccountsCallable = httpsCallable<object, { message: string; accounts: Account[] }>(
-      functions,
-      'getAllAccounts'
-    );
+// // Obtém todas as contas do usuário
+// export const getAllAccounts = async (): Promise<Account[]> => {
+//   try {
+//     const getAllAccountsCallable = httpsCallable<object, { message: string; accounts: Account[] }>(
+//       functions,
+//       'getAllAccounts'
+//     );
 
-    const response = await getAllAccountsCallable({});
-    return response.data.accounts;
-  } catch (error) {
-    console.error('Erro ao obter todas as contas:', error);
-    throw error;
-  }
-};
+//     const response = await getAllAccountsCallable({});
+//     return response.data.accounts;
+//   } catch (error) {
+//     console.error('Erro ao obter todas as contas:', error);
+//     throw error;
+//   }
+// };
 
-// Atualiza o saldo de uma conta específica
-export const updateAccountBalance = async (
-  accountId: string,
-  value: number,
-  operation: 'add' | 'subtract'
-): Promise<string> => {
-  try {
-    const updateAccountBalanceCallable = httpsCallable<
-      { accountId: string; value: number; operation: 'add' | 'subtract' },
-      { message: string }
-    >(functions, 'updateAccountBalance');
+// // Atualiza o saldo de uma conta específica
+// export const updateAccountBalance = async (
+//   accountId: string,
+//   value: number,
+//   operation: 'add' | 'subtract'
+// ): Promise<string> => {
+//   try {
+//     const updateAccountBalanceCallable = httpsCallable<
+//       { accountId: string; value: number; operation: 'add' | 'subtract' },
+//       { message: string }
+//     >(functions, 'updateAccountBalance');
 
-    const response = await updateAccountBalanceCallable({ accountId, value, operation });
-    return response.data.message;
-  } catch (error) {
-    console.error('Erro ao atualizar saldo da conta:', error);
-    throw error;
-  }
-};
+//     const response = await updateAccountBalanceCallable({ accountId, value, operation });
+//     return response.data.message;
+//   } catch (error) {
+//     console.error('Erro ao atualizar saldo da conta:', error);
+//     throw error;
+//   }
+// };

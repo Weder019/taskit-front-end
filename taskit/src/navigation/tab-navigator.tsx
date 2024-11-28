@@ -1,30 +1,26 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import React, { useCallback } from 'react';
 
 import { RootStackParamList } from '.';
 import FinancialNavigator from './finacial-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
 import NewExpenseScreen from '../screens/Financial/NewExpense';
-import Three from '../screens/three' ;
+import Three from '../screens/three';
 
-import NewBankAccount from '~/screens/Financial/NewBankAccount';
-import NewIncomeScreen from '~/screens/Financial/NewIncome';
-import EditExpenseScreen from '~/screens/Financial/EditExpense';
-import EditIncomeScreen from '~/screens/Financial/EditIncome';
-import EditNewBankAccount from '~/screens/Financial/EditNewBankAccount';
+import { useUser } from '~/context/UserContext';
 import AccountDetails from '~/screens/Financial/AccountDetails';
-import TransactionsScreen from '~/screens/TransactionScreen';
 import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
-import CategoryItem from '~/screens/Categories/Components/CategoryItem';
-
-
+import TransactionsScreen from '~/screens/Financial/TransactionScreen';
 
 const Tab = createBottomTabNavigator();
 
 type Props = StackScreenProps<RootStackParamList, 'TabNavigator'>;
 
 export default function TabLayout({ navigation }: Props) {
+  const { refreshUserData } = useUser();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -40,7 +36,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={CategoriesScreen}
+        component={TransactionsScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,

@@ -13,7 +13,7 @@ export interface Income {
   value: number;
   date: string; // Ex: "10/10/2024"
   fixed: boolean; // Se é uma receita fixa
-  received: boolean;
+  paid: boolean;
 }
 
 export interface Account {
@@ -24,4 +24,19 @@ export interface Account {
   expenses: Expense[]; // Lista de despesas associadas a esta conta
   incomes: Income[]; // Lista de receitas associadas a esta conta
   balance: number; // Saldo atual da conta
+}
+
+export interface Transaction {
+  id: string;
+  date: string;
+  category: string;
+  value: number;
+  paid: boolean;
+  exp_name?: string; // Nome da despesa (opcional porque será usado apenas para despesas)
+  inc_name?: string; // Nome da receita (opcional porque será usado apenas para receitas)
+}
+
+export interface Category{
+  name: string; // Nome da categoria
+  type: string; 
 }

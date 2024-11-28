@@ -66,10 +66,14 @@ export default function AccountDetails() {
   ]);
   const accountId = 'HTFTDk51MRMbxddpSz6g';
   const acc_type = 'Conta Corrente';
+
   const back = () => {
     console.log('back');
   };
 
+  const handleDelete = () => {
+    console.log('deletar');
+  };
   const [selectedAccount, setSelectedAccount] = useState(userAccounts[0]);
 
   const [isEditingBalance, setIsEditingBalance] = useState(false);
@@ -142,9 +146,11 @@ export default function AccountDetails() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Detalhes
-              </Text>
+              <View style={{ flex: 1, alignItems: 'center', marginLeft:50 }}>
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  Detalhes
+                </Text>
+              </View>
             </View>
             <View>
               <SelectorAccount
@@ -281,12 +287,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',

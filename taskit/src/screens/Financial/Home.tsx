@@ -42,6 +42,7 @@ export default function FinancialHome() {
   const navigation = useNavigation<FinancialHomeScreenNavigationProp>();
 
   console.log(userData.accounts);
+
   return (
     <ScreenContent style={{ justifyContent: 'flex-start' }}>
       <ScrollView style={{ width: '100%' }} contentContainerStyle={styles.scrollContainer}>
