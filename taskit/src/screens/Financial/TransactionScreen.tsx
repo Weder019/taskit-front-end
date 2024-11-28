@@ -36,26 +36,160 @@ const userData = {
       acc_type: 'Conta Corrente',
       bank: 'nubank',
       expenses: [
-        { exp_name: 'Placa mãe', category: 'Eletrônicos', value: 704, date: '2024-11-20', paid: false, id: '1' },
-        { exp_name: 'Aluguel', category: 'Casa', value: 500, date: '2024-09-10', paid: false, id: '2' },
-        { exp_name: 'Camisetas', category: 'Vestuário', value: 600, date: '2024-11-10', paid: true, id: '3' },
-        { exp_name: 'Supermercado', category: 'Supermercado', value: 250, date: '2024-11-05', paid: true, id: '4' },
-        { exp_name: 'Netflix', category: 'Lazer', value: 40, date: '2024-11-01', paid: true, id: '5' },
-        { exp_name: 'Restaurante', category: 'Restaurantes', value: 180, date: '2024-11-18', paid: false, id: '6' },
-        { exp_name: 'Internet', category: 'Serviços', value: 120, date: '2024-11-15', paid: true, id: '7' },
-        { exp_name: 'Uber', category: 'Transporte', value: 45, date: '2024-11-22', paid: false, id: '8' },
-        { exp_name: 'Academia', category: 'Saúde', value: 99, date: '2024-11-07', paid: true, id: '9' },
-        { exp_name: 'Cafeteria', category: 'Lazer', value: 20, date: '2024-11-03', paid: true, id: '10' },
-        { exp_name: 'Conta de Luz', category: 'Casa', value: 180, date: '2024-11-25', paid: false, id: '11' },
+        {
+          exp_name: 'Placa mãe',
+          category: 'Eletrônicos',
+          value: 704,
+          date: '2024-11-20',
+          paid: true,
+          id: '1',
+        },
+        {
+          exp_name: 'Aluguel',
+          category: 'Casa',
+          value: 500,
+          date: '2024-09-10',
+          paid: false,
+          id: '2',
+        },
+        {
+          exp_name: 'Camisetas',
+          category: 'Vestuário',
+          value: 600,
+          date: '2024-11-10',
+          paid: true,
+          id: '3',
+        },
+        {
+          exp_name: 'Supermercado',
+          category: 'Supermercado',
+          value: 250,
+          date: '2024-11-05',
+          paid: true,
+          id: '4',
+        },
+        {
+          exp_name: 'Netflix',
+          category: 'Lazer',
+          value: 40,
+          date: '2024-11-01',
+          paid: true,
+          id: '5',
+        },
+        {
+          exp_name: 'Restaurante',
+          category: 'Restaurantes',
+          value: 180,
+          date: '2024-11-18',
+          paid: false,
+          id: '6',
+        },
+        {
+          exp_name: 'Internet',
+          category: 'Serviços',
+          value: 120,
+          date: '2024-11-15',
+          paid: true,
+          id: '7',
+        },
+        {
+          exp_name: 'Uber',
+          category: 'Transporte',
+          value: 45,
+          date: '2024-11-22',
+          paid: false,
+          id: '8',
+        },
+        {
+          exp_name: 'Academia',
+          category: 'Saúde',
+          value: 99,
+          date: '2024-11-07',
+          paid: true,
+          id: '9',
+        },
+        {
+          exp_name: 'Cafeteria',
+          category: 'Lazer',
+          value: 20,
+          date: '2024-11-03',
+          paid: true,
+          id: '10',
+        },
+        {
+          exp_name: 'Conta de Luz',
+          category: 'Casa',
+          value: 180,
+          date: '2024-11-25',
+          paid: false,
+          id: '11',
+        },
       ],
       incomes: [
-        { inc_name: 'Salário', category: 'Salário', value: 5000, date: '2024-11-05', paid: true, id: '21' },
-        { inc_name: 'Freelance', category: 'Outros', value: 700, date: '2024-11-08', paid: false, id: '22' },
-        { inc_name: 'Aluguel de Imóvel', category: 'Investimentos', value: 1200, date: '2024-11-15', paid: true, id: '23' },
-        { inc_name: 'Pix de Amigo', category: 'Outros', value: 50, date: '2024-11-19', paid: true, id: '24' },
-        { inc_name: 'Cashback', category: 'Outros', value: 30, date: '2024-11-11', paid: true, id: '25' },
-        { inc_name: 'Venda Online', category: 'Outros', value: 500, date: '2024-11-20', paid: false, id: '26' },
-        { inc_name: 'Prêmio', category: 'Prêmio', value: 100, date: '2024-11-03', paid: true, id: '27' },
+        {
+          inc_name: 'Salário',
+          category: 'Salário',
+          value: 5000,
+          date: '2024-11-05',
+          paid: true,
+          id: '21',
+        },
+        {
+          inc_name: 'Freelance',
+          category: 'Outros',
+          value: 700,
+          date: '2024-11-08',
+          paid: false,
+          id: '22',
+        },
+        {
+          inc_name: 'Freelance',
+          category: 'Outros',
+          value: 700,
+          date: '2024-12-12',
+          paid: true,
+          id: '222',
+        },
+        {
+          inc_name: 'Aluguel de Imóvel',
+          category: 'Investimentos',
+          value: 1200,
+          date: '2024-11-15',
+          paid: true,
+          id: '23',
+        },
+        {
+          inc_name: 'Pix de Amigo',
+          category: 'Outros',
+          value: 50,
+          date: '2024-11-19',
+          paid: true,
+          id: '24',
+        },
+        {
+          inc_name: 'Cashback',
+          category: 'Outros',
+          value: 30,
+          date: '2024-11-11',
+          paid: true,
+          id: '25',
+        },
+        {
+          inc_name: 'Venda Online',
+          category: 'Outros',
+          value: 500,
+          date: '2024-11-20',
+          paid: false,
+          id: '26',
+        },
+        {
+          inc_name: 'Prêmio',
+          category: 'Prêmio',
+          value: 100,
+          date: '2024-11-03',
+          paid: true,
+          id: '27',
+        },
       ],
       balance: 6901,
     },
@@ -163,13 +297,14 @@ export default function TransactionsScreen() {
         </Text>
       </View>
       <View style={styles.transactionValueContainer}>
-        <Text style={[styles.transactionValue, { color: 'exp_name' in item ? 'red' : 'green' }]}>
+        <Text
+          style={[styles.transactionValue, { color: 'exp_name' in item ? '#c44c4e' : '#639e64' }]}>
           R$ {item.value.toFixed(2)}
         </Text>
         <IconButton
           icon={item.paid ? 'check-circle' : 'pin-off'}
           size={18}
-          iconColor={item.paid ? 'green' : 'red'}
+          iconColor={item.paid ? '#639e64' : '#c44c4e'}
         />
       </View>
     </View>
@@ -224,40 +359,63 @@ export default function TransactionsScreen() {
   };
 
   const calculateTransactionTotals = () => {
-    const totalBalance = userData.accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    const allAccounts = userData.accounts;
 
-    const balanceMonthly = transactions.reduce((sum, t) => sum + t.value, 0);
+    let totalBalance = 0; // Saldo total acumulado até o mês de referência
+    let balanceMonthly = 0; // Balanço do mês de referência (receitas - despesas)
 
-    if (currentMonth.isBefore(moment(), 'month')) {
-      // Mês Passado
-      const endOfMonth =
-        transactions.filter((t) => t.paid).reduce((sum, t) => sum + t.value, 0) + totalBalance;
+    allAccounts.forEach((account) => {
+      // Transações até o último dia do mês de referência
+      const pastTransactions = [...account.expenses, ...account.incomes].filter(
+        (tran) => moment(tran.date).isSameOrBefore(currentMonth, 'month') && tran.paid
+      );
 
-      return { totalBalance: endOfMonth, balanceMonthly };
-    } else if (currentMonth.isAfter(moment(), 'month')) {
-      // Mês Futuro
-      const forecastedBalance =
-        totalBalance + transactions.reduce((sum, t) => (t.paid ? 0 : sum + t.value), 0);
+      // Transações específicas do mês de referência
+      const monthlyTransactions = [...account.expenses, ...account.incomes].filter((tran) =>
+        moment(tran.date).isSame(currentMonth, 'month')
+      );
 
-      return { totalBalance: forecastedBalance, balanceMonthly };
-    } else {
-      // Mês Atual
-      return { totalBalance, balanceMonthly };
-    }
+      // Saldo final do mês (acumulado até o último dia do mês de referência)
+      const pastExpenses = pastTransactions
+        .filter((tran) => 'exp_name' in tran)
+        .reduce((sum, tran) => sum + tran.value, 0);
+
+      const pastIncomes = pastTransactions
+        .filter((tran) => 'inc_name' in tran)
+        .reduce((sum, tran) => sum + tran.value, 0);
+
+      totalBalance += pastIncomes - pastExpenses;
+
+      // Balanço mensal (receitas - despesas do mês de referência)
+      const monthlyExpenses = monthlyTransactions
+        .filter((tran) => 'exp_name' in tran)
+        .reduce((sum, tran) => sum + tran.value, 0);
+
+      const monthlyIncomes = monthlyTransactions
+        .filter((tran) => 'inc_name' in tran)
+        .reduce((sum, tran) => sum + tran.value, 0);
+
+      balanceMonthly += monthlyIncomes - monthlyExpenses;
+    });
+
+    return { totalBalance, balanceMonthly };
   };
 
   const renderCards = () => {
+    const { totalBalance, balanceMonthly } = calculateTransactionTotals();
     if (selectedOption === 'expenses') {
       const { totalPending, totalPaid } = calculateExpenseTotals();
       return (
         <View style={styles.cardsContainer}>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Total Pendente:</Text>
-            <Text style={styles.cardValue}>R$ {totalPending.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: '#c44c4e' }]}>
+              R$ {totalPending.toFixed(2)}
+            </Text>
           </View>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Total Pago:</Text>
-            <Text style={styles.cardValue}>R$ {totalPaid.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: '#c44c4e' }]}>R$ {totalPaid.toFixed(2)}</Text>
           </View>
         </View>
       );
@@ -269,33 +427,45 @@ export default function TransactionsScreen() {
         <View style={styles.cardsContainer}>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Total Pendente:</Text>
-            <Text style={styles.cardValue}>R$ {totalPending.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: '#639e64' }]}>
+              R$ {totalPending.toFixed(2)}
+            </Text>
           </View>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Total Recebido:</Text>
-            <Text style={styles.cardValue}>R$ {totalReceived.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: '#639e64' }]}>
+              R$ {totalReceived.toFixed(2)}
+            </Text>
           </View>
         </View>
       );
     }
 
     if (selectedOption === 'transactions') {
-      const { totalBalance, balanceMonthly } = calculateTransactionTotals();
       const label1 = currentMonth.isBefore(moment(), 'month')
         ? 'Final do Mês'
         : currentMonth.isAfter(moment(), 'month')
           ? 'Saldo Previsto'
           : 'Saldo Atual';
       const label2 = 'Balanço Mensal';
+
+      // Cores dinâmicas
+      const balanceColor = totalBalance >= 0 ? '#639e64' : '#c44c4e';
+      const monthlyColor = balanceMonthly >= 0 ? '#639e64' : '#c44c4e';
+
       return (
         <View style={styles.cardsContainer}>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{label1}:</Text>
-            <Text style={styles.cardValue}>R$ {totalBalance.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: balanceColor }]}>
+              R$ {totalBalance.toFixed(2)}
+            </Text>
           </View>
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{label2}:</Text>
-            <Text style={styles.cardValue}>R$ {balanceMonthly.toFixed(2)}</Text>
+            <Text style={[styles.cardValue, { color: monthlyColor }]}>
+              R$ {balanceMonthly.toFixed(2)}
+            </Text>
           </View>
         </View>
       );
@@ -317,27 +487,28 @@ export default function TransactionsScreen() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[style.title, styles.title]}>
-                Transações
-              </Text>
-            </View>
-            <View style={styles.toggleContainer}>
               <TransactionDropdown
                 selectedOption={selectedOption}
                 setSelectedOption={setSelectedOption}
               />
             </View>
+            {/* <View style={styles.toggleContainer}>
+              <TransactionDropdown
+                selectedOption={selectedOption}
+                setSelectedOption={setSelectedOption}
+              />
+            </View> */}
             <View style={styles.monthNavigator}>
               <IconButton
                 icon="chevron-left"
-                size={24}
+                size={22}
                 onPress={() => setCurrentMonth(currentMonth.clone().subtract(1, 'month'))}
                 iconColor="#fff" // Cor baseada no tema
               />
               <Text style={styles.monthNavigatorText}>{currentMonth.format('MMMM YYYY')}</Text>
               <IconButton
                 icon="chevron-right"
-                size={24}
+                size={22}
                 onPress={() => setCurrentMonth(currentMonth.clone().add(1, 'month'))}
                 iconColor="#fff" // Cor baseada no tema
               />
@@ -349,7 +520,7 @@ export default function TransactionsScreen() {
             rounded
             style={{
               flex: 1,
-              minHeight: screenHeight * 0.75,
+              minHeight: screenHeight * 0.8,
               borderTopLeftRadius: 30,
               borderTopRightRadius: 30,
               overflow: 'hidden',
@@ -390,6 +561,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     position: 'relative',
+    marginBottom: 40,
   },
   title: {
     fontSize: 28,
@@ -404,7 +576,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 0,
   },
   monthNavigatorText: {
     fontSize: 20,
@@ -445,6 +617,7 @@ const styles = StyleSheet.create({
   },
   transactionValue: {
     fontSize: 17,
+    fontWeight: 'bold',
   },
   cardsContainer: {
     flexDirection: 'row',

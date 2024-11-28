@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   text: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#fff', // Ajuste para o tema
   },
