@@ -2,15 +2,17 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import React from 'react';
 import { ScrollView, Text, StyleSheet } from 'react-native';
 
+import AccountList from './components/AccountList';
+import BalanceSummary from './components/BalanceSummary';
+import ExpensesByCategoryCard from './components/ExpenseByCategoryChart';
+import IncomeExpenseSummary from './components/IncomeExpenseSummary';
+import MonthSelector from './components/MonthSelector';
+import { useUser } from '../../context/UserContext';
+
 import GlobalCard from '~/components/GlobalCard';
 import GlobalHeaderContainer from '~/components/GlobalHeaderContainer';
 import { ScreenContent } from '~/components/ScreenContent';
 import { FinancialStackParamList } from '~/navigation/finacial-navigator';
-import MonthSelector from './components/MonthSelector';
-import BalanceSummary from './components/BalanceSummary';
-import IncomeExpenseSummary from './components/IncomeExpenseSummary';
-import AccountList from './components/AccountList';
-import ExpensesByCategoryCard from './components/ExpenseByCategoryChart';
 
 type FinancialHomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'FinancialHome'>;
 
@@ -36,7 +38,10 @@ const data = [
 ];
 
 export default function FinancialHome() {
+  const { user, userData, refreshUserData } = useUser();
   const navigation = useNavigation<FinancialHomeScreenNavigationProp>();
+
+  console.log(userData.accounts);
 
   return (
     <ScreenContent style={{ justifyContent: 'flex-start' }}>
@@ -54,13 +59,13 @@ export default function FinancialHome() {
         </GlobalHeaderContainer>
 
         <Text style={styles.label}>Contas</Text>
-        <AccountList accounts={accounts} />
+        <AccountList accounts={userData.accounts} />
 
         <Text style={styles.label}>Despesas por categoria</Text>
         <ExpensesByCategoryCard title="Despesas por categoria" data={data} />
 
         <Text style={styles.label}>Transações</Text>
-        <AccountList accounts={accounts} />
+        <AccountList accounts={userData.accounts} />
       </ScrollView>
     </ScreenContent>
   );

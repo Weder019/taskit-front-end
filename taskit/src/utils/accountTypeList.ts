@@ -7,6 +7,7 @@ export const accountTypeList = [
 ];
 
 export function getIcon(iconName: string): string | null {
+  console.log(iconName);
   const icon = accountTypeList.find((i) => i.name.toLowerCase() === iconName.toLowerCase());
   return icon?.iconName || null;
 }

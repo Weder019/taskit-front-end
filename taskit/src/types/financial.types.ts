@@ -35,3 +35,8 @@ export interface Transaction {
   exp_name?: string; // Nome da despesa (opcional porque será usado apenas para despesas)
   inc_name?: string; // Nome da receita (opcional porque será usado apenas para receitas)
 }
+
+export interface Category{
+  name: string; // Nome da categoria
+  type: string; 
+}

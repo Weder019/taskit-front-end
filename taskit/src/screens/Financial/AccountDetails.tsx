@@ -1,3 +1,8 @@
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import {
@@ -10,28 +15,23 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-
-import { Icon, Button, Text } from 'react-native-paper';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Container from '../../components/Container';
-import { getBankImageUri } from '~/utils/bankList';
-import { BackButton } from '~/components/BackButton';
-import { ScreenContent } from '~/components/ScreenContent';
+import { Icon, Button, Text } from 'react-native-paper';
 
-import { useGlobalStyles } from '~/styles/globalStyles';
 import IconDetails from './components/IconDetails';
-import { Account } from '~/types/financial.types';
-import SelectorAccount from './components/SelectorAccount';
-import CustomBottomSheet from '~/components/CustomBottomSheet';
-import { accountTypeList } from '~/utils/accountTypeList';
 import SelectItem from './components/SelectItem';
+import SelectorAccount from './components/SelectorAccount';
 import StaticSelectItem from './components/StaticSelectItem';
+import Container from '../../components/Container';
+
+import { BackButton } from '~/components/BackButton';
 import CircularButton from '~/components/CircularButton';
+import CustomBottomSheet from '~/components/CustomBottomSheet';
+import { ScreenContent } from '~/components/ScreenContent';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { Account } from '~/types/financial.types';
+import { accountTypeList } from '~/utils/accountTypeList';
+import { getBankImageUri } from '~/utils/bankList';
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
 
@@ -66,10 +66,14 @@ export default function AccountDetails() {
   ]);
   const accountId = 'HTFTDk51MRMbxddpSz6g';
   const acc_type = 'Conta Corrente';
+
   const back = () => {
     console.log('back');
   };
 
+  const handleDelete = () => {
+    console.log('deletar');
+  };
   const [selectedAccount, setSelectedAccount] = useState(userAccounts[0]);
 
   const [isEditingBalance, setIsEditingBalance] = useState(false);
@@ -142,9 +146,11 @@ export default function AccountDetails() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Detalhes
-              </Text>
+              <View style={{ flex: 1, alignItems: 'center', marginLeft:50 }}>
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  Detalhes
+                </Text>
+              </View>
             </View>
             <View>
               <SelectorAccount
@@ -281,12 +287,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',
@@ -389,12 +395,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    
+
     paddingHorizontal: 0, // Espaçamento nas laterais
   },
   iconDetails: {
     flex: 1, // Permite que o IconDetails ocupe espaço uniformemente
     marginRight: 16, // Espaçamento do lado direito para o CircularButton
   },
-  
 });
