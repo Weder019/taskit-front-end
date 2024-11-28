@@ -1,3 +1,8 @@
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import {
@@ -10,29 +15,23 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-
-import { Icon, Button, Text } from 'react-native-paper';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Container from '../../components/Container';
-import { getBankImageUri } from '~/utils/bankList';
-import { BackButton } from '~/components/BackButton';
-import { ScreenContent } from '~/components/ScreenContent';
+import { Icon, Button, Text } from 'react-native-paper';
 
-import { useGlobalStyles } from '~/styles/globalStyles';
 import IconDetails from './components/IconDetails';
-import { Account } from '~/types/financial.types';
-import SelectorAccount from './components/SelectorAccount';
-import CustomBottomSheet from '~/components/CustomBottomSheet';
-import { accountTypeList } from '~/utils/accountTypeList';
 import SelectItem from './components/SelectItem';
+import SelectorAccount from './components/SelectorAccount';
 import StaticSelectItem from './components/StaticSelectItem';
+import Container from '../../components/Container';
+
+import { BackButton } from '~/components/BackButton';
 import CircularButton from '~/components/CircularButton';
-import TrashButton from '~/components/TrashButton';
+import CustomBottomSheet from '~/components/CustomBottomSheet';
+import { ScreenContent } from '~/components/ScreenContent';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { Account } from '~/types/financial.types';
+import { accountTypeList } from '~/utils/accountTypeList';
+import { getBankImageUri } from '~/utils/bankList';
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
 
@@ -152,7 +151,6 @@ export default function AccountDetails() {
                   Detalhes
                 </Text>
               </View>
-              <TrashButton onPress={handleDelete} size={35} />
             </View>
             <View>
               <SelectorAccount

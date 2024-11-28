@@ -1,9 +1,9 @@
-// src/context/UserContext.tsx
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-import { login, signUp, logout, getUserDataFromFirestore } from '../services/authService';
+import { login, signUp, logout, getStoredUser } from '../services/authService';
 import { saveUserData, getUserData, clearUserData } from '../storage/userStorage';
+import { getUser } from '~/services/userService';
 
 interface UserContextProps {
   user: User | null;
@@ -12,6 +12,7 @@ interface UserContextProps {
   login: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, additionalData: any) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUserData: () => Promise<void>; // Nova função
 }
 
 interface UserProviderProps {
@@ -33,13 +34,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUser(currentUser);
         if (currentUser) {
           const cachedData = await getUserData(currentUser.uid);
-          console.log(cachedData);
+          console.log(cachedData.accounts[0].incomes);
           setUserData(cachedData);
 
-          const data = await getUserDataFromFirestore(currentUser.uid);
+          const data = await getStoredUser(currentUser.uid);
           if (data) {
             await saveUserData(currentUser.uid, data);
             setUserData(data);
+            await refreshUserData();
           }
         } else {
           setUserData(null);
@@ -57,7 +59,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const loggedInUser = await login(email, password);
       setUser(loggedInUser);
 
-      const data = await getUserDataFromFirestore(loggedInUser.uid);
+      const data = await getStoredUser(loggedInUser.uid);
+      console.log(data);
       if (data) {
         await saveUserData(loggedInUser.uid, data);
         setUserData(data);
@@ -76,7 +79,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const newUser = await signUp(email, password, additionalData);
       setUser(newUser);
 
-      const data = { email, ...additionalData };
+      const data = await getUserData(newUser.uid);
       await saveUserData(newUser.uid, data);
       setUserData(data);
     } catch (error) {
@@ -101,6 +104,32 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const refreshUserData = async () => {
+    setLoading(true);
+    try {
+      if (!user) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      // Busca os dados atualizados do Firestore
+      const updatedData = await getUser(user.uid);
+      console.log(updatedData);
+
+      if (updatedData) {
+        // Salva os dados no AsyncStorage
+        await saveUserData(user.uid, updatedData);
+
+        // Atualiza o estado global
+        setUserData(updatedData);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar os dados do usuário:', error);
+      throw error; // Caso precise tratar o erro no componente
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -110,6 +139,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         login: handleLogin,
         signUp: handleSignUp,
         logout: handleLogout,
+        refreshUserData,
       }}>
       {children}
     </UserContext.Provider>
