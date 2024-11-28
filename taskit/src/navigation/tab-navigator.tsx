@@ -10,8 +10,8 @@ import NewExpenseScreen from '../screens/Financial/NewExpense';
 import Three from '../screens/three';
 
 import AccountDetails from '~/screens/Financial/AccountDetails';
+import TransactionsScreen from '~/screens/Financial/TransactionScreen';
 import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
-import { useUser } from '../context/UserContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,7 +50,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={CategoriesScreen}
+        component={TransactionsScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
