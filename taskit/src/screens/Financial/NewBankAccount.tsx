@@ -5,7 +5,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button, Text } from 'react-native-paper';
 
@@ -23,12 +23,18 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
 import { bankList } from '~/utils/bankList';
 import {accountTypeList}from '~/utils/accountTypeList'
+import { useUser } from '~/context/UserContext';
+import { createAccount } from '~/services/accountService';
 
 type NewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
 
 export default function NewBankAccount() {
   const Globalstyles = useGlobalStyles();
+
   const navigation = useNavigation<NewBankAccountScreenNavigationProp>();
+  
+  const { user, refreshUserData } = useUser();
+
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
   const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
@@ -69,6 +75,37 @@ export default function NewBankAccount() {
     bottomSheetAccountType.current?.close();
   };
 
+  const handleSave = async () => {
+    if (!user) {
+      Alert.alert("Erro", "Usuário não autenticado.");
+      return;
+    }
+
+    if (!selectedBank || selectedAccountType === "Selecione o tipo da conta") {
+      Alert.alert("Erro", "Selecione um banco e um tipo de conta antes de salvar.");
+      return;
+    }
+
+    try {
+      const accountData = {
+        acc_name: description,
+        acc_type: selectedAccountType,
+        bank: selectedBank.name,
+        balance: parseFloat(amount.replace(",", ".")) || 0,
+      };
+      console.log(accountData)
+      await createAccount(accountData); // Cria a conta no backend
+      await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
+
+      Alert.alert("Sucesso", "Conta criada com sucesso!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      console.error("Erro ao criar conta:", error);
+      Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
+    }
+  };
+
   return (
     <GestureHandlerRootView>
       <KeyboardAvoidingView
@@ -92,7 +129,7 @@ export default function NewBankAccount() {
                 style={Globalstyles.title}
               />
             </View>
-            <Container rounded>
+            <Container rounded style={styles.container}>
               <SelectItem
                 label={selectedBank ? selectedBank.name : 'Selecionar Banco'}
                 type="banco"
@@ -124,7 +161,7 @@ export default function NewBankAccount() {
 
               <Button
                 mode="contained"
-                onPress={back}
+                onPress={handleSave}
                 style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
                 Salvar
               </Button>
@@ -215,6 +252,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
+    marginTop:20
   },
   BottomSheetTitle: {
     fontSize: 20,
@@ -225,8 +263,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 305,
-    marginBottom: 30, // Espaço acima do botão
+    // Espaço acima do botão
   },
   gesture: {
     flex: 1,
@@ -262,5 +299,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 8,
     marginHorizontal: 15,
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    minHeight: 580,
+    maxHeight: 580,
   },
 });

@@ -27,6 +27,7 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 import { Category } from '~/types/financial.types';
 
 export default function CategoriesScreen() {
+  const Globalstyles = useGlobalStyles();
   const back = () => {
     console.log('back');
   };
@@ -82,7 +83,7 @@ export default function CategoriesScreen() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text style={styles.title}>Categorias</Text>
+              <Text style={[Globalstyles.title, styles.title]}>Categorias</Text>
             </View>
             <ToggleButtonGroup
               options={['Despesas', 'Receitas']}
