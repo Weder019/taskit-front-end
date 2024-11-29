@@ -5,3 +5,5 @@ export { default as NewIncomeScreen } from './NewIncome';
 export { default as EditNewBankAccountScreen } from './EditNewBankAccount';
 export { default as EditExpenseScreen } from './EditExpense';
 export { default as EditIncomeScreen } from './EditIncome';
+export { default as CategoriesScreen } from './CategoriesScreen';
+

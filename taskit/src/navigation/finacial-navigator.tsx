@@ -1,7 +1,16 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import { FinancialHomeScreen, NewBankAccountScreen, NewExpenseScreen, EditNewBankAccountScreen, EditIncomeScreen, EditExpenseScreen } from '~/screens/Financial';
+import {
+  FinancialHomeScreen,
+  NewBankAccountScreen,
+  NewExpenseScreen,
+  EditNewBankAccountScreen,
+  EditIncomeScreen,
+  EditExpenseScreen,
+  NewIncomeScreen,
+  CategoriesScreen,
+} from '~/screens/Financial';
 
 export type FinancialStackParamList = {
   FinancialHome: undefined;
@@ -11,6 +20,7 @@ export type FinancialStackParamList = {
   NewIncome: undefined;
   EditExpense: undefined;
   EditIncome: undefined;
+  Categories: undefined;
 };
 
 const FinancialStack = createStackNavigator<FinancialStackParamList>();
@@ -34,6 +44,11 @@ export default function FinancialNavigator() {
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
+        name="NewIncome"
+        component={NewIncomeScreen}
+        options={{ headerShown: false }}
+      />
+      <FinancialStack.Screen
         name="EditNewBankAccount"
         component={EditNewBankAccountScreen}
         options={{ headerShown: false }}
@@ -48,7 +63,11 @@ export default function FinancialNavigator() {
         component={EditIncomeScreen}
         options={{ headerShown: false }}
       />
-      
+      <FinancialStack.Screen
+        name="Categories"
+        component={CategoriesScreen}
+        options={{ headerShown: false }}
+      />
     </FinancialStack.Navigator>
   );
 }

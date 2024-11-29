@@ -1,12 +1,14 @@
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, Text, StyleSheet } from 'react-native';
+import { ScrollView, Text, StyleSheet, View } from 'react-native';
 
 import AccountList from './components/AccountList';
 import BalanceSummary from './components/BalanceSummary';
+import ExpandableFloatingButton from './components/ExpandableFloatingButton';
 import ExpensesByCategoryCard from './components/ExpenseByCategoryChart';
 import IncomeExpenseSummary from './components/IncomeExpenseSummary';
 import MonthSelector from './components/MonthSelector';
+import PendingCard from './components/PendingCard';
 import { useUser } from '../../context/UserContext';
 
 import GlobalCard from '~/components/GlobalCard';
@@ -41,6 +43,29 @@ export default function FinancialHome() {
   const { user, userData, refreshUserData } = useUser();
   const navigation = useNavigation<FinancialHomeScreenNavigationProp>();
 
+  const buttons = [
+    {
+      icon: 'trending-up',
+      label: 'Receita',
+      onPress: () => navigation.navigate('NewIncome'),
+    },
+    {
+      icon: 'trending-down',
+      label: 'Despesa',
+      onPress: () => navigation.navigate('NewExpense'),
+    },
+    {
+      icon: 'tag',
+      label: 'Categoria',
+      onPress: () => navigation.navigate('Categories'),
+    },
+    {
+      icon: 'wallet',
+      label: 'Conta',
+      onPress: () => navigation.navigate('NewBankAccount'),
+    },
+  ];
+
   console.log(userData.accounts);
 
   return (
@@ -64,9 +89,15 @@ export default function FinancialHome() {
         <Text style={styles.label}>Despesas por categoria</Text>
         <ExpensesByCategoryCard title="Despesas por categoria" data={data} />
 
-        <Text style={styles.label}>Transações</Text>
-        <AccountList accounts={userData.accounts} />
+        <Text style={styles.label}>Pendencias</Text>
+        <PendingCard
+          incomes={userData.accounts[0].incomes}
+          expenses={userData.accounts[0].expenses}
+        />
       </ScrollView>
+      <View style={styles.container}>
+        <ExpandableFloatingButton buttons={buttons} />
+      </View>
     </ScreenContent>
   );
 }
@@ -83,5 +114,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 20,
     alignSelf: 'flex-start',
+  },
+  container: {
+    position: 'absolute', // Fixa o botão na tela
+    bottom: 0, // Distância da parte inferior
+    right: 0, // Distância da borda direita
+    backgroundColor: '#37618E', // Cor de fundo do botão
   },
 });
