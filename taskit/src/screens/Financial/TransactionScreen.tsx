@@ -15,249 +15,54 @@ import { ScreenContent } from '~/components/ScreenContent';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { TransactionDropdown } from './components/TransactionDropdown';
 import { expenseCategories, incomeCategories } from '~/utils/categoriesList';
+import { useUser } from '~/context/UserContext';
+
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import { Account, Expense, Income } from '~/types';
 
 moment.locale('pt-br');
 
 const screenHeight = Dimensions.get('window').height;
 
-const userData = {
-  id: 'TT0oxDgcrRG5IJR8GDpRvqjXZ9HZ',
-  name: 'Fernando',
-  email: 'fernando@teste.com',
-  cell: '19974164543',
-  categories: [],
-  tasks: [],
-  accounts: [
-    {
-      id: '28CwZ2VMHyeP490pUeNh',
-      acc_name: 'Carteira Nubank',
-      acc_type: 'Conta Corrente',
-      bank: 'nubank',
-      expenses: [
-        {
-          exp_name: 'Placa mãe',
-          category: 'Eletrônicos',
-          value: 704,
-          date: '2024-11-20',
-          paid: true,
-          id: '1',
-        },
-        {
-          exp_name: 'Aluguel',
-          category: 'Casa',
-          value: 500,
-          date: '2024-09-10',
-          paid: false,
-          id: '2',
-        },
-        {
-          exp_name: 'Camisetas',
-          category: 'Vestuário',
-          value: 600,
-          date: '2024-11-10',
-          paid: true,
-          id: '3',
-        },
-        {
-          exp_name: 'Supermercado',
-          category: 'Supermercado',
-          value: 250,
-          date: '2024-11-05',
-          paid: true,
-          id: '4',
-        },
-        {
-          exp_name: 'Netflix',
-          category: 'Lazer',
-          value: 40,
-          date: '2024-11-01',
-          paid: true,
-          id: '5',
-        },
-        {
-          exp_name: 'Restaurante',
-          category: 'Restaurantes',
-          value: 180,
-          date: '2024-11-18',
-          paid: false,
-          id: '6',
-        },
-        {
-          exp_name: 'Internet',
-          category: 'Serviços',
-          value: 120,
-          date: '2024-11-15',
-          paid: true,
-          id: '7',
-        },
-        {
-          exp_name: 'Uber',
-          category: 'Transporte',
-          value: 45,
-          date: '2024-11-22',
-          paid: false,
-          id: '8',
-        },
-        {
-          exp_name: 'Academia',
-          category: 'Saúde',
-          value: 99,
-          date: '2024-11-07',
-          paid: true,
-          id: '9',
-        },
-        {
-          exp_name: 'Cafeteria',
-          category: 'Lazer',
-          value: 20,
-          date: '2024-11-03',
-          paid: true,
-          id: '10',
-        },
-        {
-          exp_name: 'Conta de Luz',
-          category: 'Casa',
-          value: 180,
-          date: '2024-11-25',
-          paid: false,
-          id: '11',
-        },
-      ],
-      incomes: [
-        {
-          inc_name: 'Salário',
-          category: 'Salário',
-          value: 5000,
-          date: '2024-11-05',
-          paid: true,
-          id: '21',
-        },
-        {
-          inc_name: 'Freelance',
-          category: 'Outros',
-          value: 700,
-          date: '2024-11-08',
-          paid: false,
-          id: '22',
-        },
-        {
-          inc_name: 'Freelance',
-          category: 'Outros',
-          value: 700,
-          date: '2024-12-12',
-          paid: true,
-          id: '222',
-        },
-        {
-          inc_name: 'Aluguel de Imóvel',
-          category: 'Investimentos',
-          value: 1200,
-          date: '2024-11-15',
-          paid: true,
-          id: '23',
-        },
-        {
-          inc_name: 'Pix de Amigo',
-          category: 'Outros',
-          value: 50,
-          date: '2024-11-19',
-          paid: true,
-          id: '24',
-        },
-        {
-          inc_name: 'Cashback',
-          category: 'Outros',
-          value: 30,
-          date: '2024-11-11',
-          paid: true,
-          id: '25',
-        },
-        {
-          inc_name: 'Venda Online',
-          category: 'Outros',
-          value: 500,
-          date: '2024-11-20',
-          paid: false,
-          id: '26',
-        },
-        {
-          inc_name: 'Prêmio',
-          category: 'Prêmio',
-          value: 100,
-          date: '2024-11-03',
-          paid: true,
-          id: '27',
-        },
-      ],
-      balance: 6901,
-    },
-    {
-      id: 'YoaY1noPZFtZ6hIDEWwK',
-      acc_name: 'Conta XP',
-      acc_type: 'Investimento',
-      bank: 'xp',
-      expenses: [
-        {
-          exp_name: 'Compra de Ethereum',
-          category: 'Outros',
-          value: 200,
-          date: '2024-11-25',
-          fixed: false,
-          paid: true,
-          id: 'b9RXsRcenU3X0z7QR8WE',
-        },
-      ],
-      incomes: [
-        {
-          inc_name: 'Dividendos',
-          category: 'Investimentos',
-          value: 350,
-          date: '2024-10-03',
-          fixed: false,
-          paid: true,
-          id: 'Sb5PYXIoTWh7M3VF7TOt',
-        },
-      ],
-      balance: 1800,
-    },
-  ],
-};
+type Transaction = Expense | Income;
 
 export default function TransactionsScreen() {
   const style = useGlobalStyles();
+
+  const { user, userData, refreshUserData } = useUser();
+
   const [selectedOption, setSelectedOption] = useState<'expenses' | 'income' | 'transactions'>(
     'expenses'
   );
   const [currentMonth, setCurrentMonth] = useState(moment());
 
   // Obter transações conforme o tipo selecionado
-  const transactions = userData.accounts.flatMap((account) => {
+  const transactions = userData.accounts.flatMap((account: Account) => {
     if (selectedOption === 'expenses') {
       return account.expenses
-        .filter((exp) => moment(exp.date).isSame(currentMonth, 'month'))
-        .map((exp) => ({ ...exp, acc_name: account.acc_name }));
+        .filter((exp: Expense) => moment(exp.date).isSame(currentMonth, 'month'))
+        .map((exp: Expense) => ({ ...exp, acc_name: account.acc_name }));
     }
     if (selectedOption === 'income') {
       return account.incomes
-        .filter((inc) => moment(inc.date).isSame(currentMonth, 'month'))
-        .map((inc) => ({ ...inc, acc_name: account.acc_name }));
+        .filter((inc: Income) => moment(inc.date).isSame(currentMonth, 'month'))
+        .map((inc: Income) => ({ ...inc, acc_name: account.acc_name }));
     }
     // Caso "transações", combina despesas e receitas filtradas por data
     return [...account.expenses, ...account.incomes]
-      .filter((tran) => moment(tran.date).isSame(currentMonth, 'month'))
-      .map((tran) => ({ ...tran, acc_name: account.acc_name }));
+      .filter((tran: Transaction) => moment(tran.date).isSame(currentMonth, 'month'))
+      .map((tran: Transaction) => ({ ...tran, acc_name: account.acc_name }));
   });
 
-  const sortedTransactions = transactions.sort((a, b) => {
+  const sortedTransactions = transactions.sort((a: Transaction, b: Transaction) => {
     const dateA = moment(a.date);
     const dateB = moment(b.date);
     return dateB.diff(dateA); // Decrescente
   });
 
   const groupedTransactions = sortedTransactions.reduce(
-    (acc, transaction) => {
+    (acc: Record<string, Transaction[]>, transaction: Transaction) => {
       const formattedDate = moment(transaction.date).format('dddd, DD');
       if (!acc[formattedDate]) acc[formattedDate] = [];
       acc[formattedDate].push(transaction);
@@ -266,20 +71,11 @@ export default function TransactionsScreen() {
     {} as Record<string, typeof sortedTransactions>
   );
 
-  const getCategoryIcon = (transaction: {
-    category: string;
-    exp_name?: string;
-    inc_name?: string;
-  }) => {
-    // Determina se é uma despesa ou receita com base na presença de "exp_name" ou "inc_name"
+  const getCategoryIcon = (transaction: Transaction) => {
     const isExpense = 'exp_name' in transaction;
-
-    // Seleciona o conjunto de categorias correto
     const categories = isExpense ? expenseCategories : incomeCategories;
-
-    // Busca o ícone com base na categoria
     const categoryItem = categories.find((item) => item.name === transaction.category);
-    return categoryItem ? categoryItem.icon : 'dots-horizontal'; // Ícone padrão caso não encontre
+    return categoryItem ? categoryItem.icon : 'dots-horizontal';
   };
 
   const renderTransaction = ({ item }: { item: (typeof transactions)[0] }) => (
@@ -310,21 +106,6 @@ export default function TransactionsScreen() {
     </View>
   );
 
-  const renderSection = ({
-    item,
-  }: {
-    item: { date: string; transactions: typeof sortedTransactions };
-  }) => (
-    <View>
-      <Text style={styles.sectionHeader}>{item.date}</Text>
-      {item.transactions.map((transaction) => (
-        <TouchableOpacity key={transaction.id}>
-          {renderTransaction({ item: transaction })}
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
   const dataForFlatList = Object.keys(groupedTransactions).map((date) => ({
     date,
     transactions: groupedTransactions[date],
@@ -334,26 +115,26 @@ export default function TransactionsScreen() {
     console.log('back');
   };
 
-  const calculateExpenseTotals = () => {
+  const calculateExpenseTotals = (): { totalPending: number; totalPaid: number } => {
     const totalPending = transactions
-      .filter((t) => 'exp_name' in t && !t.paid)
-      .reduce((sum, t) => sum + t.value, 0);
+      .filter((t: Transaction) => 'exp_name' in t && !t.paid)
+      .reduce((sum: number, t: Expense) => sum + t.value, 0);
 
     const totalPaid = transactions
-      .filter((t) => 'exp_name' in t && t.paid)
-      .reduce((sum, t) => sum + t.value, 0);
+      .filter((t: Transaction) => 'exp_name' in t && t.paid)
+      .reduce((sum: number, t: Expense) => sum + t.value, 0);
 
     return { totalPending, totalPaid };
   };
 
-  const calculateIncomeTotals = () => {
+  const calculateIncomeTotals = (): { totalPending: number; totalReceived: number } => {
     const totalPending = transactions
-      .filter((t) => 'inc_name' in t && !t.paid)
-      .reduce((sum, t) => sum + t.value, 0);
+      .filter((t: Transaction) => 'inc_name' in t && !t.paid)
+      .reduce((sum: number, t: Income) => sum + t.value, 0);
 
     const totalReceived = transactions
-      .filter((t) => 'inc_name' in t && t.paid)
-      .reduce((sum, t) => sum + t.value, 0);
+      .filter((t: Transaction) => 'inc_name' in t && t.paid)
+      .reduce((sum: number, t: Income) => sum + t.value, 0);
 
     return { totalPending, totalReceived };
   };
@@ -364,7 +145,7 @@ export default function TransactionsScreen() {
     let totalBalance = 0; // Saldo total acumulado até o mês de referência
     let balanceMonthly = 0; // Balanço do mês de referência (receitas - despesas)
 
-    allAccounts.forEach((account) => {
+    allAccounts.forEach((account: Account) => {
       // Transações até o último dia do mês de referência
       const pastTransactions = [...account.expenses, ...account.incomes].filter(
         (tran) => moment(tran.date).isSameOrBefore(currentMonth, 'month') && tran.paid
@@ -401,8 +182,50 @@ export default function TransactionsScreen() {
     return { totalBalance, balanceMonthly };
   };
 
+  const calculateProjectedBalance = () => {
+    const allAccounts = userData.accounts;
+
+    let totalBalance = 0; // Saldo acumulado até o mês atual + previsões do mês selecionado
+    let balanceMonthly = 0; // Balanço mensal do mês selecionado
+
+    allAccounts.forEach((account: Account) => {
+      // Considera todas as transações passadas como pagas
+      const pastTransactions = [...account.expenses, ...account.incomes].filter((tran) =>
+        moment(tran.date).isBefore(currentMonth, 'month')
+      );
+
+      // Transações do mês selecionado
+      const monthlyTransactions = [...account.expenses, ...account.incomes].filter((tran) =>
+        moment(tran.date).isSame(currentMonth, 'month')
+      );
+
+      // Saldo acumulado com todas as transações passadas (tratando-as como pagas)
+      const pastExpenses = pastTransactions
+        .filter((tran) => 'exp_name' in tran)
+        .reduce((sum, tran: Expense) => sum + tran.value, 0);
+
+      const pastIncomes = pastTransactions
+        .filter((tran) => 'inc_name' in tran)
+        .reduce((sum, tran: Income) => sum + tran.value, 0);
+
+      totalBalance += pastIncomes - pastExpenses;
+
+      // Balanço mensal do mês selecionado
+      const monthlyExpenses = monthlyTransactions
+        .filter((tran) => 'exp_name' in tran)
+        .reduce((sum, tran: Expense) => sum + tran.value, 0);
+
+      const monthlyIncomes = monthlyTransactions
+        .filter((tran) => 'inc_name' in tran)
+        .reduce((sum, tran: Income) => sum + tran.value, 0);
+
+      balanceMonthly += monthlyIncomes - monthlyExpenses;
+    });
+
+    return { totalBalance, balanceMonthly };
+  };
+
   const renderCards = () => {
-    const { totalBalance, balanceMonthly } = calculateTransactionTotals();
     if (selectedOption === 'expenses') {
       const { totalPending, totalPaid } = calculateExpenseTotals();
       return (
@@ -442,10 +265,16 @@ export default function TransactionsScreen() {
     }
 
     if (selectedOption === 'transactions') {
-      const label1 = currentMonth.isBefore(moment(), 'month')
-        ? 'Final do Mês'
-        : currentMonth.isAfter(moment(), 'month')
-          ? 'Saldo Previsto'
+      const isFutureMonth = currentMonth.isAfter(moment(), 'month');
+
+      const { totalBalance, balanceMonthly } = isFutureMonth
+        ? calculateProjectedBalance() // Usa a nova função para meses futuros
+        : calculateTransactionTotals(); // Usa a lógica atual para meses passados e o mês atual
+
+      const label1 = isFutureMonth
+        ? 'Saldo Previsto'
+        : currentMonth.isBefore(moment(), 'month')
+          ? 'Final do Mês'
           : 'Saldo Atual';
       const label2 = 'Balanço Mensal';
 
@@ -492,12 +321,7 @@ export default function TransactionsScreen() {
                 setSelectedOption={setSelectedOption}
               />
             </View>
-            {/* <View style={styles.toggleContainer}>
-              <TransactionDropdown
-                selectedOption={selectedOption}
-                setSelectedOption={setSelectedOption}
-              />
-            </View> */}
+
             <View style={styles.monthNavigator}>
               <IconButton
                 icon="chevron-left"
@@ -532,7 +356,7 @@ export default function TransactionsScreen() {
             {dataForFlatList.map((section) => (
               <View key={section.date}>
                 <Text style={styles.sectionHeader}>{section.date}</Text>
-                {section.transactions.map((transaction) => (
+                {section.transactions.map((transaction: Transaction) => (
                   <TouchableOpacity key={transaction.id}>
                     {renderTransaction({ item: transaction })}
                   </TouchableOpacity>

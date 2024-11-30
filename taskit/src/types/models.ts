@@ -4,7 +4,8 @@ export interface Expense {
   category: string;
   value: number;
   date: string; // Ex: "30/10/2024"
-  fixed: boolean; // Se é uma despesa fixa
+  fixed?: boolean; // Se é uma despesa fixa
+  startDate?: string;
   paid: boolean; // Se a despesa foi paga
 }
 
@@ -14,7 +15,8 @@ export interface Income {
   category: string;
   value: number;
   date: string; // Ex: "10/10/2024"
-  fixed: boolean; // Se é uma receita fixa
+  fixed?: boolean; // Se é uma receita fixa
+  startDate?: string;
   paid: boolean;
 }
 
@@ -55,6 +57,7 @@ export interface User {
   tasks?: Task[]; // Lista de tarefas do usuário
 }
 export interface Category{
+  icon: string | undefined;
   name: string;
   type: string;
 }

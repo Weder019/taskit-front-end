@@ -22,7 +22,7 @@ import OpenModalButton from './components/OpenModalButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
 import QuantitySelector from './components/QuantitySelector';
 import SelectItem from './components/SelectItem';
-import { Account } from '~/types/financial.types';
+import { Account } from '~/types/models';
 import TrashButton from '~/components/TrashButton';
 moment.locale('pt-br');
 

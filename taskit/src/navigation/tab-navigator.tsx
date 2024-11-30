@@ -13,6 +13,7 @@ import { useUser } from '~/context/UserContext';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
 import TransactionsScreen from '~/screens/Financial/TransactionScreen';
+import { EditExpenseScreen, EditNewBankAccountScreen, NewIncomeScreen } from '~/screens/Financial';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,7 +37,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={TransactionsScreen}
+        component={EditExpenseScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -44,7 +45,7 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={AccountDetails}
+        component={TransactionsScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
