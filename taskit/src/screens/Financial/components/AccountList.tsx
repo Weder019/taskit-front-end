@@ -1,8 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { Icon } from 'react-native-paper';
-import { Text, Divider } from 'react-native-paper';
+import { Text, Divider, Icon } from 'react-native-paper';
 
 import GlobalCard from '~/components/GlobalCard';
 import { Account } from '~/types';

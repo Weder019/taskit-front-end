@@ -22,7 +22,7 @@ import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
 import { bankList } from '~/utils/bankList';
-import {accountTypeList}from '~/utils/accountTypeList'
+import { accountTypeList } from '~/utils/accountTypeList';
 import { useUser } from '~/context/UserContext';
 import { createAccount } from '~/services/accountService';
 
@@ -32,17 +32,18 @@ export default function NewBankAccount() {
   const Globalstyles = useGlobalStyles();
 
   const navigation = useNavigation<NewBankAccountScreenNavigationProp>();
-  
+
   const { user, refreshUserData } = useUser();
 
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
-  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string | undefined} >({name:'Selecione o banco', imageUri:''});
+  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string | undefined }>({
+    name: 'Selecione o banco',
+    imageUri: '',
+  });
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
   const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
 
-
-  
   const back = () => {
     navigation.goBack();
   };
@@ -61,7 +62,7 @@ export default function NewBankAccount() {
 
     bottomSheetAccount.current?.close();
   };
-  const handleBankChange = (bank: { name: string; imageUri: string| undefined } ) => {
+  const handleBankChange = (bank: { name: string; imageUri: string | undefined }) => {
     setSelectedBank(bank);
   };
 
@@ -77,12 +78,12 @@ export default function NewBankAccount() {
 
   const handleSave = async () => {
     if (!user) {
-      Alert.alert("Erro", "Usuário não autenticado.");
+      Alert.alert('Erro', 'Usuário não autenticado.');
       return;
     }
 
-    if (!selectedBank || selectedAccountType === "Selecione o tipo da conta") {
-      Alert.alert("Erro", "Selecione um banco e um tipo de conta antes de salvar.");
+    if (!selectedBank || selectedAccountType === 'Selecione o tipo da conta') {
+      Alert.alert('Erro', 'Selecione um banco e um tipo de conta antes de salvar.');
       return;
     }
 
@@ -91,18 +92,16 @@ export default function NewBankAccount() {
         acc_name: description,
         acc_type: selectedAccountType,
         bank: selectedBank.name,
-        balance: parseFloat(amount.replace(",", ".")) || 0,
+        balance: parseFloat(amount.replace(',', '.')) || 0,
       };
-      console.log(accountData)
+      console.log(accountData);
       await createAccount(accountData); // Cria a conta no backend
       await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
 
-      Alert.alert("Sucesso", "Conta criada com sucesso!", [
-        { text: "OK", onPress: () => navigation.goBack() },
-      ]);
+      Alert.alert('Sucesso', 'Conta criada com sucesso!', [{ text: 'OK' }]);
     } catch (error) {
-      console.error("Erro ao criar conta:", error);
-      Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
+      console.error('Erro ao criar conta:', error);
+      Alert.alert('Erro', 'Não foi possível criar a conta. Tente novamente.');
     }
   };
 
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    marginTop:20
+    marginTop: 20,
   },
   BottomSheetTitle: {
     fontSize: 20,
@@ -263,7 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop:200// Espaço acima do botão
+    marginTop: 200, // Espaço acima do botão
   },
   gesture: {
     flex: 1,

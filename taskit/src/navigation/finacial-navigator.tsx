@@ -1,5 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { useUser } from '~/context/UserContext';
 
 import * as FinancialScreens from '~/screens/Financial';
 
@@ -19,6 +21,15 @@ export type FinancialStackParamList = {
 const FinancialStack = createStackNavigator<FinancialStackParamList>();
 
 export default function FinancialNavigator() {
+  const { userData, loading } = useUser();
+
+  if (loading || !userData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <FinancialStack.Navigator initialRouteName="FinancialHome">
       <FinancialStack.Screen
@@ -74,3 +85,12 @@ export default function FinancialNavigator() {
     </FinancialStack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+});
