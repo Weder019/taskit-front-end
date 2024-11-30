@@ -11,6 +11,7 @@ import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import { useUser } from '~/context/UserContext';
 import { CategoriesScreen } from '~/screens/Financial';
+import LoginScreen from '~/screens/Authentication/LoginScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +33,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={CategoriesScreen}
+        component={LoginScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,

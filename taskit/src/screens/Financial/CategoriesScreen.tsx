@@ -24,9 +24,9 @@ import GlobalInput from '~/components/GlobalInput';
 import GlobalInputBottomSheet from './components/GlobalInputBottomSheet';
 import { Button } from 'react-native-paper';
 import { useGlobalStyles } from '~/styles/globalStyles';
-import { Category } from '~/types/financial.types';
 import { useUser } from '~/context/UserContext';
 import { createCategory, deleteCategory } from '~/services/categoryService';
+import { Category } from '~/types/models';
 
 export default function CategoriesScreen() {
   const Globalstyles = useGlobalStyles();
