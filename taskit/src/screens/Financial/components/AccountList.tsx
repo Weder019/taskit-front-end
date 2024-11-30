@@ -15,7 +15,6 @@ interface AccountListProps {
 const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
   // Soma total das contas
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
-  console.log(accounts.length);
 
   return (
     <GlobalCard style={{ marginHorizontal: 20 }}>

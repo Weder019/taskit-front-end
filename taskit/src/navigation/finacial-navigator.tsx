@@ -1,26 +1,19 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import {
-  FinancialHomeScreen,
-  NewBankAccountScreen,
-  NewExpenseScreen,
-  EditNewBankAccountScreen,
-  EditIncomeScreen,
-  EditExpenseScreen,
-  NewIncomeScreen,
-  CategoriesScreen,
-} from '~/screens/Financial';
+import * as FinancialScreens from '~/screens/Financial';
 
 export type FinancialStackParamList = {
   FinancialHome: undefined;
   NewBankAccount: undefined;
+  AccountDetails: undefined;
   EditNewBankAccount: undefined;
   NewExpense: undefined;
-  NewIncome: undefined;
   EditExpense: undefined;
+  NewIncome: undefined;
   EditIncome: undefined;
   Categories: undefined;
+  Transactions: undefined;
 };
 
 const FinancialStack = createStackNavigator<FinancialStackParamList>();
@@ -30,42 +23,52 @@ export default function FinancialNavigator() {
     <FinancialStack.Navigator initialRouteName="FinancialHome">
       <FinancialStack.Screen
         name="FinancialHome"
-        component={FinancialHomeScreen}
+        component={FinancialScreens.FinancialHomeScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="NewBankAccount"
-        component={NewBankAccountScreen}
+        component={FinancialScreens.NewBankAccountScreen}
+        options={{ headerShown: false }}
+      />
+      <FinancialStack.Screen
+        name="AccountDetails"
+        component={FinancialScreens.AccountDeatilsScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="NewExpense"
-        component={NewExpenseScreen}
+        component={FinancialScreens.NewExpenseScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="NewIncome"
-        component={NewIncomeScreen}
+        component={FinancialScreens.NewIncomeScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="EditNewBankAccount"
-        component={EditNewBankAccountScreen}
+        component={FinancialScreens.EditNewBankAccountScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="EditExpense"
-        component={EditExpenseScreen}
+        component={FinancialScreens.EditExpenseScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="EditIncome"
-        component={EditIncomeScreen}
+        component={FinancialScreens.EditIncomeScreen}
         options={{ headerShown: false }}
       />
       <FinancialStack.Screen
         name="Categories"
-        component={CategoriesScreen}
+        component={FinancialScreens.CategoriesScreen}
+        options={{ headerShown: false }}
+      />
+      <FinancialStack.Screen
+        name="Transactions"
+        component={FinancialScreens.TransactionScreen}
         options={{ headerShown: false }}
       />
     </FinancialStack.Navigator>

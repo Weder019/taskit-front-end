@@ -1,6 +1,8 @@
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import React from 'react';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, StyleSheet, View } from 'react-native';
+import { Button } from 'react-native-paper';
 
 import AccountList from './components/AccountList';
 import BalanceSummary from './components/BalanceSummary';
@@ -11,37 +13,56 @@ import MonthSelector from './components/MonthSelector';
 import PendingCard from './components/PendingCard';
 import { useUser } from '../../context/UserContext';
 
-import GlobalCard from '~/components/GlobalCard';
 import GlobalHeaderContainer from '~/components/GlobalHeaderContainer';
 import { ScreenContent } from '~/components/ScreenContent';
 import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+import { Account, Expense, Income } from '~/types/models';
 
 type FinancialHomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'FinancialHome'>;
-
-const accounts = [
-  { name: 'Carteira', balance: 120.0 },
-  { name: 'Conta Corrente', balance: -50.0 },
-  { name: 'Poupança', balance: 500.0 },
-  { name: 'Carteira', balance: 120.0 },
-  { name: 'Conta Corrente', balance: -50.0 },
-  { name: 'Poupança', balance: 500.0 },
-  { name: 'Carteira', balance: 120.0 },
-  { name: 'Conta Corrente', balance: -50.0 },
-  { name: 'Poupança', balance: 500.0 },
-  { name: 'Carteira', balance: 120.0 },
-  { name: 'Conta Corrente', balance: -50.0 },
-  { name: 'Poupança', balance: 500.0 },
-];
-
-const data = [
-  { name: 'Casa', value: 1050, color: '#3E37F6' },
-  { name: 'Mercado', value: 350, color: '#ED3336' },
-  { name: 'Lazer', value: 150, color: '#40F485' },
-];
 
 export default function FinancialHome() {
   const { user, userData, refreshUserData } = useUser();
   const navigation = useNavigation<FinancialHomeScreenNavigationProp>();
+  const [currentMonth, setCurrentMonth] = useState(moment());
+  const [accounts, setAccounts] = useState<Account[] | null>(null);
+  const [currentMonthExpenses, setCurrentMonthExpenses] = useState<Expense[] | null>(null);
+  const [currentMonthIncomes, setCurrentMonthIncomes] = useState<Income[] | null>(null);
+  const [accountsBalance, setAccountsBalance] = useState<number>(0);
+  const [filteredExpensesTotal, setFilteredExpensesTotal] = useState<number>(0);
+  const [filteredIncomesTotal, setFilteredIncomesTotal] = useState<number>(0);
+
+  useEffect(() => {
+    if (userData?.accounts) {
+      setAccounts(userData.accounts);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (!accounts) return;
+    console.log(accounts[0].id);
+
+    const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+    setAccountsBalance(totalBalance);
+    // Filtrando despesas e receitas com base no mês atual
+    const filteredExpenses = accounts.flatMap((account) =>
+      account.expenses.filter((expense) => moment(expense.date).isSame(currentMonth, 'month'))
+    );
+
+    const filteredIncomes = accounts.flatMap((account) =>
+      account.incomes.filter((income) => moment(income.date).isSame(currentMonth, 'month'))
+    );
+
+    setCurrentMonthExpenses(filteredExpenses || []);
+    setCurrentMonthIncomes(filteredIncomes || []);
+
+    // Calculando a soma dos valores de despesas filtradas
+    const expensesTotal = filteredExpenses.reduce((sum, expense) => sum + expense.value, 0);
+    setFilteredExpensesTotal(expensesTotal);
+
+    // Calculando a soma dos valores de receitas filtradas
+    const incomesTotal = filteredIncomes.reduce((sum, income) => sum + income.value, 0);
+    setFilteredIncomesTotal(incomesTotal);
+  }, [currentMonth, accounts]);
 
   const buttons = [
     {
@@ -65,39 +86,58 @@ export default function FinancialHome() {
       onPress: () => navigation.navigate('NewBankAccount'),
     },
   ];
+  const data = [
+    { name: 'Casa', value: 1050, color: '#3E37F6' },
+    { name: 'Mercado', value: 350, color: '#ED3336' },
+    { name: 'Lazer', value: 150, color: '#40F485' },
+  ];
 
-  console.log(userData.accounts);
-
+  const teste = async () => {
+    user?.uid ? await refreshUserData(user.uid) : null;
+  };
   return (
     <ScreenContent style={{ justifyContent: 'flex-start' }}>
       <ScrollView style={{ width: '100%' }} contentContainerStyle={styles.scrollContainer}>
         <GlobalHeaderContainer>
           <MonthSelector
-            selectedMonth="Setembro"
-            onChangeMonth={(month) => console.log(`Mês selecionado: ${month}`)}
+            selectedMonth={`${currentMonth.format('MMMM')}`}
+            onChangeMonth={(month) =>
+              setCurrentMonth(moment(month, 'MMMM').year(new Date().getFullYear()))
+            }
           />
           <BalanceSummary
-            balance={120}
+            balance={accountsBalance}
             onToggleVisibility={() => console.log('Alternar visibilidade do saldo')}
           />
-          <IncomeExpenseSummary income={1500} expense={1300} />
+          <IncomeExpenseSummary income={filteredIncomesTotal} expense={filteredExpensesTotal} />
         </GlobalHeaderContainer>
 
         <Text style={styles.label}>Contas</Text>
         <AccountList accounts={userData.accounts} />
 
-        <Text style={styles.label}>Despesas por categoria</Text>
-        <ExpensesByCategoryCard title="Despesas por categoria" data={data} />
+        {currentMonthExpenses ? (
+          <>
+            <Text style={styles.label}>Despesas por categoria</Text>
+            <ExpensesByCategoryCard
+              title="Despesas por categoria"
+              currentMonthExpenses={currentMonthExpenses}
+            />
+          </>
+        ) : null}
 
-        <Text style={styles.label}>Pendencias</Text>
-        <PendingCard
-          incomes={userData.accounts[0].incomes}
-          expenses={userData.accounts[0].expenses}
-        />
+        {currentMonthExpenses && currentMonthIncomes ? (
+          <>
+            <Text style={styles.label}>Pendencias</Text>
+            <PendingCard incomes={currentMonthIncomes} expenses={currentMonthExpenses} />
+          </>
+        ) : null}
       </ScrollView>
       <View style={styles.container}>
         <ExpandableFloatingButton buttons={buttons} />
       </View>
+      <Button mode="contained" onPress={teste}>
+        Teste
+      </Button>
     </ScreenContent>
   );
 }

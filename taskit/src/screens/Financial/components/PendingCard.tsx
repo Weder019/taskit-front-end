@@ -12,7 +12,6 @@ interface PendingCardProps {
 }
 
 const PendingCard: React.FC<PendingCardProps> = ({ expenses, incomes }) => {
-  console.log(incomes);
   // Calculando o total pendente de despesas (paid == false)
   const totalPendingExpenses = expenses.reduce(
     (sum, expense) => (expense.paid === false ? sum + expense.value : sum),
