@@ -10,22 +10,13 @@ import { TabBarIcon } from '../components/TabBarIcon';
 import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import { useUser } from '~/context/UserContext';
+import { CategoriesScreen } from '~/screens/Financial';
 
 const Tab = createBottomTabNavigator();
 
 type Props = StackScreenProps<RootStackParamList, 'TabNavigator'>;
 
 export default function TabLayout({ navigation }: Props) {
-  const { userData, loading } = useUser();
-
-  if (loading || !userData) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
