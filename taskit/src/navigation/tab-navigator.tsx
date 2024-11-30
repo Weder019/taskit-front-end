@@ -13,6 +13,7 @@ import NewIncome from '~/screens/Financial/NewIncome';
 import TransactionsScreen from '~/screens/TransactionScreen';
 import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
 import CategoryItem from '~/screens/Categories/Components/CategoryItem';
+import TaskDetails from '~/screens/ViewTaskScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -35,7 +36,7 @@ export default function TabLayout({ navigation }: Props) {
       }}>
       <Tab.Screen
         name="CategoriesScreen"
-        component={CategoriesScreen}
+        component={TaskDetails}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
