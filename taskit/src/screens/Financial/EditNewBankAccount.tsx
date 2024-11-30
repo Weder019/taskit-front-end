@@ -21,31 +21,136 @@ import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
-import { bankList } from '~/utils/bankList';
-import { accountTypeList } from '~/utils/accountTypeList';
+import { bankList, getBankImageUri } from '~/utils/bankList';
+import TrashButton from '~/components/TrashButton';
 import { useUser } from '~/context/UserContext';
-import { createAccount } from '~/services/accountService';
+import { accountTypeList, getIcon } from '~/utils/accountTypeList';
+import { deleteAccount, updateAccount } from '~/services/accountService';
 
-type NewBankAccountScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
+type EditNewBankAccountScreenNavigationProp = NavigationProp<
+  FinancialStackParamList,
+  'EditNewBankAccount'
+  
 
-export default function NewBankAccount() {
+>;
+
+export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
 
-  const navigation = useNavigation<NewBankAccountScreenNavigationProp>();
+  const { user, userData, refreshUserData } = useUser();
+  
 
-  const { user, refreshUserData } = useUser();
+  const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
+  const [description, setDescription] = useState(userData.accounts[0].acc_name);
+  const [amount, setAmount] = useState(userData.accounts[0].balance);
 
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('00,00');
-  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string | undefined }>({
-    name: 'Selecione o banco',
-    imageUri: '',
+  const [selectedBank, setSelectedBank] = useState<{
+    name: string;
+    imageUri: string | undefined;
+  }>({
+    name: userData.accounts[0].bank,
+    imageUri: getBankImageUri(userData.accounts[0].bank),
   });
-  const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
-  const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
+  const [selectedBankName, setSelectedBankName] = useState(userData.accounts[0].bank)
+  const [selectedBankImg, setSelectedBankImg] = useState<string|undefined>(getBankImageUri(userData.accounts[0].bank))
+
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState(
+    getIcon(userData.accounts[0].acc_type)
+  );
+  const [selectedAccountType, setSelectedAccountType] = useState(userData.accounts[0].acc_type);
 
   const back = () => {
     navigation.goBack();
+  };
+  const handleRedirect = () => {
+    navigation.navigate('FinancialHome'); 
+  };
+
+
+  const handleSelectBank = (name: string, imageUri: string|undefined) => {
+    setSelectedBankName(name);
+    setSelectedBankImg(imageUri);
+    setSelectedBank({name, imageUri});
+  };
+
+  const handleUpdate = async () => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
+    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    if (!accountId) {
+      Alert.alert('Erro', 'Conta não encontrada.');
+      return;
+    }
+    if (!description.trim()) {
+      Alert.alert('Erro', 'A descrição não pode estar vazia.');
+      return;
+    }
+
+    try {
+      const updatedAccount = {
+        acc_name: description,
+        balance: parseFloat(amount.toString().replace(',', '.')), // Converte para número
+        bank: selectedBank?.name,
+        acc_type: selectedAccountType,
+      };
+      // Chama o serviço para atualizar a conta
+      await updateAccount(accountId, updatedAccount);
+
+      // Atualiza os dados do usuário no contexto
+      await refreshUserData(user.uid);
+
+      Alert.alert('Sucesso', 'Conta atualizada com sucesso!');
+      navigation.goBack(); // Retorna à tela anterior
+    } catch (error) {
+      console.error('Erro ao atualizar conta:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar a conta.');
+    }
+  };
+  const handleDelete = async () => {
+    if (!user || !userData) {
+      Alert.alert("Erro", "Usuário não encontrado.");
+      return;
+    }
+  
+    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    if (!accountId) {
+      Alert.alert("Erro", "Conta não encontrada.");
+      return;
+    }
+  
+    // Exibe o alerta de confirmação
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza de que deseja excluir esta conta?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Chama o serviço para deletar a conta
+              const response = await deleteAccount(accountId);
+  
+              // Atualiza os dados do usuário no contexto
+              await refreshUserData(user.uid);
+  
+              handleRedirect(); // Retorna à tela anterior
+              Alert.alert("Sucesso", "Conta excluída com sucesso!");
+            } catch (error) {
+              console.error("Erro ao excluir conta:", error);
+              Alert.alert("Erro", "Não foi possível excluir a conta.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   //Modal
@@ -62,7 +167,7 @@ export default function NewBankAccount() {
 
     bottomSheetAccount.current?.close();
   };
-  const handleBankChange = (bank: { name: string; imageUri: string | undefined }) => {
+  const handleBankChange = (bank: { name: string; imageUri: string|undefined }) => {
     setSelectedBank(bank);
   };
 
@@ -76,35 +181,6 @@ export default function NewBankAccount() {
     bottomSheetAccountType.current?.close();
   };
 
-  const handleSave = async () => {
-    if (!user) {
-      Alert.alert('Erro', 'Usuário não autenticado.');
-      return;
-    }
-
-    if (!selectedBank || selectedAccountType === 'Selecione o tipo da conta') {
-      Alert.alert('Erro', 'Selecione um banco e um tipo de conta antes de salvar.');
-      return;
-    }
-
-    try {
-      const accountData = {
-        acc_name: description,
-        acc_type: selectedAccountType,
-        bank: selectedBank.name,
-        balance: parseFloat(amount.replace(',', '.')) || 0,
-      };
-      console.log(accountData);
-      await createAccount(accountData); // Cria a conta no backend
-      await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
-
-      Alert.alert('Sucesso', 'Conta criada com sucesso!', [{ text: 'OK' }]);
-    } catch (error) {
-      console.error('Erro ao criar conta:', error);
-      Alert.alert('Erro', 'Não foi possível criar a conta. Tente novamente.');
-    }
-  };
-
   return (
     <GestureHandlerRootView>
       <KeyboardAvoidingView
@@ -114,9 +190,12 @@ export default function NewBankAccount() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                Nova Conta
-              </Text>
+              <View style={{ flex: 1, alignItems: 'center', marginLeft: 50 }}>
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  Editar Conta
+                </Text>
+              </View>
+              <TrashButton onPress={handleDelete} size={35} />
             </View>
             <View style={styles.containerSubtitle}>
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
@@ -160,7 +239,7 @@ export default function NewBankAccount() {
 
               <Button
                 mode="contained"
-                onPress={handleSave}
+                onPress={handleUpdate}
                 style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
                 Salvar
               </Button>
@@ -235,12 +314,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
-    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   containerSubtitle: {
     alignSelf: 'flex-start',
@@ -251,7 +330,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    marginTop: 20,
   },
   BottomSheetTitle: {
     fontSize: 20,
