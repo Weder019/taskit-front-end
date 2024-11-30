@@ -4,14 +4,14 @@ import { IconButton } from 'react-native-paper';
 
 interface SelectItemProps {
   label: string;
-  value: { name: string; imageUri: string } | null;
+  value: { name: string; imageUri: string | undefined };
   type: 'categoria' | 'banco';
   iconName?: string;
   showArrow?: boolean;
   style?: ViewStyle;
   selectedValue: string;
   onPress?: () => void;
-  onChange: (value: { name: string; imageUri: string } | null) => void; // Permitir null
+  onChange: (value: { name: string; imageUri: string |undefined} ) => void; // Permitir null
 }
 
 const SelectItem: React.FC<SelectItemProps> = ({

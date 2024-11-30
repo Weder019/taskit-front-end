@@ -1,12 +1,10 @@
-import { httpsCallable } from "firebase/functions";
-import { Account } from "../types/models"; // Ajuste o caminho conforme necessário
-import { functions } from "../utils/firebase"; // Certifique-se de que está configurado corretamente
+import { httpsCallable } from 'firebase/functions';
+import { Account } from '../types/models'; // Ajuste o caminho conforme necessário
+import { functions } from '../utils/firebase'; // Certifique-se de que está configurado corretamente
 
 interface CreateAccountResponse {
   account: Account;
 }
-
-
 
 interface UpdateAccountResponse {
   message: string;
@@ -18,20 +16,19 @@ interface DeleteAccountResponse {
 
 // Cria uma nova conta
 export const createAccount = async (
-  account: Omit<Account, "id" | "expenses" | "incomes">
+  account: Omit<Account, 'id' | 'expenses' | 'incomes'>
 ): Promise<Account> => {
   try {
     const createAccountCallable = httpsCallable<
-      {account: Omit<Account, "id" | "expenses" | "incomes">},
+      { account: Omit<Account, 'id' | 'expenses' | 'incomes'> },
       CreateAccountResponse
-    >(functions, "account-createAccount");
-    
-    
-    const response = await createAccountCallable({account});
-    console.log("Conta criada:", response.data.account);
+    >(functions, 'account-createAccount');
+
+    const response = await createAccountCallable({ account });
+    console.log('Conta criada:', response.data.account);
     return response.data.account;
   } catch (error) {
-    console.error("Erro ao criar conta:", error);
+    console.error('Erro ao criar conta:', error);
     throw error;
   }
 };
@@ -39,42 +36,42 @@ export const createAccount = async (
 // Atualiza uma conta existente
 export const updateAccount = async (
   accountId: string,
-  account: Partial<Omit<Account, "id" | "expenses" | "incomes">>
-): Promise<Account> => {
+  account: Omit<Account, 'id' | 'expenses' | 'incomes'>
+): Promise<UpdateAccountResponse> => {
   try {
     const updateAccountCallable = httpsCallable<
-      { data: { accountId: string; account: Partial<Omit<Account, "id" | "expenses" | "incomes">> } },
-      { message: string; account: Account }
-    >(functions, "account-updateAccount");
+      { accountId: string; account: Omit<Account, 'id' | 'expenses' | 'incomes'> },
+      { message: UpdateAccountResponse }
+    >(functions, 'account-updateAccount');
 
     const response = await updateAccountCallable({
-      data: { accountId, account },
+      accountId,
+      account,
     });
-    console.log("Conta atualizada:", response.data.account);
-    return response.data.account;
+
+    return response.data.message;
   } catch (error) {
-    console.error("Erro ao atualizar conta:", error);
+    console.error('Erro ao atualizar conta:', error);
     throw error;
   }
 };
 
 // Remove uma conta
-export const deleteAccount = async (accountId: string): Promise<string> => {
+export const deleteAccount = async (accountId: string): Promise<DeleteAccountResponse> => {
   try {
     const deleteAccountCallable = httpsCallable<
-      { data: { accountId: string } },
-      { message: string }
-    >(functions, "account-deleteAccount");
+      { accountId: string },
+      { message: DeleteAccountResponse }
+    >(functions, 'account-deleteAccount');
 
-    const response = await deleteAccountCallable({ data: { accountId } });
-    console.log("Conta removida:", response.data.message);
+    const response = await deleteAccountCallable({ accountId });
+    console.log('Conta removida:', response.data.message);
     return response.data.message;
   } catch (error) {
-    console.error("Erro ao remover conta:", error);
+    console.error('Erro ao remover conta:', error);
     throw error;
   }
 };
-
 
 // // Obtém uma conta específica
 // export const getAccount = async (accountId: string): Promise<Account> => {

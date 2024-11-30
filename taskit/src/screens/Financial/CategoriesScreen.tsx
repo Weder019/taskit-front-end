@@ -25,9 +25,12 @@ import GlobalInputBottomSheet from './components/GlobalInputBottomSheet';
 import { Button } from 'react-native-paper';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { Category } from '~/types/financial.types';
+import { useUser } from '~/context/UserContext';
+import { createCategory, deleteCategory } from '~/services/categoryService';
 
 export default function CategoriesScreen() {
   const Globalstyles = useGlobalStyles();
+  const { user, userData, refreshUserData } = useUser();
   const back = () => {
     console.log('back');
   };
@@ -35,7 +38,7 @@ export default function CategoriesScreen() {
   const [selectedType, setSelectedType] = useState<'Despesas' | 'Receitas'>('Despesas');
   const [nameCategory, setNameCategory] = useState('');
   const [userCategories, setUserCategories] = useState<Category[]>([]); // Apenas categorias criadas pelo usuário
-
+  const [userCategoriesBd, setUserCategoriesBd] = useState<Category[]>(userData?.categories);
   const bottomSheetCreateCategory = useRef<BottomSheet>(null);
 
   const [newCategoryType, setNewCategoryType] = useState<'Despesas' | 'Receitas'>('Despesas');
@@ -44,26 +47,80 @@ export default function CategoriesScreen() {
     bottomSheetCreateCategory.current?.snapToIndex(0);
   };
 
-  const handleCreateCategory = () => {
+  const handleCreateCategory = async () => {
+    if (!user) {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+      return;
+    }
+
     if (!nameCategory.trim()) {
       Alert.alert('Erro', 'O nome da categoria não pode estar vazio.');
       return;
     }
+    try {
+      const newCategory: Category = {
+        name: nameCategory.trim(),
+        type: newCategoryType,
+      };
+      await createCategory(newCategory);
 
-    const newCategory: Category = {
-      name: nameCategory.trim(),
-      type: newCategoryType,
-    };
+      refreshUserData(user.uid);
+      const updatedCategories = userData?.categories || [];
+      setUserCategoriesBd(updatedCategories);
 
-    setUserCategories((prev) => [...prev, newCategory]); // Adiciona a nova categoria criada pelo usuário
-    setNameCategory(''); // Reseta o campo
-    bottomSheetCreateCategory.current?.close(); // Fecha o BottomSheet
-    console.log(newCategory)
+      Alert.alert('Sucesso', 'Categoria criada com sucesso!', [
+        { text: 'OK', onPress: () => bottomSheetCreateCategory.current?.close() },
+      ]);
+      setNameCategory('');
+    } catch (error) {
+      console.error('Erro ao criar conta:', error);
+      Alert.alert('Erro', 'Não foi possível criar a conta. Tente novamente.');
+    }
+
+    // setUserCategories((prev) => [...prev, newCategory]); // Adiciona a nova categoria criada pelo usuário
   };
+
+  const handleDeleteCategory = async (categoryName: string) => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
+    Alert.alert('Confirmação', 'Tem certeza de que deseja excluir está categoria?', [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            // Chama o serviço para deletar a conta
+            const response = await deleteCategory(categoryName);
+
+            // Atualiza os dados do usuário no contexto
+            await refreshUserData(user.uid);
+
+            // Retorna à tela anterior
+            Alert.alert('Sucesso', 'Categoria excluída com sucesso!');
+          } catch (error) {
+            console.error('Erro ao excluir categoria:', error);
+            Alert.alert('Erro', 'Não foi possível excluir a categoria.');
+          }
+        },
+      },
+    ]);
+  };
+  React.useEffect(() => {
+    if (userData?.categories) {
+      setUserCategoriesBd(userData.categories);
+    }
+  }, [userData]);
 
   // Categorias exibidas na interface (fixas + criadas pelo usuário)
   const filteredCategories = [
-    ...userCategories.filter((cat) => cat.type === selectedType), // Categorias criadas pelo usuário
+    ...userCategoriesBd.filter((cat) => cat.type === selectedType), // Categorias criadas pelo usuário
     ...(selectedType === 'Despesas' ? expenseCategories : incomeCategories), // Categorias fixas
   ];
 
@@ -98,6 +155,16 @@ export default function CategoriesScreen() {
                     key={`${category.name}-${index}`}
                     categoryName={category.name}
                     categoryIconName={getCategoryIcon(category.name)}
+                    type={
+                      userCategoriesBd.some((userCat) => userCat.name === category.name)
+                        ? 'bd'
+                        : undefined
+                    }
+                    onDelete={
+                      userCategoriesBd.some((userCat) => userCat.name === category.name)
+                        ? () => handleDeleteCategory(category.name)
+                        : undefined
+                    }
                   />
                 ))}
               </ScrollView>

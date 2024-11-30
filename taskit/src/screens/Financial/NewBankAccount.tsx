@@ -37,7 +37,7 @@ export default function NewBankAccount() {
 
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('00,00');
-  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
+  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string | undefined} >({name:'Selecione o banco', imageUri:''});
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
   const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
 
@@ -61,7 +61,7 @@ export default function NewBankAccount() {
 
     bottomSheetAccount.current?.close();
   };
-  const handleBankChange = (bank: { name: string; imageUri: string } | null) => {
+  const handleBankChange = (bank: { name: string; imageUri: string| undefined } ) => {
     setSelectedBank(bank);
   };
 
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    // Espaço acima do botão
+    marginTop:200// Espaço acima do botão
   },
   gesture: {
     flex: 1,

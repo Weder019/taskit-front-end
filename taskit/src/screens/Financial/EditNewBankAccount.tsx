@@ -5,7 +5,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button, Text } from 'react-native-paper';
 
@@ -21,37 +21,136 @@ import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import SelectItem from './components/SelectItem';
-import { bankList } from '~/utils/bankList';
+import { bankList, getBankImageUri } from '~/utils/bankList';
 import TrashButton from '~/components/TrashButton';
+import { useUser } from '~/context/UserContext';
+import { accountTypeList, getIcon } from '~/utils/accountTypeList';
+import { deleteAccount, updateAccount } from '~/services/accountService';
 
 type EditNewBankAccountScreenNavigationProp = NavigationProp<
   FinancialStackParamList,
   'EditNewBankAccount'
+  
+
 >;
 
 export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
-  const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('00,00');
-  const [selectedBank, setSelectedBank] = useState<{ name: string; imageUri: string } | null>(null);
-  const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
-  const [selectedAccountType, setSelectedAccountType] = useState('Selecione o tipo da conta');
 
-  const accountTypeList = [
-    { name: 'Carteira', iconName: 'wallet' },
-    { name: 'Conta Corrente', iconName: 'bank' },
-    { name: 'Poupança', iconName: 'download' },
-    { name: 'Investimentos', iconName: 'trending-up' },
-    { name: 'Outros', iconName: 'dots-horizontal' },
-  ];
+  const { user, userData, refreshUserData } = useUser();
+  
+
+  const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
+  const [description, setDescription] = useState(userData.accounts[0].acc_name);
+  const [amount, setAmount] = useState(userData.accounts[0].balance);
+
+  const [selectedBank, setSelectedBank] = useState<{
+    name: string;
+    imageUri: string | undefined;
+  }>({
+    name: userData.accounts[0].bank,
+    imageUri: getBankImageUri(userData.accounts[0].bank),
+  });
+  const [selectedBankName, setSelectedBankName] = useState(userData.accounts[0].bank)
+  const [selectedBankImg, setSelectedBankImg] = useState<string|undefined>(getBankImageUri(userData.accounts[0].bank))
+
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState(
+    getIcon(userData.accounts[0].acc_type)
+  );
+  const [selectedAccountType, setSelectedAccountType] = useState(userData.accounts[0].acc_type);
 
   const back = () => {
     navigation.goBack();
   };
+  const handleRedirect = () => {
+    navigation.navigate('FinancialHome'); 
+  };
 
-  const handleDelete = () => {
-    console.log('deletar');
+
+  const handleSelectBank = (name: string, imageUri: string|undefined) => {
+    setSelectedBankName(name);
+    setSelectedBankImg(imageUri);
+    setSelectedBank({name, imageUri});
+  };
+
+  const handleUpdate = async () => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
+    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    if (!accountId) {
+      Alert.alert('Erro', 'Conta não encontrada.');
+      return;
+    }
+    if (!description.trim()) {
+      Alert.alert('Erro', 'A descrição não pode estar vazia.');
+      return;
+    }
+
+    try {
+      const updatedAccount = {
+        acc_name: description,
+        balance: parseFloat(amount.toString().replace(',', '.')), // Converte para número
+        bank: selectedBank?.name,
+        acc_type: selectedAccountType,
+      };
+      // Chama o serviço para atualizar a conta
+      await updateAccount(accountId, updatedAccount);
+
+      // Atualiza os dados do usuário no contexto
+      await refreshUserData(user.uid);
+
+      Alert.alert('Sucesso', 'Conta atualizada com sucesso!');
+      navigation.goBack(); // Retorna à tela anterior
+    } catch (error) {
+      console.error('Erro ao atualizar conta:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar a conta.');
+    }
+  };
+  const handleDelete = async () => {
+    if (!user || !userData) {
+      Alert.alert("Erro", "Usuário não encontrado.");
+      return;
+    }
+  
+    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    if (!accountId) {
+      Alert.alert("Erro", "Conta não encontrada.");
+      return;
+    }
+  
+    // Exibe o alerta de confirmação
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza de que deseja excluir esta conta?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Chama o serviço para deletar a conta
+              const response = await deleteAccount(accountId);
+  
+              // Atualiza os dados do usuário no contexto
+              await refreshUserData(user.uid);
+  
+              handleRedirect(); // Retorna à tela anterior
+              Alert.alert("Sucesso", "Conta excluída com sucesso!");
+            } catch (error) {
+              console.error("Erro ao excluir conta:", error);
+              Alert.alert("Erro", "Não foi possível excluir a conta.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   //Modal
@@ -68,7 +167,7 @@ export default function EditNewBankAccount() {
 
     bottomSheetAccount.current?.close();
   };
-  const handleBankChange = (bank: { name: string; imageUri: string } | null) => {
+  const handleBankChange = (bank: { name: string; imageUri: string|undefined }) => {
     setSelectedBank(bank);
   };
 
@@ -108,7 +207,7 @@ export default function EditNewBankAccount() {
                 style={Globalstyles.title}
               />
             </View>
-            <Container rounded>
+            <Container rounded style={styles.container}>
               <SelectItem
                 label={selectedBank ? selectedBank.name : 'Selecionar Banco'}
                 type="banco"
@@ -140,7 +239,7 @@ export default function EditNewBankAccount() {
 
               <Button
                 mode="contained"
-                onPress={back}
+                onPress={handleUpdate}
                 style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
                 Salvar
               </Button>
@@ -241,8 +340,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 305,
-    marginBottom: 30, // Espaço acima do botão
+    marginTop: 200, // Espaço acima do botão
   },
   gesture: {
     flex: 1,
@@ -278,5 +376,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 8,
     marginHorizontal: 15,
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    minHeight: 580,
+    maxHeight: 580,
   },
 });
