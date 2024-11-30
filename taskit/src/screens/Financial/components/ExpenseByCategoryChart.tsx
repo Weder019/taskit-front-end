@@ -3,6 +3,7 @@ import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { PieChart } from 'react-native-chart-kit';
 import GlobalCard from '~/components/GlobalCard';
+import { Expense } from '~/types/models';
 
 interface CategoryData {
   name: string; // Nome da categoria
@@ -12,17 +13,55 @@ interface CategoryData {
 
 interface ExpensesByCategoryCardProps {
   title: string; // Título do card
-  data: CategoryData[]; // Dados das categorias
+  currentMonthExpenses: Expense[]; // Despesas do mês atual
 }
 
 const screenWidth = Dimensions.get('window').width;
 
-const ExpensesByCategoryCard: React.FC<ExpensesByCategoryCardProps> = ({ title, data }) => {
+// Função para gerar cores automaticamente
+const generateColor = (index: number): string => {
+  const colors = [
+    '#FF6384',
+    '#36A2EB',
+    '#FFCE56',
+    '#4BC0C0',
+    '#9966FF',
+    '#FF9F40',
+    '#FFCD56',
+    '#C9CBCF',
+    '#A8B3C5',
+    '#8DD3C7',
+  ];
+  return colors[index % colors.length];
+};
+
+const ExpensesByCategoryCard: React.FC<ExpensesByCategoryCardProps> = ({
+  title,
+  currentMonthExpenses,
+}) => {
+  // Agrupar despesas por categoria e somar os valores
+  const dataByCategory = currentMonthExpenses.reduce(
+    (acc, expense) => {
+      const category = acc[expense.category] || { name: expense.category, value: 0 };
+      category.value += expense.value;
+      acc[expense.category] = category;
+      return acc;
+    },
+    {} as Record<string, { name: string; value: number }>
+  );
+
   // Transformar dados para o formato do gráfico
-  const chartData = data.map((category) => ({
-    name: category.name,
-    population: category.value,
-    color: category.color,
+  const data = Object.values(dataByCategory).map((item, index) => ({
+    name: item.name,
+    value: item.value,
+    color: generateColor(index),
+  }));
+
+  // Transformar dados para o formato do PieChart
+  const chartData = data.map((item) => ({
+    name: item.name,
+    population: item.value,
+    color: item.color,
     legendFontColor: '#000',
     legendFontSize: 12,
   }));

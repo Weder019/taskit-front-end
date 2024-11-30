@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Icon } from 'react-native-paper';
 import { Text, Divider } from 'react-native-paper';
 
 import GlobalCard from '~/components/GlobalCard';
@@ -15,7 +15,6 @@ interface AccountListProps {
 const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
   // Soma total das contas
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
-  console.log(accounts.length);
 
   return (
     <GlobalCard style={{ marginHorizontal: 20 }}>
@@ -28,7 +27,7 @@ const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
           const iconName = getIcon(account.acc_type) || 'arrow-up-bold';
           return (
             <View key={index} style={styles.accountItem}>
-              <Icon name={iconName} size={24} color="#1C1B1F" />
+              <Icon source={iconName} size={24} color="#1C1B1F" />
               {/* Nome da conta */}
               <Text variant="bodyMedium" style={styles.accountName}>
                 {account.acc_name}

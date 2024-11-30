@@ -1,5 +1,5 @@
 import { httpsCallable } from "firebase/functions";
-import { functions } from "../utils/firebase"; // Certifique-se de ajustar o caminho
+import { functions } from "../utils/firebase"; // Ajuste o caminho conforme necessário
 import { Task, SubTask } from "../types/models"; // Ajuste o caminho conforme necessário
 
 // Cria uma nova tarefa
@@ -8,11 +8,11 @@ export const createTask = async (
 ): Promise<Task> => {
   try {
     const createTaskCallable = httpsCallable<
-      { task: Omit<Task, "id"> },
+      { data: { task: Omit<Task, "id"> } },
       { message: string; task: Task }
-    >(functions, "createTask");
+    >(functions, "task-createTask");
 
-    const response = await createTaskCallable({ task });
+    const response = await createTaskCallable({ data: { task } });
     console.log("Tarefa criada:", response.data.task);
     return response.data.task;
   } catch (error) {
@@ -28,11 +28,13 @@ export const updateTask = async (
 ): Promise<string> => {
   try {
     const updateTaskCallable = httpsCallable<
-      { taskId: string; task: Partial<Omit<Task, "id">> },
+      { data: { taskId: string; task: Partial<Omit<Task, "id">> } },
       { message: string }
-    >(functions, "updateTask");
+    >(functions, "task-updateTask");
 
-    const response = await updateTaskCallable({ taskId, task });
+    const response = await updateTaskCallable({
+      data: { taskId, task },
+    });
     console.log("Tarefa atualizada:", response.data.message);
     return response.data.message;
   } catch (error) {
@@ -45,11 +47,11 @@ export const updateTask = async (
 export const deleteTask = async (taskId: string): Promise<string> => {
   try {
     const deleteTaskCallable = httpsCallable<
-      { taskId: string },
+      { data: { taskId: string } },
       { message: string }
-    >(functions, "deleteTask");
+    >(functions, "task-deleteTask");
 
-    const response = await deleteTaskCallable({ taskId });
+    const response = await deleteTaskCallable({ data: { taskId } });
     console.log("Tarefa removida:", response.data.message);
     return response.data.message;
   } catch (error) {
@@ -62,11 +64,11 @@ export const deleteTask = async (taskId: string): Promise<string> => {
 export const getTask = async (taskId: string): Promise<Task> => {
   try {
     const getTaskCallable = httpsCallable<
-      { taskId: string },
+      { data: { taskId: string } },
       { task: Task }
-    >(functions, "getTask");
+    >(functions, "task-getTask");
 
-    const response = await getTaskCallable({ taskId });
+    const response = await getTaskCallable({ data: { taskId } });
     console.log("Tarefa obtida:", response.data.task);
     return response.data.task;
   } catch (error) {
@@ -81,7 +83,7 @@ export const getAllTasks = async (): Promise<Task[]> => {
     const getAllTasksCallable = httpsCallable<
       null,
       { tasks: Task[] }
-    >(functions, "getAllTasks");
+    >(functions, "task-getAllTasks");
 
     const response = await getAllTasksCallable(null);
     console.log("Todas as tarefas obtidas:", response.data.tasks);
@@ -96,11 +98,11 @@ export const getAllTasks = async (): Promise<Task[]> => {
 export const toggleTaskStatus = async (taskId: string): Promise<string> => {
   try {
     const toggleTaskStatusCallable = httpsCallable<
-      { taskId: string },
+      { data: { taskId: string } },
       { message: string }
-    >(functions, "toggleTaskStatus");
+    >(functions, "task-toggleTaskStatus");
 
-    const response = await toggleTaskStatusCallable({ taskId });
+    const response = await toggleTaskStatusCallable({ data: { taskId } });
     console.log("Status da tarefa alternado:", response.data.message);
     return response.data.message;
   } catch (error) {
@@ -116,11 +118,13 @@ export const toggleSubTaskStatus = async (
 ): Promise<string> => {
   try {
     const toggleSubTaskStatusCallable = httpsCallable<
-      { taskId: string; subTaskTitle: string },
+      { data: { taskId: string; subTaskTitle: string } },
       { message: string }
-    >(functions, "toggleSubTaskStatus");
+    >(functions, "task-toggleSubTaskStatus");
 
-    const response = await toggleSubTaskStatusCallable({ taskId, subTaskTitle });
+    const response = await toggleSubTaskStatusCallable({
+      data: { taskId, subTaskTitle },
+    });
     console.log("Status da subtarefa alternado:", response.data.message);
     return response.data.message;
   } catch (error) {

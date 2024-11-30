@@ -112,7 +112,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
       // Busca os dados atualizados do Firestore usando o UID fornecido
       const updatedData = await getUser(uid);
-      console.log(uid);
+      console.log("vai corinthians");
 
       if (updatedData) {
         // Salva os dados no AsyncStorage
