@@ -12,6 +12,7 @@ import NewBankAccount from '~/screens/Financial/NewBankAccount';
 import NewIncome from '~/screens/Financial/NewIncome';
 import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
 import CategoryItem from '~/screens/Categories/Components/CategoryItem';
+import AddTaskScreen from '~/screens/Tasks/AddTask';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,8 +33,8 @@ export default function TabLayout({ navigation }: Props) {
         };
       }}>
       <Tab.Screen
-        name="CategoriesScreen"
-        component={CategoriesScreen}
+        name="AddTaskScreen"
+        component={AddTaskScreen}
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
