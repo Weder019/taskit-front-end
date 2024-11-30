@@ -17,6 +17,7 @@ import { TransactionDropdown } from './components/TransactionDropdown';
 import { expenseCategories, incomeCategories } from '~/utils/categoriesList';
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import { useUser } from '~/context/UserContext';
 
 moment.locale('pt-br');
 
@@ -227,6 +228,7 @@ const userData = {
 
 export default function TransactionsScreen() {
   const style = useGlobalStyles();
+  //const { user, userData, refreshUserData } = useUser();
   const [selectedOption, setSelectedOption] = useState<'expenses' | 'income' | 'transactions'>(
     'expenses'
   );

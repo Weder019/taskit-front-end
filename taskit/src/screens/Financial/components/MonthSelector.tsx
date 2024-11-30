@@ -13,7 +13,20 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ selectedMonth, onChangeMo
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
 
-  const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho']; // Exemplo
+  const months = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
 
   return (
     <View style={styles.container}>
@@ -23,7 +36,7 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({ selectedMonth, onChangeMo
         anchor={
           <View style={styles.anchor}>
             <Text variant="titleMedium" style={styles.text}>
-              {selectedMonth}
+              {selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1).toLowerCase()}
             </Text>
             <IconButton icon="chevron-down" size={24} onPress={openMenu} />
           </View>
