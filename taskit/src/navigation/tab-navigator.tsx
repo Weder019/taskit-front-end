@@ -1,26 +1,30 @@
+import React from 'react';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute, useFocusEffect } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useCallback } from 'react';
 
 import { RootStackParamList } from '.';
 import FinancialNavigator from './finacial-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
-import NewExpenseScreen from '../screens/Financial/NewExpense';
-import Three from '../screens/three';
-
-import { useUser } from '~/context/UserContext';
+import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
-import CategoriesScreen from '~/screens/Financial/CategoriesScreen';
-import TransactionsScreen from '~/screens/Financial/TransactionScreen';
-import { NewBankAccountScreen } from '~/screens/Financial';
+import { useUser } from '~/context/UserContext';
 
 const Tab = createBottomTabNavigator();
 
 type Props = StackScreenProps<RootStackParamList, 'TabNavigator'>;
 
 export default function TabLayout({ navigation }: Props) {
-  const { refreshUserData } = useUser();
+  const { userData, loading } = useUser();
+
+  if (loading || !userData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <Tab.Navigator
@@ -56,9 +60,18 @@ export default function TabLayout({ navigation }: Props) {
         component={FinancialNavigator}
         options={{
           title: 'Financial',
-          tabBarIcon: ({ color }) => <TabBarIcon name="money" color={color} />, // ícone representativo
+          tabBarIcon: ({ color }) => <TabBarIcon name="money" color={color} />, // Ícone representativo
         }}
       />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+});
