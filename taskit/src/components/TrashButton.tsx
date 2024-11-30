@@ -3,18 +3,19 @@ import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 interface TrashButtonProps {
-  onPress: () => void; // Função chamada ao pressionar o botão
+  onPress?: () => void; // Função chamada ao pressionar o botão
   size?: number; // Tamanho do botão
   style?: ViewStyle; // Estilo personalizado para o botão
+  iconColor?: string; // Cor do ícone (padrão: #FFFFFF)
 }
 
-const TrashButton: React.FC<TrashButtonProps> = ({ onPress, size = 32, style }) => {
+const TrashButton: React.FC<TrashButtonProps> = ({ onPress, size = 32, style, iconColor = "#FFFFFF" }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
       <IconButton
         icon="trash-can-outline" // Ícone de lixeira do React Native Paper
         size={size}
-        iconColor="#FFFFFF" // Cor branca
+        iconColor={iconColor}// Cor branca
         style={styles.icon}
       />
     </TouchableOpacity>

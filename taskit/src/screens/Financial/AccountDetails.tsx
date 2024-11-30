@@ -32,38 +32,12 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 import { Account } from '~/types/financial.types';
 import { accountTypeList } from '~/utils/accountTypeList';
 import { getBankImageUri } from '~/utils/bankList';
+import { useUser } from '~/context/UserContext';
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
 
-  const [userAccounts, setUserAccounts] = useState<Account[]>([
-    {
-      id: 'HTFTDk51MRMbxddpSz6g',
-      acc_name: 'Minha Conta Nubank', // Nome escolhido pelo usuário
-      acc_type: 'Conta Corrente', // Relacionado ao accountList
-      bank: 'Nubank',
-      expenses: [],
-      incomes: [],
-      balance: 1000,
-    },
-    {
-      id: '2',
-      acc_name: 'Poupança da Caixa',
-      acc_type: 'Poupança',
-      bank: 'Caixa Econômica Federal',
-      expenses: [],
-      incomes: [],
-      balance: 500,
-    },
-    {
-      id: '3',
-      acc_name: 'Minha Carteira',
-      acc_type: 'Carteira',
-      bank: '',
-      expenses: [],
-      incomes: [],
-      balance: 250,
-    },
-  ]);
+  const { user, userData, refreshUserData } = useUser();
+
   const accountId = 'HTFTDk51MRMbxddpSz6g';
   const acc_type = 'Conta Corrente';
 
@@ -74,13 +48,17 @@ export default function AccountDetails() {
   const handleDelete = () => {
     console.log('deletar');
   };
-  const [selectedAccount, setSelectedAccount] = useState(userAccounts[0]);
-
+  const [selectedAccount, setSelectedAccount] = useState<Account>(userData.accounts[0]);
   const [isEditingBalance, setIsEditingBalance] = useState(false);
-  const [inputBalance, setInputBalance] = useState('');
+  const [inputBalance, setInputBalance] = useState(userData.accounts[0].balance);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  React.useEffect(() => {
+    if (userData?.accounts?.length > 0) {
+      setSelectedAccount(userData.accounts[0]);
+    }
+  }, [userData]);
 
-  const bankIconUri = getBankImageUri(selectedAccount.bank);
+  const bankIconUri = getBankImageUri(userData.accounts[0].bank);
 
   const bottomSheetAccount = useRef<BottomSheet>(null);
   const bottomSheetBalance = useRef<BottomSheet>(null);
@@ -90,7 +68,7 @@ export default function AccountDetails() {
   };
 
   const handleAccountChange = (accountId: string) => {
-    const account = userAccounts.find((acc) => acc.id === accountId);
+    const account = userData.accounts.find((acc: Account) => acc.id === accountId);
     if (account) {
       setSelectedAccount(account);
     }
@@ -120,14 +98,15 @@ export default function AccountDetails() {
     setIsConfirmed(true); // Marca como confirmado
   };
 
+  //Acredito q aqui q o fernando vai mexer
   const handleConfirmBalance = () => {
     const updatedBalance = parseFloat(inputBalance.replace(',', '.'));
     if (!isNaN(updatedBalance)) {
-      setUserAccounts((prevAccounts) =>
-        prevAccounts.map((acc) =>
-          acc.id === selectedAccount.id ? { ...acc, balance: updatedBalance } : acc
-        )
-      );
+      // setUserAccounts((prevAccounts) =>
+      //   prevAccounts.map((acc) =>
+      //     acc.id === selectedAccount.id ? { ...acc, balance: updatedBalance } : acc
+      //   )
+      // );
       setSelectedAccount((prev) => ({ ...prev, balance: updatedBalance }));
     }
     bottomSheetBalance.current?.close(); // Fecha o BottomSheet
@@ -146,11 +125,9 @@ export default function AccountDetails() {
           <ScreenContent>
             <View style={styles.containerTitle}>
               <BackButton onPress={back} />
-              <View style={{ flex: 1, alignItems: 'center', marginLeft:50 }}>
-                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                  Detalhes
-                </Text>
-              </View>
+              <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                Detalhes
+              </Text>
             </View>
             <View>
               <SelectorAccount
@@ -187,7 +164,7 @@ export default function AccountDetails() {
               <View>
                 <StaticSelectItem
                   bankName={selectedAccount.bank || 'Banco não informado'}
-                  bankIconUri={bankIconUri}
+                  bankIconUri={getBankImageUri(selectedAccount.bank)}
                 />
                 <IconDetails
                   iconName="wallet"
@@ -199,14 +176,14 @@ export default function AccountDetails() {
                 <IconDetails
                   iconName="cart-outline"
                   title="Qtd. de despesas"
-                  subtitle={`${selectedAccount.expenses}`}
+                  subtitle={`${selectedAccount.expenses.length} despesas`}
                   iconColor="#FFFFFF"
                   iconSize={32}
                 />
                 <IconDetails
                   iconName="cash-plus"
                   title="Qtd. de receitas"
-                  subtitle={`${selectedAccount.incomes}`}
+                  subtitle={`${selectedAccount.incomes.length} receitas`}
                   iconColor="#FFFFFF"
                   iconSize={32}
                 />
@@ -215,7 +192,7 @@ export default function AccountDetails() {
                   <IconDetails
                     iconName="swap-horizontal"
                     title="Qtd. de transferências"
-                    subtitle="Carteira"
+                    subtitle={`${selectedAccount.incomes.length + selectedAccount.expenses.length} receitas`}
                     iconColor="#FFFFFF"
                     iconSize={32}
                     style={styles.iconDetails} // Adicione um estilo consistente
@@ -250,7 +227,7 @@ export default function AccountDetails() {
                 <>
                   <BottomSheetView>
                     <Text style={styles.BottomSheetTitle}>Selecione a conta</Text>
-                    {userAccounts.map((account) => {
+                    {userData.accounts.map((account: Account) => {
                       const icon =
                         accountTypeList.find((item) => item.name === account.acc_type)?.iconName ||
                         'wallet';
@@ -287,12 +264,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centralizar o conteúdo
   },
   containerTitle: {
+    flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 10,
     width: '100%',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    justifyContent: 'center', // Centraliza os itens ao longo do eixo principal
+    position: 'relative',
   },
   containerSubtitle: {
     alignSelf: 'flex-start',
