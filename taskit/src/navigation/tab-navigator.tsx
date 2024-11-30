@@ -1,3 +1,5 @@
+import React from 'react';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -5,13 +7,11 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '.';
 import FinancialNavigator from './finacial-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
-import NewExpenseScreen from '../screens/Financial/NewExpense';
-import Three from '../screens/three' ;
-
-import NewBankAccount from '~/screens/Financial/NewBankAccount';
-import NewIncome from '~/screens/Financial/NewIncome';
-import CategoriesScreen from '~/screens/Categories/CategoriesScreen';
-import CategoryItem from '~/screens/Categories/Components/CategoryItem';
+import TransactionsScreen from '../screens/Financial/TransactionScreen';
+import AccountDetails from '~/screens/Financial/AccountDetails';
+import { useUser } from '~/context/UserContext';
+import { CategoriesScreen } from '~/screens/Financial';
+import LoginScreen from '~/screens/Authentication/LoginScreen';
 import AddTaskScreen from '~/screens/Tasks/AddTask';
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +42,7 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={NewExpenseScreen}
+        component={TransactionsScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -53,9 +53,18 @@ export default function TabLayout({ navigation }: Props) {
         component={FinancialNavigator}
         options={{
           title: 'Financial',
-          tabBarIcon: ({ color }) => <TabBarIcon name="money" color={color} />, // ícone representativo
+          tabBarIcon: ({ color }) => <TabBarIcon name="money" color={color} />, // Ícone representativo
         }}
       />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+});
