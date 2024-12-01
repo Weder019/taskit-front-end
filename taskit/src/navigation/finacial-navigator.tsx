@@ -8,8 +8,8 @@ import * as FinancialScreens from '~/screens/Financial';
 export type FinancialStackParamList = {
   FinancialHome: undefined;
   NewBankAccount: undefined;
-  AccountDetails: undefined;
-  EditNewBankAccount: undefined;
+  AccountDetails: { account_id: string };
+  EditNewBankAccount: { account_id: string };
   NewExpense: undefined;
   EditExpense: undefined;
   NewIncome: undefined;

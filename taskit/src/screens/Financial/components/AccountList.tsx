@@ -1,19 +1,28 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { NavigationProp } from '@react-navigation/native';
 import React from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon } from 'react-native-paper';
 
 import GlobalCard from '~/components/GlobalCard';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import { Account } from '~/types';
 import { getIcon } from '~/utils/accountTypeList';
 
+type FinancialHomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'FinancialHome'>;
+
 interface AccountListProps {
   accounts: Account[]; // Lista de contas
+  navigation: FinancialHomeScreenNavigationProp; // Navegação passada como prop
 }
 
-const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
+const AccountList: React.FC<AccountListProps> = ({ accounts, navigation }) => {
   // Soma total das contas
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+
+  const handleNavigateToDetails = (accountId: string) => {
+    console.log(accountId);
+    navigation.navigate('AccountDetails', { account_id: accountId });
+  };
 
   return (
     <GlobalCard style={{ marginHorizontal: 20 }}>
@@ -25,7 +34,10 @@ const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
         {accounts.map((account, index) => {
           const iconName = getIcon(account.acc_type) || 'arrow-up-bold';
           return (
-            <View key={index} style={styles.accountItem}>
+            <TouchableOpacity
+              key={index}
+              style={styles.accountItem}
+              onPress={() => handleNavigateToDetails(account.id)}>
               <Icon source={iconName} size={24} color="#1C1B1F" />
               {/* Nome da conta */}
               <Text variant="bodyMedium" style={styles.accountName}>
@@ -40,7 +52,7 @@ const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
                 ]}>
                 R$ {account.balance.toFixed(2)}
               </Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>
@@ -64,26 +76,28 @@ const AccountList: React.FC<AccountListProps> = ({ accounts }) => {
 };
 
 const styles = StyleSheet.create({
-  card: {
-    paddingVertical: 16,
-    flex: 1,
-  },
   scrollContainer: {
-    maxHeight: 100,
+    maxHeight: 500,
     flexGrow: 0,
   },
   accountItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8, // Espaçamento entre as contas
+    marginBottom: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
   accountName: {
     fontFamily: 'Outfit-Regular',
     color: '#000',
+    flex: 1,
+    marginLeft: 8,
   },
   accountBalance: {
     fontFamily: 'Outfit-Regular',
+    textAlign: 'right',
   },
   positive: {
     color: 'green',
@@ -92,7 +106,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   divider: {
-    marginVertical: 8, // Espaçamento entre a lista e o total
+    marginVertical: 8,
   },
   totalContainer: {
     flexDirection: 'row',
@@ -106,7 +120,7 @@ const styles = StyleSheet.create({
   },
   totalBalance: {
     fontFamily: 'Outfit-Regular',
-    fontWeight: 'bold', // Destaque para o total
+    fontWeight: 'bold',
   },
 });
 
