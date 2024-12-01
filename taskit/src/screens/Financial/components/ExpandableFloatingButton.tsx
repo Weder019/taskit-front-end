@@ -30,6 +30,16 @@ const ExpandableFloatingButton: React.FC<ExpandableFloatingButtonProps> = ({ but
     setIsExpanded(!isExpanded);
   };
 
+  const handleMainButtonPress = () => {
+    if (buttons.length === 1) {
+      // Se houver apenas um botão, chama diretamente o onPress do único botão
+      buttons[0].onPress();
+    } else {
+      // Caso contrário, expande o menu
+      toggleMenu();
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Backdrop e botões */}
@@ -60,7 +70,7 @@ const ExpandableFloatingButton: React.FC<ExpandableFloatingButtonProps> = ({ but
       </Modal>
 
       {/* Botão flutuante principal */}
-      <TouchableOpacity style={styles.floatingButton} onPress={toggleMenu}>
+      <TouchableOpacity style={styles.floatingButton} onPress={handleMainButtonPress}>
         <IconButton icon="plus" size={24} iconColor="#FFFFFF" />
       </TouchableOpacity>
     </View>
