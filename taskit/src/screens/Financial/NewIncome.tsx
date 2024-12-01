@@ -162,7 +162,7 @@ export default function NewIncomeScreen() {
       return;
     }
 
-    const formattedDate = moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD');
+    const formattedDate = moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
     let baseIncome: IncomeInput = {
       inc_name: name,
@@ -312,7 +312,7 @@ export default function NewIncomeScreen() {
                         ...category,
                         icon: category.icon || 'dots-horizontal', // Garante o ícone padrão
                       })),
-                  ].map((category: Category) => (
+                  ].map((category: any) => (
                     <SelectItem
                       key={category.name}
                       label={category.name}

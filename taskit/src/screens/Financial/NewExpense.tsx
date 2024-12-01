@@ -319,7 +319,7 @@ export default function NewExpenseScreen() {
                         ...category,
                         icon: category.icon || 'dots-horizontal', // Garante o ícone padrão
                       })),
-                  ].map((category: Category) => (
+                  ].map((category: any) => (
                     <SelectItem
                       key={category.name}
                       label={category.name}

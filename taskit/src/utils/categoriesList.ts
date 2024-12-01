@@ -12,6 +12,7 @@ export const expenseCategories = [
   { name: 'Transporte', icon: 'car' },
   { name: 'Vestuário', icon: 'tshirt-crew' },
   { name: 'Viagem', icon: 'airplane' },
+  { name: 'Reajuste', icon: 'tools' },
 ];
 
 // Lista de categorias para receitas
@@ -21,4 +22,5 @@ export const incomeCategories = [
   { name: 'Presente', icon: 'gift' },
   { name: 'Prêmio', icon: 'trophy' },
   { name: 'Salário', icon: 'cash' },
+  { name: 'Reajuste', icon: 'tools' },
 ];

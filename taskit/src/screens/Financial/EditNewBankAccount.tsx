@@ -30,15 +30,12 @@ import { deleteAccount, updateAccount } from '~/services/accountService';
 type EditNewBankAccountScreenNavigationProp = NavigationProp<
   FinancialStackParamList,
   'EditNewBankAccount'
-  
-
 >;
 
 export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
 
   const { user, userData, refreshUserData } = useUser();
-  
 
   const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
   const [description, setDescription] = useState(userData.accounts[0].acc_name);
@@ -48,11 +45,13 @@ export default function EditNewBankAccount() {
     name: string;
     imageUri: string | undefined;
   }>({
-    name: userData.accounts[0].bank,
+    name: userData.accounts[0].bank || 'Sem Banco',
     imageUri: getBankImageUri(userData.accounts[0].bank),
   });
-  const [selectedBankName, setSelectedBankName] = useState(userData.accounts[0].bank)
-  const [selectedBankImg, setSelectedBankImg] = useState<string|undefined>(getBankImageUri(userData.accounts[0].bank))
+  const [selectedBankName, setSelectedBankName] = useState(userData.accounts[0].bank);
+  const [selectedBankImg, setSelectedBankImg] = useState<string | undefined>(
+    getBankImageUri(userData.accounts[0].bank)
+  );
 
   const [selectedAccountIcon, setSelectedAccountIcon] = useState(
     getIcon(userData.accounts[0].acc_type)
@@ -63,14 +62,13 @@ export default function EditNewBankAccount() {
     navigation.goBack();
   };
   const handleRedirect = () => {
-    navigation.navigate('FinancialHome'); 
+    navigation.navigate('FinancialHome');
   };
 
-
-  const handleSelectBank = (name: string, imageUri: string|undefined) => {
+  const handleSelectBank = (name: string, imageUri: string | undefined) => {
     setSelectedBankName(name);
     setSelectedBankImg(imageUri);
-    setSelectedBank({name, imageUri});
+    setSelectedBank({ name, imageUri });
   };
 
   const handleUpdate = async () => {
@@ -111,46 +109,42 @@ export default function EditNewBankAccount() {
   };
   const handleDelete = async () => {
     if (!user || !userData) {
-      Alert.alert("Erro", "Usuário não encontrado.");
+      Alert.alert('Erro', 'Usuário não encontrado.');
       return;
     }
-  
+
     const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
     if (!accountId) {
-      Alert.alert("Erro", "Conta não encontrada.");
+      Alert.alert('Erro', 'Conta não encontrada.');
       return;
     }
-  
+
     // Exibe o alerta de confirmação
-    Alert.alert(
-      "Confirmação",
-      "Tem certeza de que deseja excluir esta conta?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
+    Alert.alert('Confirmação', 'Tem certeza de que deseja excluir esta conta?', [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            // Chama o serviço para deletar a conta
+            const response = await deleteAccount(accountId);
+
+            // Atualiza os dados do usuário no contexto
+            await refreshUserData(user.uid);
+
+            handleRedirect(); // Retorna à tela anterior
+            Alert.alert('Sucesso', 'Conta excluída com sucesso!');
+          } catch (error) {
+            console.error('Erro ao excluir conta:', error);
+            Alert.alert('Erro', 'Não foi possível excluir a conta.');
+          }
         },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // Chama o serviço para deletar a conta
-              const response = await deleteAccount(accountId);
-  
-              // Atualiza os dados do usuário no contexto
-              await refreshUserData(user.uid);
-  
-              handleRedirect(); // Retorna à tela anterior
-              Alert.alert("Sucesso", "Conta excluída com sucesso!");
-            } catch (error) {
-              console.error("Erro ao excluir conta:", error);
-              Alert.alert("Erro", "Não foi possível excluir a conta.");
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   //Modal
@@ -167,7 +161,7 @@ export default function EditNewBankAccount() {
 
     bottomSheetAccount.current?.close();
   };
-  const handleBankChange = (bank: { name: string; imageUri: string|undefined }) => {
+  const handleBankChange = (bank: { name: string; imageUri: string | undefined }) => {
     setSelectedBank(bank);
   };
 
@@ -340,7 +334,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 200, // Espaço acima do botão
+    marginTop: 285, // Espaço acima do botão
   },
   gesture: {
     flex: 1,
@@ -382,7 +376,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginHorizontal: 20,
     marginTop: 20,
-    minHeight: 580,
-    maxHeight: 580,
+    minHeight: 700,
   },
 });

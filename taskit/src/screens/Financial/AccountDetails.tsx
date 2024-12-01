@@ -29,25 +29,22 @@ import CircularButton from '~/components/CircularButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
 import { ScreenContent } from '~/components/ScreenContent';
 import { useGlobalStyles } from '~/styles/globalStyles';
-import { Account } from '~/types/financial.types';
+import { Account, Expense, Income } from '~/types/';
 import { accountTypeList } from '~/utils/accountTypeList';
 import { getBankImageUri } from '~/utils/bankList';
 import { useUser } from '~/context/UserContext';
+import moment from 'moment';
+import { createIncome } from '~/services/incomeService';
+import { createExpense } from '~/services/expenseService';
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
 
   const { user, userData, refreshUserData } = useUser();
 
-  const accountId = 'HTFTDk51MRMbxddpSz6g';
-  const acc_type = 'Conta Corrente';
-
   const back = () => {
     console.log('back');
   };
 
-  const handleDelete = () => {
-    console.log('deletar');
-  };
   const [selectedAccount, setSelectedAccount] = useState<Account>(userData.accounts[0]);
   const [isEditingBalance, setIsEditingBalance] = useState(false);
   const [inputBalance, setInputBalance] = useState(userData.accounts[0].balance);
@@ -99,16 +96,58 @@ export default function AccountDetails() {
   };
 
   //Acredito q aqui q o fernando vai mexer
-  const handleConfirmBalance = () => {
+  const handleConfirmBalance = async () => {
     const updatedBalance = parseFloat(inputBalance.replace(',', '.'));
-    if (!isNaN(updatedBalance)) {
-      // setUserAccounts((prevAccounts) =>
-      //   prevAccounts.map((acc) =>
-      //     acc.id === selectedAccount.id ? { ...acc, balance: updatedBalance } : acc
-      //   )
-      // );
-      setSelectedAccount((prev) => ({ ...prev, balance: updatedBalance }));
+
+    if (isNaN(updatedBalance)) {
+      Alert.alert('Erro', 'O valor inserido é inválido. Por favor, insira um número válido.');
+      return;
     }
+    const difference = updatedBalance - selectedAccount.balance;
+
+    if (difference === 0) {
+      Alert.alert('Aviso', 'O saldo não sofreu alterações.');
+      return;
+    }
+
+    const isIncome = difference > 0;
+
+    const transaction = {
+      ...(isIncome
+        ? {
+            inc_name: 'Reajuste de Saldo',
+            category: 'Reajuste',
+            value: Math.abs(difference),
+            date: moment().format('YYYY-MM-DD'),
+            paid: true,
+          }
+        : {
+            exp_name: 'Reajuste de Saldo',
+            category: 'Reajuste',
+            value: Math.abs(difference),
+            date: moment().format('YYYY-MM-DD'),
+            paid: true,
+          }),
+    };
+
+    try {
+      // Chama o serviço correspondente
+      if (isIncome) {
+        await createIncome(selectedAccount.id, [transaction as Omit<Income, 'id' | 'startDate'>]);
+      } else {
+        await createExpense(selectedAccount.id, [transaction as Omit<Expense, 'id' | 'startDate'>]);
+      }
+
+      // Atualiza os dados globais do usuário
+      await refreshUserData(user?.uid || '');
+
+      Alert.alert('Sucesso', 'O saldo foi ajustado com sucesso!');
+      bottomSheetBalance.current?.close();
+    } catch (error) {
+      console.error('Erro ao ajustar o saldo:', error);
+      Alert.alert('Erro', 'Não foi possível ajustar o saldo. Tente novamente.');
+    }
+
     bottomSheetBalance.current?.close(); // Fecha o BottomSheet
   };
 
