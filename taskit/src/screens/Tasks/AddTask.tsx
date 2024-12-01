@@ -60,7 +60,7 @@ export default function AddTaskScreen() {
     const priorityValue = priority === 'Alta' ? 3 : priority === 'Média' ? 2 : 1;
     setPriority(priorityValue);
   };
-  
+
   const handleSubtaskPriorityChange = (priority: string, index: number) => {
     const priorityValue = priority === 'Alta' ? 3 : priority === 'Média' ? 2 : 1;
     handleSubtaskChange(index, 'priority', priorityValue);
@@ -77,17 +77,47 @@ export default function AddTaskScreen() {
       Alert.alert('Erro', 'O título da tarefa é obrigatório.');
       return;
     }
-
+    if (!descricao.trim()) {
+      Alert.alert('Erro', 'A descrição da tarefa é obrigatória.');
+      return;
+    }
     if (!selectedDate) {
       Alert.alert('Erro', 'A data é obrigatória.');
       return;
     }
+    if (priority === 0) {
+      Alert.alert('Erro', 'A prioridade da tarefa é obrigatória.');
+      return;
+    }
+    const titles = subtasks.map((subtask) => subtask.title.trim());
+    const hasDuplicates = titles.some((title, index) => titles.indexOf(title) !== index);
+
+    if (hasDuplicates) {
+      Alert.alert('Erro', 'Existem subtarefas com títulos duplicados. Por favor, corrija-os.');
+      return;
+    }
 
     // Filtrar subtarefas válidas (com título e descrição preenchidos)
-    const validSubtasks = subtasks.filter(
-      (subtask) => subtask.title.trim() && subtask.description.trim()
-    );
-    console.log(priority)
+    const validSubtasks = subtasks.filter((subtask) => {
+      if (!subtask.title.trim()) {
+        Alert.alert('Erro', `O título da subtarefa é obrigatório.`);
+        return false;
+      }
+  
+  
+      if (subtask.priority === 0) {
+        Alert.alert('Erro', `A prioridade da subtarefa é obrigatória.`);
+        return false;
+      }
+  
+      return true;
+    });
+  
+    // Caso alguma subtarefa seja inválida, interrompe o envio
+    if (validSubtasks.length !== subtasks.length) {
+      return;
+    }
+    console.log(priority);
     try {
       const newTask = {
         title: titulo,
@@ -218,6 +248,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
+    backgroundColor: '#DFE2EB',
   },
   containerTitle: {
     flex: 1,
@@ -231,12 +262,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
   },
-  taskTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 20,
-  },
+
   separator: {
     height: 1,
     backgroundColor: '#ccc',

@@ -98,16 +98,16 @@ export const toggleTaskStatus = async (taskId: string): Promise<toggleTaskStatus
 // Alterna o status de conclusão de uma subtarefa
 export const toggleSubTaskStatus = async (
   taskId: string,
-  subTaskTitle: string
+  subTaskTitles: string[]
 ): Promise<toggleSubTaskStatusResponse> => {
   try {
     const toggleSubTaskStatusCallable = httpsCallable<
-      { taskId: string; subTaskTitle: string },
+      { taskId: string; subTaskTitles: string[] },
       { message: toggleSubTaskStatusResponse }
     >(functions, "task-toggleSubTaskStatus");
 
     const response = await toggleSubTaskStatusCallable({
-       taskId, subTaskTitle
+       taskId, subTaskTitles
     });
     
     return response.data.message;

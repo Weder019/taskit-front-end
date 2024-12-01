@@ -33,7 +33,6 @@ export default function TaskDetails() {
       )
     );
   };
-  
 
   const back = () => {
     console.log('Voltar para a tela anterior');
@@ -50,11 +49,6 @@ export default function TaskDetails() {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const [year, month, day] = dateString.split('-'); // Divide a string da data pelo separador '-'
-    return `${day}/${month}/${year}`; // Retorna a data formatada como "DD/MM/YYYY"
-  };
-
 
   const handleSave = async () => {
     if (!task || !user) {
@@ -63,25 +57,32 @@ export default function TaskDetails() {
     }
 
     try {
-      // Atualizar todas as subtarefas alteradas no banco
-      await Promise.all(
-        subtasks.map(async (subtask) => {
-          const original = task.subTask.find((t) => t.title === subtask.title);
-          if (original?.done !== subtask.done) {
-            // Chama o serviço para alternar o status da subtarefa
-            await toggleSubTaskStatus(task.id, subtask.title);
-          }
-        })
-      );
+      // Filtra apenas as subtarefas que tiveram o status alterado
+      const changedSubtasks = subtasks.filter((subtask) => {
+        const original = task.subTask.find((t) => t.title === subtask.title);
+        return original?.done !== subtask.done;
+      });
 
-      // Atualiza os dados do usuário
-      await refreshUserData(user.uid);
-      Alert.alert('Sucesso', 'Subtarefas salvas com sucesso!');
+      if (changedSubtasks.length > 0) {
+        // Obtém os títulos das subtarefas alteradas
+        const changedSubtaskTitles = changedSubtasks.map((subtask) => subtask.title);
+
+        // Chama o serviço para alternar o status das subtarefas
+        await toggleSubTaskStatus(task.id, changedSubtaskTitles);
+
+        // Atualiza os dados do usuário
+        await refreshUserData(user.uid);
+
+        Alert.alert('Sucesso', 'Subtarefas salvas com sucesso!');
+      } else {
+        Alert.alert('Nenhuma alteração', 'Nenhuma subtarefa foi alterada.');
+      }
     } catch (error) {
       console.error('Erro ao salvar subtarefas:', error);
       Alert.alert('Erro', 'Não foi possível salvar as subtarefas.');
     }
   };
+
   const handleCompleteTask = async () => {
     if (!task || !user) {
       Alert.alert('Erro', 'Tarefa ou usuário não encontrados.');
@@ -89,14 +90,15 @@ export default function TaskDetails() {
     }
 
     try {
-      // Garantir que todas as subtarefas estejam marcadas como concluídas
-      await Promise.all(
-        subtasks.map(async (subtask) => {
-          if (!subtask.done) {
-            await toggleSubTaskStatus(task.id, subtask.title);
-          }
-        })
-      );
+      // Obtém os títulos das subtarefas que ainda não foram concluídas
+      const incompleteSubtasks = subtasks
+        .filter((subtask) => !subtask.done)
+        .map((subtask) => subtask.title);
+
+      if (incompleteSubtasks.length > 0) {
+        // Marca todas as subtarefas como concluídas
+        await toggleSubTaskStatus(task.id, incompleteSubtasks);
+      }
 
       // Alternar o status da tarefa principal
       await toggleTaskStatus(task.id);
@@ -132,7 +134,7 @@ export default function TaskDetails() {
               </Text>
 
               <Text style={styles.infoText}>
-                Prazo: <Text style={styles.data}>{formatDate(userData.tasks[0].data)}</Text>
+                Prazo: <Text style={styles.data}>{userData.tasks[0].data}</Text>
               </Text>
             </View>
 
@@ -151,6 +153,7 @@ export default function TaskDetails() {
                   key={index}
                   title={subtask.title}
                   subtitle={subtask.description}
+                  priority={getPriority(subtask.priority)}
                   checked={subtask.done}
                   onToggle={() => toggleSubtask(index)}
                 />
@@ -194,7 +197,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   container: {
-    minHeight: "88%",
+    minHeight: '88%',
+    maxHeight: '88%',
   },
   title: {
     fontSize: 28,
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    width:"57%"
+    width: '57%',
   },
   data: {
     fontWeight: 'bold',

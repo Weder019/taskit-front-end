@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -20,13 +20,21 @@ const DatePickerButton: React.FC<DatePickerButtonProps> = ({
   const [date, setDate] = useState(parsedDate);
   const [showPicker, setShowPicker] = useState(false);
 
+  // Valida e define a data inicial ao carregar o componente
+  useEffect(() => {
+    if (!initialDate) {
+      const today = moment().format('DD/MM/YYYY');
+      onDateChange(today); // Notifica a data inicial
+    }
+  }, [initialDate, onDateChange]);
+
   const handleOpenCalendar = () => {
     setShowPicker(true);
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowPicker(false);
-    if (selectedDate && selectedDate.toDateString() !== date.toDateString()) {
+    if (selectedDate) {
       setDate(selectedDate);
       const formattedDate = moment(selectedDate).format('DD/MM/YYYY');
       onDateChange(formattedDate);
@@ -43,7 +51,7 @@ const DatePickerButton: React.FC<DatePickerButtonProps> = ({
           style={styles.icon}
         />
         <Text style={styles.label}>
-          {date ? moment(date).format('DD/MM/YYYY') : label}
+          {moment(date).format('DD/MM/YYYY') || label}
         </Text>
       </TouchableOpacity>
 
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 14,
-    marginBottom:20
+    marginBottom: 20,
   },
   icon: {
     marginRight: 10, // Espaço entre o ícone e o texto
