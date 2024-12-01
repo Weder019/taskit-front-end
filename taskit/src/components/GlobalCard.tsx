@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     padding: 16, // Espaçamento interno
     shadowColor: '#000', // Sombra para destaque
     shadowOffset: { width: 0, height: 2 },
-    maxHeight: 200,
+    maxHeight: 300,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3, // Elevação para Android

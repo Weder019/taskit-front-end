@@ -6,7 +6,6 @@ import { Button, Text } from 'react-native-paper';
 
 import EditableAmountInput from './components/EditableAmountInput';
 import Container from '../../components/Container';
-import DropdownInput from '../../components/DropdownInput';
 import { ScreenContent } from '../../components/ScreenContent';
 
 import { BackButton } from '~/components/BackButton';
@@ -20,118 +19,58 @@ import 'moment/locale/pt-br';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import OpenModalButton from './components/OpenModalButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
-import QuantitySelector from './components/QuantitySelector';
 import SelectItem from './components/SelectItem';
-import { Account } from '~/types/financial.types';
+import { Account, Category, Income } from '~/types/models';
+import { accountTypeList } from '../../utils/accountTypeList';
+import { incomeCategories } from '../../utils/categoriesList';
 import TrashButton from '~/components/TrashButton';
+import { useUser } from '~/context/UserContext';
+import { deleteIncome, updateIncome } from '~/services/incomeService';
+
 moment.locale('pt-br');
 
 type EditIncomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditIncome'>;
 
 export default function EditIncomeScreen() {
   const style = useGlobalStyles();
+  const { user, userData, refreshUserData } = useUser();
+  console.log(userData.accounts[0].incomes[0]);
+
   const navigation = useNavigation<EditIncomeScreenNavigationProp>();
 
-  const [userAccounts, setUserAccounts] = useState<Account[]>([
-    {
-      id: 'HTFTDk51MRMbxddpSz6g',
-      acc_name: 'Minha Conta Nubank', // Nome escolhido pelo usuário
-      acc_type: 'Conta Corrente', // Relacionado ao accountList
-      bank: 'Nubank',
-      expenses: [],
-      incomes: [],
-      balance: 1000,
-    },
-    {
-      id: '2',
-      acc_name: 'Poupança da Caixa',
-      acc_type: 'Poupança',
-      bank: 'Caixa Econômica',
-      expenses: [],
-      incomes: [],
-      balance: 500,
-    },
-    {
-      id: '3',
-      acc_name: 'Minha Carteira',
-      acc_type: 'Carteira',
-      bank: '',
-      expenses: [],
-      incomes: [],
-      balance: 250,
-    },
-  ]);
-
-  const accountId = 'HTFTDk51MRMbxddpSz6g';
-  const acc_type = 'Conta Corrente';
-  const [income, setIncome] = useState({
-    id: 'U6KqFx8UmO8rEs20tKJE',
-    inc_name: 'Dividendos CPX022',
-    category: 'Investimento',
-    value: 330,
-    date: '2024-11-07',
-    fixed: true,
-    received: true,
-  });
-
-  const [amount, setAmount] = useState(income.value.toFixed(2).replace('.', ','));
-  const [received, setReceived] = useState(income.received);
-  const [name, setName] = useState(income.inc_name);
-  const [fixed, setFix] = useState(income.fixed);
-  const [repeat, setRepeat] = useState(false);
-  const [quantity, setQuantity] = useState(2);
-  const [period, setPeriod] = useState('Mensal');
+  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState(
+    userData.accounts[0].incomes[0].value.toFixed(2).replace('.', ',')
+  );
+  const [paid, setPaid] = useState(userData.accounts[0].incomes[0].paid);
+  const [name, setName] = useState(userData.accounts[0].incomes[0].inc_name);
   const [selectedDate, setSelectedDate] = useState(
-    moment(income.date, 'YYYY-MM-DD').format('DD/MM/YYYY')
+    moment(userData.accounts[0].incomes[0].date, 'YYYY-MM-DD').format('YYYY-MM-DD')
   );
 
-  const [selectedCategory, setSelectedCategory] = useState(income.category);
+  const [selectedCategory, setSelectedCategory] = useState(
+    userData.accounts[0].incomes[0].category
+  );
   const [selectedAccount, setSelectedAccountType] = useState(
-    userAccounts.find((account) => account.id === accountId)?.acc_name || 'wallet'
+    userData.accounts.find((account: Account) => account.id === userData.accounts[0].id)
+      ?.acc_name || 'wallet'
   );
 
   const back = () => {
     navigation.goBack();
   };
 
-  const handleDelete = () => {
-    console.log('deletar');
-  };
-
   const bottomSheetAccount = useRef<BottomSheet>(null);
   const bottomSheetCategory = useRef<BottomSheet>(null);
-  const bottomSheetRepeat = useRef<BottomSheet>(null);
-
-  const accountList = [
-    { name: 'Carteira', iconName: 'wallet' },
-    { name: 'Conta Corrente', iconName: 'bank' },
-    { name: 'Poupança', iconName: 'download' },
-    { name: 'Investimentos', iconName: 'trending-up' },
-    { name: 'Outros', iconName: 'dots-horizontal' },
-  ];
-
-  const categoryList = [
-    { name: 'Casa', iconName: 'home' },
-    { name: 'Educação', iconName: 'school' },
-    { name: 'Eletrônicos', iconName: 'devices' },
-    { name: 'Lazer', iconName: 'gamepad' },
-    { name: 'Outros', iconName: 'dots-horizontal' },
-    { name: 'Restaurantes', iconName: 'food' },
-    { name: 'Saúde', iconName: 'heart' },
-    { name: 'Serviços', iconName: 'cog' },
-    { name: 'Supermercado', iconName: 'cart' },
-    { name: 'Transporte', iconName: 'car' },
-    { name: 'Investimento', iconName: 'cash' },
-    { name: 'Presente', iconName: 'gift' },
-    { name: 'Salário', iconName: 'cash-multiple' },
-    { name: 'Prêmio', iconName: 'trophy' },
-  ];
 
   const [selectedCategoryIcon, setSelectedCategoryIcon] = useState(
-    categoryList.find((categories) => categories.name === income.category)?.iconName || 'tag'
+    incomeCategories.find(
+      (categories) => categories.name === userData.accounts[0].incomes[0].category
+    )?.icon || 'tag'
   );
   const [selectedAccountIcon, setSelectedAccountIcon] = useState(
-    accountList.find((account) => account.name === acc_type)?.iconName || 'wallet'
+    accountTypeList.find((account) => account.name === userData.accounts[0].acc_type)?.iconName ||
+      'wallet'
   );
 
   const handleSnapPressAccount = (index: number) => {
@@ -142,38 +81,32 @@ export default function EditIncomeScreen() {
     bottomSheetCategory.current?.snapToIndex(index);
   };
 
-  const handleSnapPressRepeat = (index: number) => {
-    bottomSheetRepeat.current?.snapToIndex(index);
-  };
-
-  const handleRepeatChange = (value: boolean) => {
-    if (value) {
-      handleSnapPressRepeat(0);
-    } else {
-      setRepeat(false);
-    }
-  };
-
   const handleAccountChange = (account: { name: string; iconName: string }) => {
     setSelectedAccountType(account.name);
     setSelectedAccountIcon(account.iconName);
     bottomSheetAccount.current?.close();
   };
 
-  const handleCategoryChange = (category: { name: string; iconName: string }) => {
+  const handleCategoryChange = (category: { name: string; icon: string }) => {
     setSelectedCategory(category.name);
-    setSelectedCategoryIcon(category.iconName);
+    setSelectedCategoryIcon(category.icon);
     bottomSheetCategory.current?.close();
   };
 
-  const handleSaveIncome = () => {
+  const handleSaveIncome = async () => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
     // Validação dos campos
     if (!name.trim()) {
       Alert.alert('Erro', 'Por favor, insira o nome da receita.');
       return;
     }
 
-    if (!amount || parseFloat(amount.replace(',', '.')) <= 0) {
+    const value = parseFloat(amount.replace(',', '.'));
+    if (!value || value <= 0) {
       Alert.alert('Erro', 'Por favor, insira um valor válido.');
       return;
     }
@@ -183,46 +116,137 @@ export default function EditIncomeScreen() {
       return;
     }
 
-    const selectedAccountData = userAccounts.find(
-      (account) => account.acc_name === selectedAccount
+    const newAccount = userData.accounts.find(
+      (account: Account) => account.acc_name === selectedAccount
     );
-    if (!selectedAccountData) {
+
+    if (!newAccount) {
       Alert.alert('Erro', 'Conta selecionada inválida.');
       return;
     }
 
-    const updatedIncome = {
-      id: income.id,
+    // Montar o objeto atualizado
+    const updatedIncome: Income = {
+      id: userData.accounts[0].incomes[0].id, // ID original
       inc_name: name,
       category: selectedCategory,
-      value: parseFloat(amount.replace(',', '.')),
-      date: moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD'),
-      fixed,
-      received,
+      value,
+      date: moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+      fixed: userData.accounts[0].incomes[0].fixed,
+      paid,
     };
 
-    if (selectedAccountData.id !== accountId) {
-      const payload = {
-        oldAccountId: accountId,
-        newAccountId: selectedAccountData.id,
-        income: updatedIncome,
-      };
-      console.log('Conta alterada, payload:', payload);
-      // Mostrar alerta de confirmação
-      Alert.alert('Conta Alterada', 'A receita foi movida para outra conta.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
-    } else {
-      // Caso a conta não tenha sido alterada
-      const payload = {
-        accountId, // ID da conta atual
-        expense: updatedIncome,
-      };
+    console.log(updatedIncome);
+    setLoading(true);
+    try {
+      // Caso a conta tenha sido alterada
+      if (newAccount.id !== userData.accounts[0].id) {
+        await updateIncome(newAccount.id, updatedIncome, userData.accounts[0].id);
+        Alert.alert('Sucesso', 'Receita movida para outra conta e atualizada com sucesso!');
+      } else {
+        // Caso permaneça na mesma conta
+        await updateIncome(newAccount.id, updatedIncome);
+        Alert.alert('Sucesso', 'Receita atualizada com sucesso!');
+      }
 
-      console.log('Conta inalterada, payload:', payload);
-      Alert.alert('Sucesso', 'Despesa atualizada com sucesso!', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
+      navigation.goBack(); // Volta para a tela anterior
+    } catch (error) {
+      console.error('Erro ao atualizar receita:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar a receita. Tente novamente.');
+    } finally {
+      setLoading(false); // Desativa o indicador de carregamento
+    }
+  };
+
+  const handleDelete = async (income: Income) => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
+    // Encontra a conta associada à receita
+    const account = userData.accounts.find((acc: Account) =>
+      acc.incomes.some((i) => i.id === income.id)
+    );
+
+    if (!account) {
+      Alert.alert('Erro', 'Conta associada à receita não encontrada.');
+      return;
+    }
+
+    const isSameIncome = (i: Income) =>
+      i.startDate === income.startDate &&
+      i.inc_name === income.inc_name &&
+      i.category === income.category &&
+      i.value === income.value;
+
+    const deleteIncomes = async (ids: string[], successMessage: string) => {
+      try {
+        if (ids.length > 0) {
+          await deleteIncome(account.id, ids);
+          await refreshUserData(user.uid);
+          Alert.alert('Sucesso', successMessage);
+        } else {
+          Alert.alert('Aviso', 'Nenhuma receita encontrada para remover.');
+        }
+      } catch (error) {
+        console.error('Erro ao remover receita:', error);
+        Alert.alert('Erro', 'Não foi possível remover as receitas.');
+      }
+    };
+
+    if (income.fixed) {
+      Alert.alert(
+        'Excluir Receita',
+        'Esta receita é fixa. O que você deseja fazer?',
+        [
+          {
+            text: 'Remover Todas (Efetivadas)',
+            onPress: async () => {
+              const allIncomes = account.incomes
+                .filter((i: Income) => isSameIncome(i))
+                .map((i: Income) => i.id);
+              await deleteIncomes(allIncomes, 'Todas as receitas removidas com sucesso!');
+            },
+          },
+          {
+            text: 'Remover Todas Pendentes',
+            onPress: async () => {
+              const pendingIncomes = account.incomes
+                .filter((i: Income) => isSameIncome(i) && !i.paid)
+                .map((i: Income) => i.id);
+              await deleteIncomes(pendingIncomes, 'Receitas pendentes removidas com sucesso!');
+            },
+          },
+          {
+            text: 'Remover Somente Essa',
+            onPress: async () => {
+              await deleteIncomes([income.id], 'Receita removida com sucesso!');
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      // Alerta para receita não fixas
+      Alert.alert(
+        'Excluir Receita',
+        'Tem certeza que deseja excluir esta receita?',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+          {
+            text: 'Excluir',
+            onPress: async () => {
+              await deleteIncomes([income.id], 'Receita removida com sucesso!');
+            },
+          },
+        ],
+        { cancelable: true }
+      );
     }
   };
 
@@ -239,7 +263,7 @@ export default function EditIncomeScreen() {
                 Editar Receita
               </Text>
             </View>
-            <TrashButton onPress={handleDelete} size={35} />
+            <TrashButton onPress={() => handleDelete(userData.accounts[0].incomes[0])} size={35} />
           </View>
           <View style={styles.containerSubtitle}>
             <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>
@@ -247,10 +271,10 @@ export default function EditIncomeScreen() {
             </Text>
             <EditableAmountInput value={amount} onChangeValue={setAmount} style={style.title} />
           </View>
-          <Container rounded>
+          <Container rounded style={styles.container}>
             <GlobalSwitch
-              value={received}
-              onValueChange={(value) => setReceived(value)}
+              value={paid}
+              onValueChange={(value) => setPaid(value)}
               label="Recebido"
               color="#37618E" // cor personalizada
               icon="check-circle"
@@ -288,27 +312,14 @@ export default function EditIncomeScreen() {
               errorMessage=""
               style={styles.openModal}
             />
-            <GlobalSwitch
-              value={fixed}
-              onValueChange={(value) => setFix(value)}
-              label="Receita Fixa"
-              color="#37618E" // cor personalizada
-              icon="pin"
-              style={styles.switch}
-            />
-            <GlobalSwitch
-              value={repeat}
-              onValueChange={handleRepeatChange}
-              label="Repetir"
-              color="#37618E" // cor personalizada
-              icon="repeat"
-              style={styles.switch}
-            />
             <Button
               mode="contained"
               onPress={handleSaveIncome}
-              style={[style.containedButtonDefaultStyle, styles.button]}>
-              Salvar
+              style={[style.containedButtonDefaultStyle, styles.button]}
+              disabled={loading} // Desativa o botão enquanto está carregando
+              loading={loading} // Exibe o indicador de carregamento enquanto está carregando
+            >
+              {loading ? 'Salvando...' : 'Salvar'}
             </Button>
           </Container>
 
@@ -319,7 +330,18 @@ export default function EditIncomeScreen() {
               <>
                 <BottomSheetScrollView>
                   <Text style={styles.BottomSheetTitle}>Tags</Text>
-                  {categoryList.map((category) => (
+                  {[
+                    ...incomeCategories.map((category) => ({
+                      ...category,
+                      type: 'expense',
+                    })),
+                    ...userData.categories
+                      .filter((category: Category) => category.type === 'expense')
+                      .map((category: { icon: any }) => ({
+                        ...category,
+                        icon: category.icon || 'dots-horizontal', // Garante o ícone padrão
+                      })),
+                  ].map((category: any) => (
                     <SelectItem
                       key={category.name}
                       label={category.name}
@@ -327,7 +349,7 @@ export default function EditIncomeScreen() {
                       value={{ name: category.name, imageUri: '' }}
                       selectedValue={selectedCategory}
                       onChange={() => handleCategoryChange(category)}
-                      iconName={category.iconName}
+                      iconName={category.icon || 'dots-horizontal'} // Ícone válido
                       style={styles.SelectItemInsideModal}
                     />
                   ))}
@@ -343,57 +365,30 @@ export default function EditIncomeScreen() {
               <>
                 <BottomSheetView>
                   <Text style={styles.BottomSheetTitle}>Tipo da Conta</Text>
-                  {userAccounts.map((account) => {
-                    const icon =
-                      accountList.find((item) => item.name === account.acc_type)?.iconName ||
-                      'wallet';
+                  {userData.accounts.map((account: Account) => {
+                    const accountType = accountTypeList.find(
+                      (type) => type.name === account.acc_type
+                    );
                     return (
                       <SelectItem
                         key={account.id}
-                        label={account.acc_name}
+                        label={account.acc_name} // Nome da conta
                         type="categoria"
                         value={{ name: account.acc_name, imageUri: '' }}
                         selectedValue={selectedAccount}
                         onChange={() =>
-                          handleAccountChange({ name: account.acc_name, iconName: icon })
+                          handleAccountChange({
+                            name: account.acc_name,
+                            iconName: accountType?.iconName || 'help-circle',
+                          })
                         }
-                        iconName={icon}
+                        iconName={accountType?.iconName || 'help-circle'} // Ícone baseado no tipo
                         style={styles.SelectItemInsideModal}
                       />
                     );
                   })}
                 </BottomSheetView>
               </>
-            }
-          />
-
-          <CustomBottomSheet
-            ref={bottomSheetRepeat}
-            snapPoints={['35%']}
-            children={
-              <BottomSheetView style={styles.repeatContent}>
-                <Text style={styles.containerHeadline}>Como sua transação se repete?</Text>
-                <View style={styles.repeatOption}>
-                  <Text style={styles.optionLabel}>Quantidade</Text>
-                  <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
-                </View>
-                <View style={styles.repeatOption}>
-                  <Text style={styles.optionLabel}>Período</Text>
-                  <DropdownInput
-                    value={period}
-                    options={['Diário', 'Semanal', 'Mensal', 'Anual']}
-                    onSelect={(value) => setPeriod(value)}
-                  />
-                </View>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    setRepeat(true);
-                    bottomSheetRepeat.current?.close();
-                  }}>
-                  Concluído
-                </Button>
-              </BottomSheetView>
             }
           />
         </ScreenContent>
@@ -486,5 +481,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 8,
     marginHorizontal: 15,
+  },
+  container: {
+    minHeight: 680,
   },
 });

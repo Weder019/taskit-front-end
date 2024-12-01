@@ -12,7 +12,7 @@ interface OpenModalButtonProps {
   style?: ViewStyle; // Estilo personalizado
   error?: boolean; // Exibe erro
   errorMessage?: string;
-  prefixIcon?: string; // Ícone à esquerda, opcional
+  prefixIcon?: string | null; // Ícone à esquerda, opcional
 }
 
 const OpenModalButton: React.FC<OpenModalButtonProps> = ({
