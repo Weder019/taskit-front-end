@@ -23,8 +23,8 @@ import {
 } from '~/screens/Financial';
 import LoginScreen from '~/screens/Authentication/LoginScreen';
 import AddTaskScreen from '~/screens/Tasks/AddTask';
-import TaskList from '~/screens/TaskList';
-import TaskDetails from '~/screens/ViewTaskScreen';
+
+import TaskDetails from '~/screens/Tasks/ViewTaskScreen';
 
 const Tab = createBottomTabNavigator();
 
