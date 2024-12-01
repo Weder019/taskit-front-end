@@ -41,7 +41,7 @@ export default function EditNewBankAccount() {
 
   // Estados iniciais baseados na conta filtrada
   const [description, setDescription] = useState(selectedAccount?.acc_name || '');
-  const [amount, setAmount] = useState(selectedAccount?.balance || 0);
+  // const [amount, setAmount] = useState(selectedAccount?.balance || 0);
   const [selectedBank, setSelectedBank] = useState<{
     name: string;
     imageUri: string | undefined;
@@ -87,7 +87,7 @@ export default function EditNewBankAccount() {
     try {
       const updatedAccount = {
         acc_name: description,
-        balance: parseFloat(amount.toString().replace(',', '.')), // Converte para número
+        balance: selectedAccount.balance,
         bank: selectedBank?.name,
         acc_type: selectedAccountType,
       };
@@ -192,11 +192,8 @@ export default function EditNewBankAccount() {
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.subtitle]}>
                 Saldo Da Conta
               </Text>
-              <EditableAmountInput
-                value={amount}
-                onChangeValue={setAmount}
-                style={Globalstyles.title}
-              />
+              <Text style={Globalstyles.title}>R$ {selectedAccount.balance}</Text>
+              
             </View>
             <Container rounded style={styles.container}>
               <SelectItem

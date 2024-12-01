@@ -13,6 +13,7 @@ import { TaskStackParamList } from '~/navigation/task-navigator';
 import { toggleSubTaskStatus, toggleTaskStatus } from '~/services/taskService';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { SubTask, Task } from '~/types';
+import EditButton from './components/EditButton';
 
 type ViewTaskNavigationProp = NavigationProp<TaskStackParamList, 'ViewTask'>;
 type ViewTasRouteProp = RouteProp<TaskStackParamList, 'ViewTask'>;
@@ -52,6 +53,9 @@ export default function TaskDetails() {
   const back = () => {
     navigation.goBack();
   };
+  const editScreen = () => {
+
+  }
 
   const getPriority = (index: number) => {
     switch (index) {
@@ -136,9 +140,12 @@ export default function TaskDetails() {
             <>
               <View style={styles.containerTitle}>
                 <BackButton onPress={back} />
-                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-                  {task.title}
-                </Text>
+                <View style={{ flex: 1, alignItems: 'center', marginLeft: 50 }}>
+                  <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                    {task.title}
+                  </Text>
+                </View>
+                <EditButton onPress={editScreen} size={35} />
               </View>
 
               <Container rounded style={styles.container}>
