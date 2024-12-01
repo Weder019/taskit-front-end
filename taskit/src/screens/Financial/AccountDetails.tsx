@@ -3,8 +3,9 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { NavigationProp, useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import moment from 'moment';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -28,37 +29,49 @@ import { BackButton } from '~/components/BackButton';
 import CircularButton from '~/components/CircularButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
 import { ScreenContent } from '~/components/ScreenContent';
+import { useUser } from '~/context/UserContext';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+import { createExpense } from '~/services/expenseService';
+import { createIncome } from '~/services/incomeService';
 import { useGlobalStyles } from '~/styles/globalStyles';
-import { Account } from '~/types/financial.types';
+import { Account, Expense, Income } from '~/types/models';
 import { accountTypeList } from '~/utils/accountTypeList';
 import { getBankImageUri } from '~/utils/bankList';
-import { useUser } from '~/context/UserContext';
+
+type AccountDetailsNavigationProp = NavigationProp<FinancialStackParamList, 'AccountDetails'>;
+type AccountDetailsRouteProp = RouteProp<FinancialStackParamList, 'AccountDetails'>;
+
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
-
   const { user, userData, refreshUserData } = useUser();
+  const route = useRoute<AccountDetailsRouteProp>();
+  const { account_id } = route.params;
+  const navigation = useNavigation<AccountDetailsNavigationProp>();
 
-  const accountId = 'HTFTDk51MRMbxddpSz6g';
-  const acc_type = 'Conta Corrente';
-
-  const back = () => {
-    console.log('back');
-  };
-
-  const handleDelete = () => {
-    console.log('deletar');
-  };
   const [selectedAccount, setSelectedAccount] = useState<Account>(userData.accounts[0]);
   const [isEditingBalance, setIsEditingBalance] = useState(false);
   const [inputBalance, setInputBalance] = useState(userData.accounts[0].balance);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  React.useEffect(() => {
-    if (userData?.accounts?.length > 0) {
-      setSelectedAccount(userData.accounts[0]);
-    }
-  }, [userData]);
 
-  const bankIconUri = getBankImageUri(userData.accounts[0].bank);
+  const goBack = () => {
+    navigation.goBack();
+  };
+
+  const handleNavigateToEdit = () => {
+    navigation.navigate('EditNewBankAccount', { account_id: selectedAccount.id });
+  };
+
+  useEffect(() => {
+    if (userData?.accounts?.length > 0) {
+      // Filtra a conta com base no ID recebido pela rota
+      const account = userData.accounts.find((acc: Account) => acc.id === account_id);
+      if (account) {
+        setSelectedAccount(account); // Define a conta encontrada como selecionada
+      } else {
+        console.warn('Conta não encontrada para o ID fornecido.');
+      }
+    }
+  }, [userData, account_id]);
 
   const bottomSheetAccount = useRef<BottomSheet>(null);
   const bottomSheetBalance = useRef<BottomSheet>(null);
@@ -99,16 +112,59 @@ export default function AccountDetails() {
   };
 
   //Acredito q aqui q o fernando vai mexer
-  const handleConfirmBalance = () => {
+  //Acredito q aqui q o fernando vai mexer
+  const handleConfirmBalance = async () => {
     const updatedBalance = parseFloat(inputBalance.replace(',', '.'));
-    if (!isNaN(updatedBalance)) {
-      // setUserAccounts((prevAccounts) =>
-      //   prevAccounts.map((acc) =>
-      //     acc.id === selectedAccount.id ? { ...acc, balance: updatedBalance } : acc
-      //   )
-      // );
-      setSelectedAccount((prev) => ({ ...prev, balance: updatedBalance }));
+
+    if (isNaN(updatedBalance)) {
+      Alert.alert('Erro', 'O valor inserido é inválido. Por favor, insira um número válido.');
+      return;
     }
+    const difference = updatedBalance - selectedAccount.balance;
+
+    if (difference === 0) {
+      Alert.alert('Aviso', 'O saldo não sofreu alterações.');
+      return;
+    }
+
+    const isIncome = difference > 0;
+
+    const transaction = {
+      ...(isIncome
+        ? {
+            inc_name: 'Reajuste de Saldo',
+            category: 'Reajuste',
+            value: Math.abs(difference),
+            date: moment().format('YYYY-MM-DD'),
+            paid: true,
+          }
+        : {
+            exp_name: 'Reajuste de Saldo',
+            category: 'Reajuste',
+            value: Math.abs(difference),
+            date: moment().format('YYYY-MM-DD'),
+            paid: true,
+          }),
+    };
+
+    try {
+      // Chama o serviço correspondente
+      if (isIncome) {
+        await createIncome(selectedAccount.id, [transaction as Omit<Income, 'id' | 'startDate'>]);
+      } else {
+        await createExpense(selectedAccount.id, [transaction as Omit<Expense, 'id' | 'startDate'>]);
+      }
+
+      // Atualiza os dados globais do usuário
+      await refreshUserData(user?.uid || '');
+
+      Alert.alert('Sucesso', 'O saldo foi ajustado com sucesso!');
+      bottomSheetBalance.current?.close();
+    } catch (error) {
+      console.error('Erro ao ajustar o saldo:', error);
+      Alert.alert('Erro', 'Não foi possível ajustar o saldo. Tente novamente.');
+    }
+
     bottomSheetBalance.current?.close(); // Fecha o BottomSheet
   };
 
@@ -124,7 +180,7 @@ export default function AccountDetails() {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <ScreenContent>
             <View style={styles.containerTitle}>
-              <BackButton onPress={back} />
+              <BackButton onPress={goBack} />
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
                 Detalhes
               </Text>
@@ -197,7 +253,7 @@ export default function AccountDetails() {
                     iconSize={32}
                     style={styles.iconDetails} // Adicione um estilo consistente
                   />
-                  <CircularButton onPress={back} iconName="pencil" size={48} />
+                  <CircularButton onPress={handleNavigateToEdit} iconName="pencil" size={48} />
                 </View>
               </View>
             </Container>

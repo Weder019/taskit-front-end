@@ -25,7 +25,7 @@ export default function FinancialHome() {
   const navigation = useNavigation<FinancialHomeScreenNavigationProp>();
   const [currentMonth, setCurrentMonth] = useState(moment());
   const [accounts, setAccounts] = useState<Account[] | null>(null);
-  const [currentMonthExpenses, setCurrentMonthExpenses] = useState<Expense[] | null>(null);
+  const [currentMonthExpenses, setCurrentMonthExpenses] = useState<Expense[] | []>([]);
   const [currentMonthIncomes, setCurrentMonthIncomes] = useState<Income[] | null>(null);
   const [accountsBalance, setAccountsBalance] = useState<number>(0);
   const [filteredExpensesTotal, setFilteredExpensesTotal] = useState<number>(0);
@@ -39,7 +39,6 @@ export default function FinancialHome() {
 
   useEffect(() => {
     if (!accounts) return;
-    console.log(accounts[0].id);
 
     const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
     setAccountsBalance(totalBalance);
@@ -86,11 +85,6 @@ export default function FinancialHome() {
       onPress: () => navigation.navigate('NewBankAccount'),
     },
   ];
-  const data = [
-    { name: 'Casa', value: 1050, color: '#3E37F6' },
-    { name: 'Mercado', value: 350, color: '#ED3336' },
-    { name: 'Lazer', value: 150, color: '#40F485' },
-  ];
 
   const teste = async () => {
     user?.uid ? await refreshUserData(user.uid) : null;
@@ -113,9 +107,9 @@ export default function FinancialHome() {
         </GlobalHeaderContainer>
 
         <Text style={styles.label}>Contas</Text>
-        <AccountList accounts={userData.accounts} />
+        <AccountList accounts={userData.accounts} navigation={navigation} />
 
-        {currentMonthExpenses ? (
+        {currentMonthExpenses.length > 0 ? (
           <>
             <Text style={styles.label}>Despesas por categoria</Text>
             <ExpensesByCategoryCard

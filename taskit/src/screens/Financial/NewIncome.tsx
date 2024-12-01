@@ -52,6 +52,7 @@ export default function NewIncomeScreen() {
   const [quantity, setQuantity] = useState(2);
   const [period, setPeriod] = useState('Mensal');
   const [selectedDate, setSelectedDate] = useState(moment().format('DD-MM-YYYY'));
+  console.log(selectedDate);
 
   const [selectedCategoryIcon, setSelectedCategoryIcon] = useState('tag');
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
@@ -162,7 +163,7 @@ export default function NewIncomeScreen() {
       return;
     }
 
-    const formattedDate = moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD');
+    const formattedDate = moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
     let baseIncome: IncomeInput = {
       inc_name: name,
@@ -312,7 +313,7 @@ export default function NewIncomeScreen() {
                         ...category,
                         icon: category.icon || 'dots-horizontal', // Garante o ícone padrão
                       })),
-                  ].map((category: Category) => (
+                  ].map((category: any) => (
                     <SelectItem
                       key={category.name}
                       label={category.name}
