@@ -10,11 +10,11 @@ import { TabBarIcon } from '../components/TabBarIcon';
 import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import { useUser } from '~/context/UserContext';
-import { CategoriesScreen } from '~/screens/Financial';
+import { CategoriesScreen, EditNewBankAccountScreen } from '~/screens/Financial';
 import LoginScreen from '~/screens/Authentication/LoginScreen';
 import AddTaskScreen from '~/screens/Tasks/AddTask';
-import TaskList from '~/screens/TaskList';
-import TaskDetails from '~/screens/ViewTaskScreen';
+
+import TaskDetails from '~/screens/Tasks/ViewTaskScreen';
 
 const Tab = createBottomTabNavigator();
 
