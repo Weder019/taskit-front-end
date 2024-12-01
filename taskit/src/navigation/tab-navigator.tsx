@@ -11,7 +11,16 @@ import { TabBarIcon } from '../components/TabBarIcon';
 import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
 import { useUser } from '~/context/UserContext';
-import { CategoriesScreen } from '~/screens/Financial';
+import {
+  AccountDeatilsScreen,
+  CategoriesScreen,
+  EditExpenseScreen,
+  EditIncomeScreen,
+  EditNewBankAccountScreen,
+  NewBankAccountScreen,
+  NewExpenseScreen,
+  NewIncomeScreen,
+} from '~/screens/Financial';
 import LoginScreen from '~/screens/Authentication/LoginScreen';
 import AddTaskScreen from '~/screens/Tasks/AddTask';
 import TaskList from '~/screens/TaskList';
@@ -45,7 +54,7 @@ export default function TabLayout({ navigation }: Props) {
       />
       <Tab.Screen
         name="Two"
-        component={TaskDetails}
+        component={EditIncomeScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,

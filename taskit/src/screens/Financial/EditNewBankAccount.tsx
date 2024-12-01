@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     marginBottom: 25, // Espaço entre os inputs
   },
   button: {
-    marginTop: 200, // Espaço acima do botão
+    marginTop: 285, // Espaço acima do botão
   },
   gesture: {
     flex: 1,
@@ -373,7 +373,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginHorizontal: 20,
     marginTop: 20,
-    minHeight: 580,
-    maxHeight: 580,
+    minHeight: 700,
   },
 });

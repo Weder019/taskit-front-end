@@ -34,7 +34,7 @@ import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import { createExpense } from '~/services/expenseService';
 import { createIncome } from '~/services/incomeService';
 import { useGlobalStyles } from '~/styles/globalStyles';
-import { Account, Expense, Income } from '~/types/models';
+import { Account, Expense, Income } from '~/types/';
 import { accountTypeList } from '~/utils/accountTypeList';
 import { getBankImageUri } from '~/utils/bankList';
 
