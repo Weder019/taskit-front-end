@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -15,6 +15,7 @@ interface DropdownProps {
   iconName: string; // Nome do ícone
   options: string[]; // Lista de opções do dropdown
   onSelect: (option: string) => void; // Função chamada ao selecionar uma opção
+  selectedOption?: string; // Valor atual selecionado (opcional)
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -22,23 +23,27 @@ const Dropdown: React.FC<DropdownProps> = ({
   iconName,
   options,
   onSelect,
+  selectedOption,
 }) => {
   const [visible, setVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string>(label);
+  const [localSelectedOption, setLocalSelectedOption] = useState<string>(selectedOption || label);
 
   const handleOptionPress = (option: string) => {
-    setSelectedOption(option);
-    onSelect(option);
+    setLocalSelectedOption(option); // Atualiza o valor local
+    onSelect(option); // Notifica o valor selecionado ao componente pai
     setVisible(false); // Fecha o modal
   };
 
+  // Sincroniza alterações externas no selectedOption
+  useEffect(() => {
+    setLocalSelectedOption(selectedOption || label); // Fallback para o label
+  }, [selectedOption, label]);
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setVisible(true)}>
+      <TouchableOpacity style={styles.button} onPress={() => setVisible(true)}>
         <MaterialCommunityIcons name={iconName} size={24} style={styles.icon} />
-        <Text style={styles.text}>{selectedOption}</Text>
+        <Text style={styles.text}>{localSelectedOption}</Text>
       </TouchableOpacity>
 
       {/* Modal para exibir as opções */}
@@ -47,17 +52,13 @@ const Dropdown: React.FC<DropdownProps> = ({
         visible={visible}
         animationType="fade"
         onRequestClose={() => setVisible(false)}>
-        <TouchableOpacity
-          style={styles.overlay}
-          onPress={() => setVisible(false)}>
+        <TouchableOpacity style={styles.overlay} onPress={() => setVisible(false)}>
           <View style={styles.dropdown}>
             <FlatList
               data={options}
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => handleOptionPress(item)}>
+                <TouchableOpacity style={styles.option} onPress={() => handleOptionPress(item)}>
                   <RNText style={styles.optionText}>{item}</RNText>
                 </TouchableOpacity>
               )}
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 14,
-    marginBottom:20,
+    marginBottom: 20,
     borderWidth: 0.5,
     borderColor: '#000',
     borderRadius: 8,

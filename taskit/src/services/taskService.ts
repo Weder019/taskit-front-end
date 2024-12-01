@@ -38,14 +38,14 @@ export const createTask = async (
     throw error;
   }
 };
-export const deleteTask = async (taskId: string): Promise<string> => {
+export const deleteTask = async (taskId: string): Promise<DeleteTaskResponse> => {
   try {
     const deleteTaskCallable = httpsCallable<
-      { data: { taskId: string } },
-      { message: string }
+      { taskId: string },
+      { message: DeleteTaskResponse }
     >(functions, "task-deleteTask");
 
-    const response = await deleteTaskCallable({ data: { taskId } });
+    const response = await deleteTaskCallable({ taskId });
     console.log("Tarefa removida:", response.data.message);
     return response.data.message;
   } catch (error) {
