@@ -1,74 +1,71 @@
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button, Text } from 'react-native-paper';
 
 import EditableAmountInput from './components/EditableAmountInput';
+import SelectItem from './components/SelectItem';
 import Container from '../../components/Container';
 import CustomBottomSheet from '../../components/CustomBottomSheet';
 
 import { BackButton } from '~/components/BackButton';
 import GlobalInput from '~/components/GlobalInput';
-import GlobalSwitch from '~/components/GlobalSwitch';
 import { ScreenContent } from '~/components/ScreenContent';
-import { FinancialStackParamList } from '~/navigation/finacial-navigator';
-import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
-import { useGlobalStyles } from '~/styles/globalStyles';
-import SelectItem from './components/SelectItem';
-import { bankList, getBankImageUri } from '~/utils/bankList';
 import TrashButton from '~/components/TrashButton';
 import { useUser } from '~/context/UserContext';
-import { accountTypeList, getIcon } from '~/utils/accountTypeList';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+import OpenModalButton from '~/screens/Financial/components/OpenModalButton';
 import { deleteAccount, updateAccount } from '~/services/accountService';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { Account } from '~/types';
+import { accountTypeList, getIcon } from '~/utils/accountTypeList';
+import { bankList, getBankImageUri } from '~/utils/bankList';
 
 type EditNewBankAccountScreenNavigationProp = NavigationProp<
   FinancialStackParamList,
   'EditNewBankAccount'
 >;
+type EditNewBankAccountScreenRouteProp = RouteProp<FinancialStackParamList, 'EditNewBankAccount'>;
 
 export default function EditNewBankAccount() {
   const Globalstyles = useGlobalStyles();
-
   const { user, userData, refreshUserData } = useUser();
-
   const navigation = useNavigation<EditNewBankAccountScreenNavigationProp>();
-  const [description, setDescription] = useState(userData.accounts[0].acc_name);
-  const [amount, setAmount] = useState(userData.accounts[0].balance);
+  const route = useRoute<EditNewBankAccountScreenRouteProp>();
+  const { account_id } = route.params;
 
+  // Filtrar a conta com base no account_id
+  const selectedAccount = userData.accounts.find((acc: Account) => acc.id === account_id);
+
+  // Estados iniciais baseados na conta filtrada
+  const [description, setDescription] = useState(selectedAccount?.acc_name || '');
+  const [amount, setAmount] = useState(selectedAccount?.balance || 0);
   const [selectedBank, setSelectedBank] = useState<{
     name: string;
     imageUri: string | undefined;
   }>({
-    name: userData.accounts[0].bank || 'Sem Banco',
-    imageUri: getBankImageUri(userData.accounts[0].bank),
+    name: selectedAccount?.bank || '',
+    imageUri: selectedAccount ? getBankImageUri(selectedAccount.bank) : undefined,
   });
-  const [selectedBankName, setSelectedBankName] = useState(userData.accounts[0].bank);
-  const [selectedBankImg, setSelectedBankImg] = useState<string | undefined>(
-    getBankImageUri(userData.accounts[0].bank)
-  );
-
   const [selectedAccountIcon, setSelectedAccountIcon] = useState(
-    getIcon(userData.accounts[0].acc_type)
+    selectedAccount ? getIcon(selectedAccount.acc_type) : undefined
   );
-  const [selectedAccountType, setSelectedAccountType] = useState(userData.accounts[0].acc_type);
+  const [selectedAccountType, setSelectedAccountType] = useState(selectedAccount?.acc_type || '');
 
+  useEffect(() => {
+    if (!selectedAccount) {
+      // Redirecionar ou mostrar uma mensagem de erro se a conta não for encontrada
+      console.warn('Conta não encontrada');
+      navigation.goBack(); // Ou exiba uma mensagem de erro apropriada
+    }
+  }, [selectedAccount, navigation]);
   const back = () => {
     navigation.goBack();
   };
   const handleRedirect = () => {
     navigation.navigate('FinancialHome');
-  };
-
-  const handleSelectBank = (name: string, imageUri: string | undefined) => {
-    setSelectedBankName(name);
-    setSelectedBankImg(imageUri);
-    setSelectedBank({ name, imageUri });
   };
 
   const handleUpdate = async () => {
@@ -77,7 +74,7 @@ export default function EditNewBankAccount() {
       return;
     }
 
-    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    const accountId = selectedAccount.id; // Supondo que estamos editando a primeira conta
     if (!accountId) {
       Alert.alert('Erro', 'Conta não encontrada.');
       return;
@@ -113,7 +110,7 @@ export default function EditNewBankAccount() {
       return;
     }
 
-    const accountId = userData.accounts[0]?.id; // Supondo que estamos editando a primeira conta
+    const accountId = selectedAccount.id; // Supondo que estamos editando a primeira conta
     if (!accountId) {
       Alert.alert('Erro', 'Conta não encontrada.');
       return;
@@ -131,7 +128,7 @@ export default function EditNewBankAccount() {
         onPress: async () => {
           try {
             // Chama o serviço para deletar a conta
-            const response = await deleteAccount(accountId);
+            await deleteAccount(accountId);
 
             // Atualiza os dados do usuário no contexto
             await refreshUserData(user.uid);

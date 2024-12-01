@@ -6,6 +6,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import { RootStackParamList } from '.';
 import FinancialNavigator from './finacial-navigator';
+import TaskNavigator from './task-navigator';
 import { TabBarIcon } from '../components/TabBarIcon';
 import TransactionsScreen from '../screens/Financial/TransactionScreen';
 import AccountDetails from '~/screens/Financial/AccountDetails';
@@ -44,11 +45,11 @@ export default function TabLayout({ navigation }: Props) {
         };
       }}>
       <Tab.Screen
-        name="AddTaskScreen"
-        component={AddTaskScreen}
+        name="Task"
+        component={TaskNavigator}
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Task',
+          tabBarIcon: ({ color }) => <TabBarIcon name="clock-o" color={color} />,
         }}
       />
       <Tab.Screen

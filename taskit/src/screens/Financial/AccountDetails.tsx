@@ -3,8 +3,9 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { NavigationProp, useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import moment from 'moment';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -28,34 +29,49 @@ import { BackButton } from '~/components/BackButton';
 import CircularButton from '~/components/CircularButton';
 import CustomBottomSheet from '~/components/CustomBottomSheet';
 import { ScreenContent } from '~/components/ScreenContent';
+import { useUser } from '~/context/UserContext';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+import { createExpense } from '~/services/expenseService';
+import { createIncome } from '~/services/incomeService';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { Account, Expense, Income } from '~/types/';
 import { accountTypeList } from '~/utils/accountTypeList';
 import { getBankImageUri } from '~/utils/bankList';
-import { useUser } from '~/context/UserContext';
-import moment from 'moment';
-import { createIncome } from '~/services/incomeService';
-import { createExpense } from '~/services/expenseService';
+
+type AccountDetailsNavigationProp = NavigationProp<FinancialStackParamList, 'AccountDetails'>;
+type AccountDetailsRouteProp = RouteProp<FinancialStackParamList, 'AccountDetails'>;
+
 export default function AccountDetails() {
   const Globalstyles = useGlobalStyles();
-
   const { user, userData, refreshUserData } = useUser();
-
-  const back = () => {
-    console.log('back');
-  };
+  const route = useRoute<AccountDetailsRouteProp>();
+  const { account_id } = route.params;
+  const navigation = useNavigation<AccountDetailsNavigationProp>();
 
   const [selectedAccount, setSelectedAccount] = useState<Account>(userData.accounts[0]);
   const [isEditingBalance, setIsEditingBalance] = useState(false);
   const [inputBalance, setInputBalance] = useState(userData.accounts[0].balance);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  React.useEffect(() => {
-    if (userData?.accounts?.length > 0) {
-      setSelectedAccount(userData.accounts[0]);
-    }
-  }, [userData]);
 
-  const bankIconUri = getBankImageUri(userData.accounts[0].bank);
+  const goBack = () => {
+    navigation.goBack();
+  };
+
+  const handleNavigateToEdit = () => {
+    navigation.navigate('EditNewBankAccount', { account_id: selectedAccount.id });
+  };
+
+  useEffect(() => {
+    if (userData?.accounts?.length > 0) {
+      // Filtra a conta com base no ID recebido pela rota
+      const account = userData.accounts.find((acc: Account) => acc.id === account_id);
+      if (account) {
+        setSelectedAccount(account); // Define a conta encontrada como selecionada
+      } else {
+        console.warn('Conta não encontrada para o ID fornecido.');
+      }
+    }
+  }, [userData, account_id]);
 
   const bottomSheetAccount = useRef<BottomSheet>(null);
   const bottomSheetBalance = useRef<BottomSheet>(null);
@@ -95,6 +111,7 @@ export default function AccountDetails() {
     setIsConfirmed(true); // Marca como confirmado
   };
 
+  //Acredito q aqui q o fernando vai mexer
   //Acredito q aqui q o fernando vai mexer
   const handleConfirmBalance = async () => {
     const updatedBalance = parseFloat(inputBalance.replace(',', '.'));
@@ -163,7 +180,7 @@ export default function AccountDetails() {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <ScreenContent>
             <View style={styles.containerTitle}>
-              <BackButton onPress={back} />
+              <BackButton onPress={goBack} />
               <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
                 Detalhes
               </Text>
@@ -236,7 +253,7 @@ export default function AccountDetails() {
                     iconSize={32}
                     style={styles.iconDetails} // Adicione um estilo consistente
                   />
-                  <CircularButton onPress={back} iconName="pencil" size={48} />
+                  <CircularButton onPress={handleNavigateToEdit} iconName="pencil" size={48} />
                 </View>
               </View>
             </Container>

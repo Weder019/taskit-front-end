@@ -52,6 +52,7 @@ export default function NewIncomeScreen() {
   const [quantity, setQuantity] = useState(2);
   const [period, setPeriod] = useState('Mensal');
   const [selectedDate, setSelectedDate] = useState(moment().format('DD-MM-YYYY'));
+  console.log(selectedDate);
 
   const [selectedCategoryIcon, setSelectedCategoryIcon] = useState('tag');
   const [selectedAccountIcon, setSelectedAccountIcon] = useState('wallet');
