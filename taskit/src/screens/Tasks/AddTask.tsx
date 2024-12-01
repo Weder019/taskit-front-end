@@ -22,6 +22,7 @@ import Dropdown from './components/Dropdown';
 import { SubTask } from '~/types/models';
 import { useUser } from '~/context/UserContext';
 import { createTask } from '~/services/taskService';
+import moment from 'moment';
 
 type AddTaskScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
 
@@ -103,26 +104,26 @@ export default function AddTaskScreen() {
         Alert.alert('Erro', `O título da subtarefa é obrigatório.`);
         return false;
       }
-  
-  
+
       if (subtask.priority === 0) {
         Alert.alert('Erro', `A prioridade da subtarefa é obrigatória.`);
         return false;
       }
-  
+
       return true;
     });
-  
+
     // Caso alguma subtarefa seja inválida, interrompe o envio
     if (validSubtasks.length !== subtasks.length) {
       return;
     }
     console.log(priority);
+    const formattedDate = moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
     try {
       const newTask = {
         title: titulo,
         description: descricao,
-        data: selectedDate,
+        data: formattedDate,
         priority,
         subTask: validSubtasks,
         done: false,

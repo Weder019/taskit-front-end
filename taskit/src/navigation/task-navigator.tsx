@@ -8,6 +8,8 @@ import * as TaskScreens from '~/screens/Tasks';
 export type TaskStackParamList = {
   TaskHome: undefined;
   AddTask: undefined;
+  ViewTask: { task_id: string };
+  // EditTask: { tesk_id: string };
 };
 
 const TaskStack = createStackNavigator<TaskStackParamList>();
@@ -25,6 +27,16 @@ export default function TaskNavigator() {
         component={TaskScreens.AddTaskScreen}
         options={{ headerShown: false }}
       />
+      <TaskStack.Screen
+        name="ViewTask"
+        component={TaskScreens.ViewTaskScreen}
+        options={{ headerShown: false }}
+      />
+      {/* <TaskStack.Screen
+        name="EditTask"
+        component={TaskScreens.AddTaskScreen}
+        options={{ headerShown: false }}
+      /> */}
     </TaskStack.Navigator>
   );
 }

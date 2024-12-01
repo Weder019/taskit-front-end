@@ -1,27 +1,28 @@
+import { NavigationProp } from '@react-navigation/native';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Checkbox, IconButton, useTheme } from 'react-native-paper';
+
 import GlobalCard from '~/components/GlobalCard';
+import { TaskStackParamList } from '~/navigation/task-navigator';
+import { Task } from '~/types';
 
-interface SubTask {
-  title: string;
-  done: boolean;
-}
-
-interface Task {
-  title: string;
-  description: string;
-  done: boolean;
-  subtasks?: SubTask[];
-}
+type TaskHomeScreenNavigateprop = NavigationProp<TaskStackParamList, 'TaskHome'>;
 
 interface TaskCardProps {
   task: Task;
+  navigation: TaskHomeScreenNavigateprop;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, navigation }) => {
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
+
+  const handleNavigateToViewTask = (taskId: string) => {
+    console.log(taskId);
+    navigation.navigate('ViewTask', { task_id: taskId });
+  };
 
   return (
     <GlobalCard style={styles.card}>
@@ -30,12 +31,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
         <Checkbox
           status={task.done ? 'checked' : 'unchecked'}
           onPress={() => {
-            // Lógica para atualizar o status da tarefa
+            handleNavigateToViewTask(task.id);
           }}
           color={colors.primary}
         />
         <Text variant="titleLarge" style={styles.title}>
-          {task.title}
+          {task.title + ' | Dia: ' + moment(task.data).format('DD')}
         </Text>
         <IconButton
           icon={expanded ? 'chevron-up' : 'chevron-down'}
@@ -54,7 +55,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
           </Text>
 
           {/* Lista de Subtarefas */}
-          {task.subtasks && task.subtasks.length > 0 && (
+          {task.subTask && task.subTask.length > 0 && (
             <View style={styles.subtaskContainer}>
               <Text variant="titleMedium" style={styles.subtaskTitle}>
                 Subtarefas
@@ -63,7 +64,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
                 style={styles.subtaskScroll}
                 nestedScrollEnabled
                 showsVerticalScrollIndicator={false}>
-                {task.subtasks.map((subtask, index) => (
+                {task.subTask.map((subtask, index) => (
                   <View key={index} style={styles.subtaskItem}>
                     <Checkbox
                       status={subtask.done ? 'checked' : 'unchecked'}

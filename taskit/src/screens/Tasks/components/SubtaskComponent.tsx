@@ -21,12 +21,11 @@ const SubtaskComponent: React.FC<SubtaskComponentProps> = ({
   style,
   maxSubtitleLength = 15, // Limite padrão de 15 caracteres
 }) => {
-  const displayText =
-    subtitle.trim()
-      ? subtitle.length > maxSubtitleLength
-        ? `${subtitle.substring(0, maxSubtitleLength)}...`
-        : subtitle
-      : `Prioridade: ${priority}`;
+  const displayText = subtitle.trim()
+    ? subtitle.length > maxSubtitleLength
+      ? `${subtitle.substring(0, maxSubtitleLength)}...`
+      : subtitle
+    : `Prioridade: ${priority}`;
 
   return (
     <View style={[styles.container, style]}>
@@ -34,11 +33,7 @@ const SubtaskComponent: React.FC<SubtaskComponentProps> = ({
         <Text style={styles.title}>{title}</Text>
         <View style={styles.subtitleContainer}>
           <Text style={styles.subtitle}>{displayText}</Text>
-          {subtitle.trim() && (
-            <Text style={styles.priority}>
-              {' '}| Prioridade: {priority}
-            </Text>
-          )}
+          {subtitle.trim() && <Text style={styles.priority}> | Prioridade: {priority}</Text>}
         </View>
       </View>
       <Checkbox

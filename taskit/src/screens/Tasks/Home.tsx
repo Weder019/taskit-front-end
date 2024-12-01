@@ -1,27 +1,19 @@
-import React from 'react';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { Button, Text } from 'react-native-paper';
-import Container from '~/components/Container';
-import { ScreenContent } from '~/components/ScreenContent';
-import TaskCard from './components/TaskCard';
+import { Text } from 'react-native-paper';
+
 import TaskListGroupedByMonth from './components/TaskListGroupedByMonth';
 import ExpandableFloatingButton from '../Financial/components/ExpandableFloatingButton';
 
-const exampleTask = {
-  title: 'Exemplo de Tarefa',
-  description: 'Essa é uma descrição da tarefa.',
-  done: false,
-  subtasks: [
-    { title: 'Subtarefa 1', done: true },
-    { title: 'Subtarefa 2', done: false },
-    { title: 'Subtarefa 1', done: true },
-    { title: 'Subtarefa 2', done: false },
-    { title: 'Subtarefa 1', done: true },
-    { title: 'Subtarefa 2', done: false },
-  ],
-};
+import { ScreenContent } from '~/components/ScreenContent';
+import { useUser } from '~/context/UserContext';
+import { TaskStackParamList } from '~/navigation/task-navigator';
+import { Task } from '~/types';
 
-const tasks = [
+type TaskHomeScreenNavigateprop = NavigationProp<TaskStackParamList, 'TaskHome'>;
+
+const task = [
   {
     title: 'Task 1',
     description: 'Description 1',
@@ -99,28 +91,38 @@ const tasks = [
 ];
 
 export default function TaskHome() {
-  const handleNavigateToScreen1 = () => {
-    console.log('aaaa');
-  };
+  const { user, userData, refreshUserData } = useUser();
+  const navigation = useNavigation<TaskHomeScreenNavigateprop>();
+  const [tasks, setTasks] = useState<Task[] | null>();
 
-  const handleNavigateToScreen2 = () => {
-    console.log('aaaa');
+  useEffect(() => {
+    if (userData?.tasks) {
+      setTasks(userData.tasks);
+    }
+  }, [userData]);
+
+  const handleNavigateToNewTask = () => {
+    navigation.navigate('AddTask');
   };
 
   const buttons = [
     {
       icon: 'trending-up',
       label: 'Receita',
-      onPress: () => console.log('CORINTHINAS'),
+      onPress: () => handleNavigateToNewTask(),
     },
   ];
 
   return (
     <ScreenContent style={{ justifyContent: 'flex-start' }}>
-      <Text variant="bodyLarge" style={styles.title}>
-        Minhas Tarefas:
-      </Text>
-      <TaskListGroupedByMonth tasks={tasks} />
+      {tasks ? (
+        <>
+          <Text variant="bodyLarge" style={styles.title}>
+            Minhas Tarefas:
+          </Text>
+          <TaskListGroupedByMonth tasks={tasks} navigate={navigation} />
+        </>
+      ) : null}
       <View style={styles.container}>
         <ExpandableFloatingButton buttons={buttons} />
       </View>

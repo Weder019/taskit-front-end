@@ -1,30 +1,45 @@
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+
+import SubtaskComponent from './components/SubtaskComponent';
+
 import { BackButton } from '~/components/BackButton';
 import Container from '~/components/Container';
-
-import { useGlobalStyles } from '~/styles/globalStyles';
 import { ScreenContent } from '~/components/ScreenContent';
 import { useUser } from '~/context/UserContext';
-import SubtaskComponent from './components/SubtaskComponent';
-import { SubTask, Task } from '~/types';
+import { TaskStackParamList } from '~/navigation/task-navigator';
 import { toggleSubTaskStatus, toggleTaskStatus } from '~/services/taskService';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { SubTask, Task } from '~/types';
+
+type ViewTaskNavigationProp = NavigationProp<TaskStackParamList, 'ViewTask'>;
+type ViewTasRouteProp = RouteProp<TaskStackParamList, 'ViewTask'>;
 
 export default function TaskDetails() {
   const Globalstyles = useGlobalStyles();
   const { user, userData, refreshUserData } = useUser();
+  const route = useRoute<ViewTasRouteProp>();
+  const { task_id } = route.params;
+  const navigation = useNavigation<ViewTaskNavigationProp>();
 
-  const task: Task | undefined = userData.tasks?.[0];
-
+  //const task: Task | undefined = userData.tasks?.[0];
+  const [task, setTask] = useState<Task>();
   const [subtasks, setSubtasks] = useState<SubTask[]>([]);
 
   useEffect(() => {
-    // Carrega as subtarefas da tarefa
-    if (task?.subTask) {
-      setSubtasks(task.subTask);
+    if (userData?.tasks?.length > 0) {
+      // Filtra a conta com base no ID recebido pela rota
+      const task = userData.tasks.find((acc: Task) => acc.id === task_id);
+      if (task) {
+        setTask(task); // Define a conta encontrada como selecionada
+        setSubtasks(task.subTask);
+      } else {
+        console.warn('Conta não encontrada para o ID fornecido.');
+      }
     }
-  }, [task]);
+  }, [userData, task_id]);
 
   const toggleSubtask = (index: number) => {
     setSubtasks((prevSubtasks) =>
@@ -35,7 +50,7 @@ export default function TaskDetails() {
   };
 
   const back = () => {
-    console.log('Voltar para a tela anterior');
+    navigation.goBack();
   };
 
   const getPriority = (index: number) => {
@@ -48,7 +63,6 @@ export default function TaskDetails() {
         return 'Alta';
     }
   };
-
 
   const handleSave = async () => {
     if (!task || !user) {
@@ -118,63 +132,66 @@ export default function TaskDetails() {
       style={styles.keyboardAvoidingView}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ScreenContent>
-          <View style={styles.containerTitle}>
-            <BackButton onPress={back} />
-            <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
-              {userData.tasks[0].title}
-            </Text>
-          </View>
+          {task ? (
+            <>
+              <View style={styles.containerTitle}>
+                <BackButton onPress={back} />
+                <Text variant="headlineMedium" style={[Globalstyles.title, styles.title]}>
+                  {task.title}
+                </Text>
+              </View>
 
-          <Container rounded style={styles.container}>
-            {/* Informações da tarefa */}
-            <View style={styles.infoRow}>
-              <Text style={styles.infoText}>
-                Prioridade:{' '}
-                <Text style={styles.data}>{getPriority(userData.tasks[0].priority)}</Text>
-              </Text>
+              <Container rounded style={styles.container}>
+                {/* Informações da tarefa */}
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoText}>
+                    Prioridade: <Text style={styles.data}>{getPriority(task.priority)}</Text>
+                  </Text>
 
-              <Text style={styles.infoText}>
-                Prazo: <Text style={styles.data}>{userData.tasks[0].data}</Text>
-              </Text>
-            </View>
+                  <Text style={styles.infoText}>
+                    Prazo: <Text style={styles.data}>{task.data}</Text>
+                  </Text>
+                </View>
 
-            <Text style={styles.description}>
-              Descrição da Tarefa:{'\n'}
-              <Text style={styles.data}>{userData.tasks[0].description}</Text>
-            </Text>
+                <Text style={styles.description}>
+                  Descrição da Tarefa:{'\n'}
+                  <Text style={styles.data}>{task.description}</Text>
+                </Text>
 
-            <View style={styles.divider} />
+                <View style={styles.divider} />
 
-            {/* Subtarefas */}
-            <Text style={styles.subtaskTitle}>SUBTAREFAS</Text>
-            <ScrollView>
-              {subtasks.map((subtask, index) => (
-                <SubtaskComponent
-                  key={index}
-                  title={subtask.title}
-                  subtitle={subtask.description}
-                  priority={getPriority(subtask.priority)}
-                  checked={subtask.done}
-                  onToggle={() => toggleSubtask(index)}
-                />
-              ))}
-            </ScrollView>
-            {/* Botões de Ação */}
-            <Button
-              mode="contained"
-              onPress={handleSave}
-              style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
-              Salvar
-            </Button>
-            {allSubtasksCompleted && (
-              <Button
-                mode="contained"
-                onPress={handleCompleteTask}
-                style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
-                Completar Tarefa
-              </Button>
-            )}
-          </Container>
+                {/* Subtarefas */}
+                <Text style={styles.subtaskTitle}>SUBTAREFAS</Text>
+                <ScrollView>
+                  {subtasks.map((subtask, index) => (
+                    <SubtaskComponent
+                      key={index}
+                      title={subtask.title}
+                      subtitle={subtask.description}
+                      priority={getPriority(subtask.priority)}
+                      checked={subtask.done}
+                      onToggle={() => toggleSubtask(index)}
+                    />
+                  ))}
+                </ScrollView>
+                {/* Botões de Ação */}
+                <Button
+                  mode="contained"
+                  onPress={handleSave}
+                  style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
+                  Salvar
+                </Button>
+                {allSubtasksCompleted && (
+                  <Button
+                    mode="contained"
+                    onPress={handleCompleteTask}
+                    style={[Globalstyles.containedButtonDefaultStyle, styles.button]}>
+                    Completar Tarefa
+                  </Button>
+                )}
+              </Container>
+            </>
+          ) : null}
         </ScreenContent>
       </ScrollView>
     </KeyboardAvoidingView>

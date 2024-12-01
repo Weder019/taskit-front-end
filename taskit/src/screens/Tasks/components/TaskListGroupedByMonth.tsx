@@ -1,31 +1,25 @@
+import { NavigationProp } from '@react-navigation/native';
+import moment from 'moment';
 import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { Text, Divider } from 'react-native-paper';
+
 import TaskCard from './TaskCard';
-import moment from 'moment';
 
-interface SubTask {
-  title: string;
-  done: boolean;
-}
+import { TaskStackParamList } from '~/navigation/task-navigator';
+import { Task } from '~/types';
 
-interface Task {
-  title: string;
-  description: string;
-  done: boolean;
-  subtasks?: SubTask[];
-  date: string; // Data da tarefa no formato ISO ou string reconhecida pelo moment
-}
-
+type TaskHomeScreenNavigateprop = NavigationProp<TaskStackParamList, 'TaskHome'>;
 interface TaskListGroupedByMonthProps {
   tasks: Task[];
+  navigate: TaskHomeScreenNavigateprop;
 }
 
-const TaskListGroupedByMonth: React.FC<TaskListGroupedByMonthProps> = ({ tasks }) => {
+const TaskListGroupedByMonth: React.FC<TaskListGroupedByMonthProps> = ({ tasks, navigate }) => {
   // Agrupar tarefas por mês e ano
   const groupedTasks = tasks.reduce(
     (acc, task) => {
-      const monthYear = moment(task.date).format('MMMM YYYY');
+      const monthYear = moment(task.data).format('MMMM YYYY');
       if (!acc[monthYear]) {
         acc[monthYear] = [];
       }
@@ -55,7 +49,7 @@ const TaskListGroupedByMonth: React.FC<TaskListGroupedByMonthProps> = ({ tasks }
 
           {/* Lista de TaskCards */}
           {item.tasks.map((task, index) => (
-            <TaskCard key={index} task={task} />
+            <TaskCard key={index} task={task} navigation={navigate} />
           ))}
 
           {/* Linha Divisória */}
