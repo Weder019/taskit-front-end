@@ -16,14 +16,14 @@ const DatePickerButton: React.FC<DatePickerButtonProps> = ({
   onDateChange,
   label = 'Data',
 }) => {
-  const parsedDate = initialDate ? moment(initialDate, 'DD/MM/YYYY').toDate() : new Date();
+  const parsedDate = initialDate ? moment(initialDate, 'YYYY-MM-DD').toDate() : new Date();
   const [date, setDate] = useState(parsedDate);
   const [showPicker, setShowPicker] = useState(false);
 
   // Valida e define a data inicial ao carregar o componente
   useEffect(() => {
     if (!initialDate) {
-      const today = moment().format('DD/MM/YYYY');
+      const today = moment().format('YYYY-MM-DD');
       onDateChange(today); // Notifica a data inicial
     }
   }, [initialDate, onDateChange]);
@@ -36,7 +36,7 @@ const DatePickerButton: React.FC<DatePickerButtonProps> = ({
     setShowPicker(false);
     if (selectedDate) {
       setDate(selectedDate);
-      const formattedDate = moment(selectedDate).format('DD/MM/YYYY');
+      const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
       onDateChange(formattedDate);
     }
   };
@@ -44,24 +44,12 @@ const DatePickerButton: React.FC<DatePickerButtonProps> = ({
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handleOpenCalendar} style={styles.inputContainer}>
-        <MaterialCommunityIcons
-          name="calendar-plus"
-          size={24}
-          color="#000"
-          style={styles.icon}
-        />
-        <Text style={styles.label}>
-          {moment(date).format('DD/MM/YYYY') || label}
-        </Text>
+        <MaterialCommunityIcons name="calendar-plus" size={24} color="#000" style={styles.icon} />
+        <Text style={styles.label}>{moment(date).format('DD/MM/YYYY') || label}</Text>
       </TouchableOpacity>
 
       {showPicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
+        <DateTimePicker value={date} mode="date" display="default" onChange={handleDateChange} />
       )}
     </View>
   );

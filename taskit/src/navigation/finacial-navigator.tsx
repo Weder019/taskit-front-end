@@ -11,11 +11,11 @@ export type FinancialStackParamList = {
   AccountDetails: { account_id: string };
   EditNewBankAccount: { account_id: string };
   NewExpense: undefined;
-  EditExpense: undefined;
+  EditExpense: { expense_id: string; account_id: string };
   NewIncome: undefined;
-  EditIncome: undefined;
+  EditIncome: { income_id: string; account_id: string };
   Categories: undefined;
-  Transactions: undefined;
+  Transactions: { type: 'expenses' | 'income' | 'transactions' };
 };
 
 const FinancialStack = createStackNavigator<FinancialStackParamList>();

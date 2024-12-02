@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+import moment from 'moment';
 import React, { useState } from 'react';
 import {
   View,
@@ -9,17 +11,24 @@ import {
   Dimensions,
 } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
+
+import { TransactionDropdown } from './components/TransactionDropdown';
+
 import { BackButton } from '~/components/BackButton';
 import Container from '~/components/Container';
 import { ScreenContent } from '~/components/ScreenContent';
-import { useGlobalStyles } from '~/styles/globalStyles';
-import { TransactionDropdown } from './components/TransactionDropdown';
-import { expenseCategories, incomeCategories } from '~/utils/categoriesList';
 import { useUser } from '~/context/UserContext';
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { expenseCategories, incomeCategories } from '~/utils/categoriesList';
 
-import moment from 'moment';
 import 'moment/locale/pt-br';
 import { Account, Expense, Income } from '~/types';
+
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+
+type TransactionsScreenNavigationProp = NavigationProp<FinancialStackParamList, 'Transactions'>;
+type TransactionsScreenRouteProp = RouteProp<FinancialStackParamList, 'Transactions'>;
 
 moment.locale('pt-br');
 
@@ -29,30 +38,39 @@ type Transaction = Expense | Income;
 
 export default function TransactionsScreen() {
   const style = useGlobalStyles();
-
   const { user, userData, refreshUserData } = useUser();
+  const navigation = useNavigation<TransactionsScreenNavigationProp>();
+  const route = useRoute<TransactionsScreenRouteProp>();
+  const { type } = route.params;
 
   const [selectedOption, setSelectedOption] = useState<'expenses' | 'income' | 'transactions'>(
-    'expenses'
+    type
   );
   const [currentMonth, setCurrentMonth] = useState(moment());
+
+  const handleNavigateToEdit = (item: any) => {
+    console.log(item);
+    if ('inc_name' in item)
+      navigation.navigate('EditIncome', { income_id: item.id, account_id: item.acc_id });
+    else navigation.navigate('EditExpense', { expense_id: item.id, account_id: item.acc_id });
+  };
 
   // Obter transações conforme o tipo selecionado
   const transactions = userData.accounts.flatMap((account: Account) => {
     if (selectedOption === 'expenses') {
       return account.expenses
         .filter((exp: Expense) => moment(exp.date).isSame(currentMonth, 'month'))
-        .map((exp: Expense) => ({ ...exp, acc_name: account.acc_name }));
+        .map((exp: Expense) => ({ ...exp, acc_name: account.acc_name, acc_id: account.id }));
     }
     if (selectedOption === 'income') {
       return account.incomes
         .filter((inc: Income) => moment(inc.date).isSame(currentMonth, 'month'))
-        .map((inc: Income) => ({ ...inc, acc_name: account.acc_name }));
+        .map((inc: Income) => ({ ...inc, acc_name: account.acc_name, acc_id: account.id }));
     }
     // Caso "transações", combina despesas e receitas filtradas por data
     return [...account.expenses, ...account.incomes]
       .filter((tran: Transaction) => moment(tran.date).isSame(currentMonth, 'month'))
-      .map((tran: Transaction) => ({ ...tran, acc_name: account.acc_name }));
+      .map((tran: Transaction) => ({ ...tran, acc_name: account.acc_name, acc_id: account.id }));
   });
 
   const sortedTransactions = transactions.sort((a: Transaction, b: Transaction) => {
@@ -112,7 +130,7 @@ export default function TransactionsScreen() {
   }));
 
   const back = () => {
-    console.log('back');
+    navigation.goBack();
   };
 
   const calculateExpenseTotals = (): { totalPending: number; totalPaid: number } => {
@@ -357,7 +375,9 @@ export default function TransactionsScreen() {
               <View key={section.date}>
                 <Text style={styles.sectionHeader}>{section.date}</Text>
                 {section.transactions.map((transaction: Transaction) => (
-                  <TouchableOpacity key={transaction.id}>
+                  <TouchableOpacity
+                    key={transaction.id}
+                    onPress={() => handleNavigateToEdit(transaction)}>
                     {renderTransaction({ item: transaction })}
                   </TouchableOpacity>
                 ))}

@@ -9,12 +9,21 @@ export type TaskStackParamList = {
   TaskHome: undefined;
   AddTask: undefined;
   ViewTask: { task_id: string };
-  // EditTask: { tesk_id: string };
+  EditTask: { tesk_id: string };
 };
 
 const TaskStack = createStackNavigator<TaskStackParamList>();
 
 export default function TaskNavigator() {
+  const { userData, loading } = useUser();
+
+  if (loading || !userData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <TaskStack.Navigator initialRouteName="TaskHome">
       <TaskStack.Screen
@@ -32,11 +41,20 @@ export default function TaskNavigator() {
         component={TaskScreens.ViewTaskScreen}
         options={{ headerShown: false }}
       />
-      {/* <TaskStack.Screen
+      <TaskStack.Screen
         name="EditTask"
-        component={TaskScreens.AddTaskScreen}
+        component={TaskScreens.EditTaskScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
     </TaskStack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+});

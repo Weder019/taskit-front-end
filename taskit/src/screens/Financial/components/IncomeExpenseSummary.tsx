@@ -1,18 +1,34 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons'; // Certifique-se de que esta biblioteca está instalada
+import { NavigationProp } from '@react-navigation/native';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Text } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Certifique-se de que esta biblioteca está instalada
 
+import { FinancialStackParamList } from '~/navigation/finacial-navigator';
+
+type FinancialHomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'FinancialHome'>;
 interface IncomeExpenseSummaryProps {
   income: number; // Valor de receitas
   expense: number; // Valor de despesas
+  navigation: FinancialHomeScreenNavigationProp;
 }
 
-const IncomeExpenseSummary: React.FC<IncomeExpenseSummaryProps> = ({ income, expense }) => {
+const IncomeExpenseSummary: React.FC<IncomeExpenseSummaryProps> = ({
+  income,
+  expense,
+  navigation,
+}) => {
+  const handleNavigateToIncomes = () => {
+    navigation.navigate('Transactions', { type: 'income' });
+  };
+  const handleNavigateToExpenses = () => {
+    navigation.navigate('Transactions', { type: 'expenses' });
+  };
   return (
     <View style={styles.container}>
       {/* Receita */}
-      <View style={styles.item}>
+      <TouchableOpacity onPress={() => handleNavigateToIncomes()} style={styles.item}>
         <View style={[styles.iconBackground, { backgroundColor: '#43D272' }]}>
           <MaterialCommunityIcons name="arrow-up-bold" size={24} color="#1C1B1F" />
         </View>
@@ -22,13 +38,13 @@ const IncomeExpenseSummary: React.FC<IncomeExpenseSummaryProps> = ({ income, exp
         <Text variant="bodyLarge" style={styles.incomeValue}>
           R$ {income.toFixed(2)}
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Espaçamento entre receitas e despesas */}
       <View style={styles.spacer} />
 
       {/* Despesa */}
-      <View style={styles.item}>
+      <TouchableOpacity onPress={() => handleNavigateToExpenses()} style={styles.item}>
         <View style={[styles.iconBackground, { backgroundColor: '#EC4C4C' }]}>
           <MaterialCommunityIcons name="arrow-down-bold" size={24} color="#1C1B1F" />
         </View>
@@ -38,7 +54,7 @@ const IncomeExpenseSummary: React.FC<IncomeExpenseSummaryProps> = ({ income, exp
         <Text variant="bodyLarge" style={styles.expenseValue}>
           R$ {expense.toFixed(2)}
         </Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -81,7 +97,7 @@ const styles = StyleSheet.create({
     color: '#EC4C4C',
   },
   spacer: {
-    width: 16, // Espaçamento entre receitas e despesas
+    width: 150, // Espaçamento entre receitas e despesas
   },
 });
 

@@ -86,9 +86,6 @@ export default function FinancialHome() {
     },
   ];
 
-  const teste = async () => {
-    user?.uid ? await refreshUserData(user.uid) : null;
-  };
   return (
     <ScreenContent style={{ justifyContent: 'flex-start' }}>
       <ScrollView style={{ width: '100%' }} contentContainerStyle={styles.scrollContainer}>
@@ -103,7 +100,11 @@ export default function FinancialHome() {
             balance={accountsBalance}
             onToggleVisibility={() => console.log('Alternar visibilidade do saldo')}
           />
-          <IncomeExpenseSummary income={filteredIncomesTotal} expense={filteredExpensesTotal} />
+          <IncomeExpenseSummary
+            income={filteredIncomesTotal}
+            expense={filteredExpensesTotal}
+            navigation={navigation}
+          />
         </GlobalHeaderContainer>
 
         <Text style={styles.label}>Contas</Text>
@@ -129,9 +130,6 @@ export default function FinancialHome() {
       <View style={styles.container}>
         <ExpandableFloatingButton buttons={buttons} />
       </View>
-      <Button mode="contained" onPress={teste}>
-        Teste
-      </Button>
     </ScreenContent>
   );
 }

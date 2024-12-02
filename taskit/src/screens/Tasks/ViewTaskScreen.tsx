@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
+import EditButton from './components/EditButton';
 import SubtaskComponent from './components/SubtaskComponent';
 
 import { BackButton } from '~/components/BackButton';
@@ -13,7 +14,6 @@ import { TaskStackParamList } from '~/navigation/task-navigator';
 import { toggleSubTaskStatus, toggleTaskStatus } from '~/services/taskService';
 import { useGlobalStyles } from '~/styles/globalStyles';
 import { SubTask, Task } from '~/types';
-import EditButton from './components/EditButton';
 
 type ViewTaskNavigationProp = NavigationProp<TaskStackParamList, 'ViewTask'>;
 type ViewTasRouteProp = RouteProp<TaskStackParamList, 'ViewTask'>;
@@ -53,9 +53,11 @@ export default function TaskDetails() {
   const back = () => {
     navigation.goBack();
   };
-  const editScreen = () => {
-
-  }
+  const handleNavigateToEdit = () => {
+    if (task) {
+      navigation.navigate('EditTask', { tesk_id: task.id });
+    }
+  };
 
   const getPriority = (index: number) => {
     switch (index) {
@@ -145,7 +147,7 @@ export default function TaskDetails() {
                     {task.title}
                   </Text>
                 </View>
-                <EditButton onPress={editScreen} size={35} />
+                <EditButton onPress={handleNavigateToEdit} size={29} />
               </View>
 
               <Container rounded style={styles.container}>

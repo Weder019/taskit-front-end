@@ -1,3 +1,5 @@
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,40 +8,47 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Button, Text } from 'react-native-paper';
-import GlobalInput from '~/components/GlobalInput';
-import { BackButton } from '~/components/BackButton';
-import Container from '~/components/Container';
-import { useState } from 'react';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { FinancialStackParamList } from '~/navigation/finacial-navigator';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ScreenContent } from '~/components/ScreenContent';
-import { useGlobalStyles } from '~/styles/globalStyles';
-import CalendarDatePicker from '~/components/CalendarDatePicker';
+import { Button, Text } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import DatePickerButton from './components/DatePickerButton';
 import Dropdown from './components/Dropdown';
-import { SubTask, Task } from '~/types/models';
+
+import { BackButton } from '~/components/BackButton';
+import CalendarDatePicker from '~/components/CalendarDatePicker';
+import Container from '~/components/Container';
+import GlobalInput from '~/components/GlobalInput';
+import { ScreenContent } from '~/components/ScreenContent';
+import TrashButton from '~/components/TrashButton';
 import { useUser } from '~/context/UserContext';
 import { createTask, deleteTask, updateTask } from '~/services/taskService';
-import TrashButton from '~/components/TrashButton';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-type AddTaskScreenNavigationProp = NavigationProp<FinancialStackParamList, 'NewBankAccount'>;
+import { useGlobalStyles } from '~/styles/globalStyles';
+import { SubTask, Task } from '~/types/models';
+import { TaskStackParamList } from '~/navigation/task-navigator';
+import moment from 'moment';
 
-export default function AddTaskScreen() {
+type EditTaskScreenNavigationProp = NavigationProp<TaskStackParamList, 'EditTask'>;
+type EditTaskScreenRouteProp = RouteProp<TaskStackParamList, 'EditTask'>;
+
+export default function EditTaskScreen() {
   const Globalstyles = useGlobalStyles();
   const { user, userData, refreshUserData } = useUser();
-  const back = () => {
-    navigation.goBack();
-  };
-  const task: Task = userData.tasks?.[0];
+  const navigation = useNavigation<EditTaskScreenNavigationProp>();
+  const route = useRoute<EditTaskScreenRouteProp>();
+  const { tesk_id } = route.params;
+
+  const task = userData.tasks.find((tas: Task) => tas.id === tesk_id);
+
   const [titulo, setTitulo] = useState(task.title);
   const [selectedDate, setSelectedDate] = useState(task?.data);
   const [priority, setPriority] = useState<number>(task?.priority);
   const [descricao, setDescricao] = useState(task?.description);
   const [subtasks, setSubtasks] = useState<SubTask[]>(task?.subTask);
 
-  const navigation = useNavigation<AddTaskScreenNavigationProp>();
+  const back = () => {
+    navigation.goBack();
+  };
 
   const handleAddSubtask = () => {
     setSubtasks((prev) => [
@@ -100,12 +109,13 @@ export default function AddTaskScreen() {
       Alert.alert('Erro', 'Todas as subtarefas devem ter uma prioridade selecionada.');
       return;
     }
+    console.log(selectedDate);
 
     try {
       const updatedTask = {
         title: titulo,
         description: descricao,
-        data: selectedDate,
+        data: moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
         priority,
         subTask: validSubtasks,
         done: task.done, // Mantém o status atual da tarefa
@@ -149,7 +159,7 @@ export default function AddTaskScreen() {
             await refreshUserData(user.uid);
 
             Alert.alert('Sucesso', 'Tarefa excluída com sucesso!');
-            navigation.goBack(); // Navegar para a tela anterior
+            navigation.navigate('TaskHome'); // Navegar para a tela anterior
           } catch (error) {
             console.error('Erro ao excluir tarefa:', error);
             Alert.alert('Erro', 'Não foi possível excluir a tarefa.');

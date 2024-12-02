@@ -1,4 +1,4 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
@@ -29,30 +29,29 @@ import { deleteExpense, updateExpense } from '~/services/expenseService';
 moment.locale('pt-br');
 
 type EditExpensesScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditExpense'>;
+type EditRouteScreenNavigationProp = RouteProp<FinancialStackParamList, 'EditExpense'>;
 
 export default function EditExpenseScreen() {
   const style = useGlobalStyles();
   const { user, userData, refreshUserData } = useUser();
-  console.log(userData.accounts[0].expenses[0]);
 
   const navigation = useNavigation<EditExpensesScreenNavigationProp>();
+  const route = useRoute<EditRouteScreenNavigationProp>();
+  const { expense_id, account_id } = route.params;
 
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState(
-    userData.accounts[0].expenses[0].value.toFixed(2).replace('.', ',')
-  );
-  const [paid, setPaid] = useState(userData.accounts[0].expenses[0].paid);
-  const [name, setName] = useState(userData.accounts[0].expenses[0].exp_name);
+
+  const account = userData.accounts.find((acc: Account) => acc.id === account_id);
+  const expense = account.expenses.find((exp: Expense) => exp.id === expense_id);
+
+  const [amount, setAmount] = useState(expense.value.toFixed(2).replace('.', ','));
+  const [paid, setPaid] = useState(expense.paid);
+  const [name, setName] = useState(expense.exp_name);
   const [selectedDate, setSelectedDate] = useState(
-    moment(userData.accounts[0].expenses[0].date, 'YYYY-MM-DD').format('YYYY-MM-DD')
+    moment(expense.date, 'YYYY-MM-DD').format('YYYY-MM-DD')
   );
-  const [selectedCategory, setSelectedCategory] = useState(
-    userData.accounts[0].expenses[0].category
-  );
-  const [selectedAccount, setSelectedAccountType] = useState(
-    userData.accounts.find((account: Account) => account.id === userData.accounts[0].id)
-      ?.acc_name || 'wallet'
-  );
+  const [selectedCategory, setSelectedCategory] = useState(expense.category);
+  const [selectedAccount, setSelectedAccountType] = useState(account?.acc_name || 'wallet');
 
   const back = () => {
     navigation.goBack();
@@ -62,14 +61,9 @@ export default function EditExpenseScreen() {
   const bottomSheetCategory = useRef<BottomSheet>(null);
 
   const [selectedCategoryIcon, setSelectedCategoryIcon] = useState(
-    expenseCategories.find(
-      (categories) => categories.name === userData.accounts[0].expenses[0].category
-    )?.icon || 'tag'
+    expenseCategories.find((categories) => categories.name === expense.category)?.icon || 'tag'
   );
-  const [selectedAccountIcon, setSelectedAccountIcon] = useState(
-    accountTypeList.find((account) => account.name === userData.accounts[0].acc_type)?.iconName ||
-      'wallet'
-  );
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState(account?.iconName || 'wallet');
 
   const handleSnapPressAccount = (index: number) => {
     bottomSheetAccount.current?.snapToIndex(index);
@@ -125,12 +119,12 @@ export default function EditExpenseScreen() {
 
     // Montar o objeto atualizado
     const updatedExpense: Expense = {
-      id: userData.accounts[0].expenses[0].id, // ID original
+      id: expense.id, // ID original
       exp_name: name,
       category: selectedCategory,
       value,
       date: moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-      fixed: userData.accounts[0].incomes[0].fixed,
+      fixed: expense.fixed,
       paid,
     };
 
@@ -138,8 +132,8 @@ export default function EditExpenseScreen() {
     setLoading(true);
     try {
       // Caso a conta tenha sido alterada
-      if (newAccount.id !== userData.accounts[0].id) {
-        await updateExpense(newAccount.id, updatedExpense, userData.accounts[0].id);
+      if (newAccount.id !== account.id) {
+        await updateExpense(newAccount.id, updatedExpense, account.id);
         Alert.alert('Sucesso', 'Despesa movida para outra conta e atualizada com sucesso!');
       } else {
         // Caso permaneça na mesma conta
@@ -148,7 +142,7 @@ export default function EditExpenseScreen() {
       }
 
       await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
-      navigation.goBack(); // Volta para a tela anterior
+      navigation.navigate('Transactions', { type: 'expenses' }); // Volta para a tela anterior
     } catch (error) {
       console.error('Erro ao atualizar despesa:', error);
       Alert.alert('Erro', 'Não foi possível atualizar a despesa. Tente novamente.');
@@ -261,7 +255,7 @@ export default function EditExpenseScreen() {
                 Editar Despesa
               </Text>
             </View>
-            <TrashButton onPress={() => handleDelete(userData.accounts[0].expenses[0])} size={35} />
+            <TrashButton onPress={() => handleDelete(expense)} size={35} />
           </View>
           <View style={styles.containerSubtitle}>
             <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>

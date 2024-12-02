@@ -118,12 +118,12 @@ export default function AddTaskScreen() {
       return;
     }
     console.log(priority);
-    const formattedDate = moment(selectedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    console.log(selectedDate);
     try {
       const newTask = {
         title: titulo,
         description: descricao,
-        data: formattedDate,
+        data: selectedDate,
         priority,
         subTask: validSubtasks,
         done: false,

@@ -1,10 +1,13 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+/* eslint-disable import/order */
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View, Alert } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
 import EditableAmountInput from './components/EditableAmountInput';
+import OpenModalButton from './components/OpenModalButton';
+import SelectItem from './components/SelectItem';
 import Container from '../../components/Container';
 import { ScreenContent } from '../../components/ScreenContent';
 
@@ -17,12 +20,13 @@ import { useGlobalStyles } from '~/styles/globalStyles';
 
 import 'moment/locale/pt-br';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import OpenModalButton from './components/OpenModalButton';
+
 import CustomBottomSheet from '~/components/CustomBottomSheet';
-import SelectItem from './components/SelectItem';
 import { Account, Category, Income } from '~/types/models';
+
 import { accountTypeList } from '../../utils/accountTypeList';
 import { incomeCategories } from '../../utils/categoriesList';
+
 import TrashButton from '~/components/TrashButton';
 import { useUser } from '~/context/UserContext';
 import { deleteIncome, updateIncome } from '~/services/incomeService';
@@ -30,31 +34,32 @@ import { deleteIncome, updateIncome } from '~/services/incomeService';
 moment.locale('pt-br');
 
 type EditIncomeScreenNavigationProp = NavigationProp<FinancialStackParamList, 'EditIncome'>;
+type EditRouteScreenNavigationProp = RouteProp<FinancialStackParamList, 'EditIncome'>;
 
 export default function EditIncomeScreen() {
   const style = useGlobalStyles();
   const { user, userData, refreshUserData } = useUser();
-  console.log(userData.accounts[0].incomes[0]);
 
   const navigation = useNavigation<EditIncomeScreenNavigationProp>();
+  const route = useRoute<EditRouteScreenNavigationProp>();
+  const { income_id, account_id } = route.params;
 
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState(
-    userData.accounts[0].incomes[0].value.toFixed(2).replace('.', ',')
-  );
-  const [paid, setPaid] = useState(userData.accounts[0].incomes[0].paid);
-  const [name, setName] = useState(userData.accounts[0].incomes[0].inc_name);
+
+  const account = userData.accounts.find((acc: Account) => acc.id === account_id);
+  const income = account.incomes.find((inc: Income) => inc.id === income_id);
+
+  console.log(income);
+
+  const [amount, setAmount] = useState(income.value.toFixed(2).replace('.', ','));
+  const [paid, setPaid] = useState(income.paid);
+  const [name, setName] = useState(income.inc_name);
   const [selectedDate, setSelectedDate] = useState(
-    moment(userData.accounts[0].incomes[0].date, 'YYYY-MM-DD').format('YYYY-MM-DD')
+    moment(income.date, 'YYYY-MM-DD').format('YYYY-MM-DD')
   );
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    userData.accounts[0].incomes[0].category
-  );
-  const [selectedAccount, setSelectedAccountType] = useState(
-    userData.accounts.find((account: Account) => account.id === userData.accounts[0].id)
-      ?.acc_name || 'wallet'
-  );
+  const [selectedCategory, setSelectedCategory] = useState(income.category);
+  const [selectedAccount, setSelectedAccountType] = useState(account?.acc_name || 'wallet');
 
   const back = () => {
     navigation.goBack();
@@ -64,14 +69,9 @@ export default function EditIncomeScreen() {
   const bottomSheetCategory = useRef<BottomSheet>(null);
 
   const [selectedCategoryIcon, setSelectedCategoryIcon] = useState(
-    incomeCategories.find(
-      (categories) => categories.name === userData.accounts[0].incomes[0].category
-    )?.icon || 'tag'
+    incomeCategories.find((categories) => categories.name === income.category)?.icon || 'tag'
   );
-  const [selectedAccountIcon, setSelectedAccountIcon] = useState(
-    accountTypeList.find((account) => account.name === userData.accounts[0].acc_type)?.iconName ||
-      'wallet'
-  );
+  const [selectedAccountIcon, setSelectedAccountIcon] = useState(account?.iconName || 'wallet');
 
   const handleSnapPressAccount = (index: number) => {
     bottomSheetAccount.current?.snapToIndex(index);
@@ -127,12 +127,12 @@ export default function EditIncomeScreen() {
 
     // Montar o objeto atualizado
     const updatedIncome: Income = {
-      id: userData.accounts[0].incomes[0].id, // ID original
+      id: income.id, // ID original
       inc_name: name,
       category: selectedCategory,
       value,
       date: moment(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-      fixed: userData.accounts[0].incomes[0].fixed,
+      fixed: income.fixed,
       paid,
     };
 
@@ -140,8 +140,8 @@ export default function EditIncomeScreen() {
     setLoading(true);
     try {
       // Caso a conta tenha sido alterada
-      if (newAccount.id !== userData.accounts[0].id) {
-        await updateIncome(newAccount.id, updatedIncome, userData.accounts[0].id);
+      if (newAccount.id !== account.id) {
+        await updateIncome(newAccount.id, updatedIncome, account.id);
         Alert.alert('Sucesso', 'Receita movida para outra conta e atualizada com sucesso!');
       } else {
         // Caso permaneça na mesma conta
@@ -150,7 +150,7 @@ export default function EditIncomeScreen() {
       }
 
       await refreshUserData(user.uid); // Atualiza os dados do usuário globalmente
-      navigation.goBack(); // Volta para a tela anterior
+      navigation.navigate('Transactions', { type: 'income' });
     } catch (error) {
       console.error('Erro ao atualizar receita:', error);
       Alert.alert('Erro', 'Não foi possível atualizar a receita. Tente novamente.');
@@ -263,7 +263,7 @@ export default function EditIncomeScreen() {
                 Editar Receita
               </Text>
             </View>
-            <TrashButton onPress={() => handleDelete(userData.accounts[0].incomes[0])} size={35} />
+            <TrashButton onPress={() => handleDelete(income)} size={35} />
           </View>
           <View style={styles.containerSubtitle}>
             <Text variant="headlineMedium" style={[style.title, styles.subtitle]}>
